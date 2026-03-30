@@ -1,18 +1,33 @@
 using UnityEngine;
+using System.Collections; 
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab; // Trascina qui il Prefab del nemico
-    public float spawnRate = 2f;   // Secondi tra uno spawn e l'altro
+    [Header("Configurazione Spawn")]
+    public GameObject enemyPrefab;
+    public float minSpawnDelay = 0.5f;
+    public float maxSpawnDelay = 3.0f;
 
     void Start()
     {
-        // Avvia la generazione ripetuta
-        InvokeRepeating("SpawnEnemy", 0f, spawnRate);
+        StartCoroutine(SpawnRoutine());
+    }
+
+    private IEnumerator SpawnRoutine()
+    {
+        while (true)
+        {
+            float randomDelay = Random.Range(minSpawnDelay, maxSpawnDelay);
+            yield return new WaitForSeconds(randomDelay);
+            SpawnEnemy();
+        }
     }
 
     void SpawnEnemy()
     {
-        Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        if (enemyPrefab != null)
+        {
+            Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        }
     }
 }

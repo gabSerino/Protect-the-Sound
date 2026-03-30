@@ -1,90 +1,145 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
+[RequireComponent(typeof(NavMeshAgent))] // Garantisce che l'oggetto abbia l'agente
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
+    private GameObject currentTarget;
 
-    private GameObject cassaTarget;
-    private GameObject playerTarget;
+    [Header("Movimento")]
+    public float moveSpeed = 3.5f;
+    public float acceleration = 8f;
+    public float angularSpeed = 120f;
 
-    [Header("Configurazioni")]
+    [Header("Configurazioni Attacco")]
     public float detectionRadius = 10f;
-    public float damageToTarget = 10f; // Quanto danno fa il nemico
-    private float stopDistanceSqr = 2.25f; // Distanza di contatto (1.5m al quadrato)
+    public float damageToTarget = 10f;
+    public float stopDistance = 1.5f;
+    public float targetUpdateInterval = 0.3f;
 
-    void Start()
+    private float stopDistanceSqr;
+    private float detectionRadiusSqr;
+
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
 
-        // Riferimenti ai bersagli
-        cassaTarget = GameObject.Find("provacassa");
-        playerTarget = GameObject.FindGameObjectWithTag("Player");
+        // Applichiamo i parametri di movimento all'agente
+        agent.speed = moveSpeed;
+        agent.acceleration = acceleration;
+        agent.angularSpeed = angularSpeed;
+        agent.stoppingDistance = stopDistance * 0.9f;
 
-        if (cassaTarget == null)
-            Debug.LogWarning("Attenzione: 'provacassa' non trovata in scena!");
+        stopDistanceSqr = stopDistance * stopDistance;
+        detectionRadiusSqr = detectionRadius * detectionRadius;
+    }
 
-        // Impostazione iniziale verso la cassa
-        if (cassaTarget != null)
-            agent.SetDestination(cassaTarget.transform.position);
+    void Start()
+    {
+        StartCoroutine(UpdateLogicRoutine());
+    }
+
+    IEnumerator UpdateLogicRoutine()
+    {
+        while (true)
+        {
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+            {
+                DecideTarget();
+
+                // OTTIMIZZAZIONE: Impostiamo la destinazione solo qui, non ogni frame
+                if (currentTarget != null)
+                {
+                    agent.SetDestination(currentTarget.transform.position);
+                }
+                else
+                {
+                    agent.ResetPath();
+                }
+            }
+            yield return new WaitForSeconds(targetUpdateInterval);
+        }
     }
 
     void Update()
     {
-        // Se non c'è l'agente o non ci sono più bersagli, non fare nulla
-        if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
-        if (cassaTarget == null && playerTarget == null) return;
+        // Nell'Update lasciamo solo il controllo della distanza (molto leggero)
+        if (currentTarget == null || !agent.isOnNavMesh) return;
 
-        // Determina chi inseguire
-        GameObject currentTarget = DecideTarget();
+        float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
 
-        if (currentTarget != null)
+        if (distSqr < stopDistanceSqr)
         {
-            // Aggiorna la destinazione verso il target attuale
-            agent.SetDestination(currentTarget.transform.position);
-
-            // Controllo distanza per il contatto
-            float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
-
-            if (distSqr < stopDistanceSqr)
-            {
-                // Applica il danno se il target ha lo script Health
-                Health targetHealth = currentTarget.GetComponent<Health>();
-                if (targetHealth != null)
-                {
-                    targetHealth.TakeDamage(damageToTarget);
-                }
-
-                // Il nemico sparisce dopo l'attacco
-                Destroy(gameObject);
-            }
+            Attack();
         }
     }
 
-    GameObject DecideTarget()
+    void DecideTarget()
     {
-        // Se uno dei due non esiste più, punta all'altro
-        if (playerTarget == null) return cassaTarget;
-        if (cassaTarget == null) return playerTarget;
+        // Ricerca Player (Priorità)
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        GameObject bestTarget = null;
+        float closestPlayerDistSqr = detectionRadiusSqr;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, playerTarget.transform.position);
-        float distanceToCassa = Vector3.Distance(transform.position, cassaTarget.transform.position);
-
-        // PRIORITÀ ALLA CASSA: 
-        // Insegue il Player solo se è nel raggio E se è più vicino della cassa
-        if (distanceToPlayer < detectionRadius && distanceToPlayer < distanceToCassa)
+        foreach (GameObject p in players)
         {
-            return playerTarget;
+            float distSqr = (p.transform.position - transform.position).sqrMagnitude;
+            if (distSqr < closestPlayerDistSqr)
+            {
+                closestPlayerDistSqr = distSqr;
+                bestTarget = p;
+            }
         }
 
-        // Altrimenti l'obiettivo resta la cassa
-        return cassaTarget;
+        if (bestTarget != null)
+        {
+            currentTarget = bestTarget;
+            return;
+        }
+
+        // Ricerca Casse (Secondaria)
+        GameObject[] casse = GameObject.FindGameObjectsWithTag("provacassa");
+        float closestCassaDistSqr = Mathf.Infinity;
+
+        foreach (GameObject c in casse)
+        {
+            float distSqr = (c.transform.position - transform.position).sqrMagnitude;
+            if (distSqr < closestCassaDistSqr)
+            {
+                closestCassaDistSqr = distSqr;
+                bestTarget = c;
+            }
+        }
+
+        currentTarget = bestTarget;
+    }
+
+    void Attack()
+    {
+        // Logica danno
+        DamageReceiver sharedTarget = currentTarget.GetComponent<DamageReceiver>();
+        if (sharedTarget != null)
+        {
+            sharedTarget.TakeDamage(damageToTarget);
+        }
+        else
+        {
+            Health targetHealth = currentTarget.GetComponent<Health>();
+            if (targetHealth != null) targetHealth.TakeDamage(damageToTarget);
+        }
+
+        // Sparisce dopo l'attacco
+        Debug.Log($"{gameObject.name} ha colpito {currentTarget.name} e si è sacrificato.");
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()
     {
-        // Disegna il raggio di rilevamento nell'Editor (cerchio giallo)
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, stopDistance);
     }
 }

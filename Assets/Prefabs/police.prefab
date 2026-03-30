@@ -148,4 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edfac0f0f63cdda4d9ef4a634109c3df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
+  moveSpeed: 2.5
+  acceleration: 8
+  angularSpeed: 120
   detectionRadius: 10
+  damageToTarget: 10
+  stopDistance: 1.5
+  targetUpdateInterval: 0.3
