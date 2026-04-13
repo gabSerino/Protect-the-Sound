@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackDamage = 10f;
-    [SerializeField] private float attackCooldown = 0.5f;
+    [SerializeField] private float attackCooldown = 0.2f;
+    [SerializeField] private float attackHitboxDuration = 0.3f;
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -217,6 +218,17 @@ public class PlayerController : MonoBehaviour
         if (playerInputManager.AttackInput && Time.time >= lastAttackTime + attackCooldown)
         {
             lastAttackTime = Time.time;
+            StartCoroutine(AttackRoutine());
+        }
+    }
+
+    /*private void HandleAttack()
+    {
+        if (!canAttack) return;
+
+        if (playerInputManager.AttackInput && Time.time >= lastAttackTime + attackCooldown)
+        {
+            lastAttackTime = Time.time;
             attackPerformed = true;
         }
     }
@@ -249,7 +261,7 @@ public class PlayerController : MonoBehaviour
         }
 
         isCheckingAttack = false;
-    }
+    }*/
 
     private IEnumerator AttackRoutine()
     {
@@ -258,7 +270,7 @@ public class PlayerController : MonoBehaviour
 
         PerformAttack();
 
-        yield return new WaitForSeconds(attackCooldown);
+        yield return new WaitForSeconds(attackHitboxDuration + attackCooldown);
 
         canAttack = true;
         canMove = true;
@@ -291,7 +303,7 @@ public class PlayerController : MonoBehaviour
         if (attackHitbox == null) yield break;
 
         attackHitbox.SetActive(true);
-        yield return new WaitForSeconds(attackCooldown);
+        yield return new WaitForSeconds(attackHitboxDuration);
         attackHitbox.SetActive(false);
     }
 }
