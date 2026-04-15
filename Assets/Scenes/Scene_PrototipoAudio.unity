@@ -657,6 +657,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &609273639 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2150209574076669066, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+  m_PrefabInstance: {fileID: 3604288669057188150}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &609273640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609273639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80a61cbb326216149802402b652aa64c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitboxDamage
+  beatManager: {fileID: 1444474721}
 --- !u!1 &616968061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1738,6 +1756,7 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  _marginPercentage: 0.05
 --- !u!82 &1444474722
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2610,7 +2629,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2106794303}
   - {fileID: 254813698}
   - {fileID: 1444474723}
   - {fileID: 6182784}
@@ -2754,51 +2772,6 @@ Transform:
   - {fileID: 1237136443}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2106794302
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2106794303}
-  - component: {fileID: 2106794304}
-  m_Layer: 0
-  m_Name: BeatTracker
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2106794303
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106794302}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.75251, y: 0, z: -4.44674}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1720042634}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2106794304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106794302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e171e9ed2f585034b802470807120342, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BeatTracker
-  bpm: 120
 --- !u!1 &2130710310
 GameObject:
   m_ObjectHideFlags: 0
@@ -2991,6 +2964,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7160524696072743285, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7162328971966095542, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -3030,7 +3007,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3390883603148105037, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       insertIndex: 0
       addedObject: {fileID: 2130710311}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2150209574076669066, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 609273640}
   m_SourcePrefab: {fileID: 100100000, guid: 5cc786c8972df504c830c24a00054616, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
