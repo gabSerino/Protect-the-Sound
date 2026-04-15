@@ -2,11 +2,20 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
-[RequireComponent(typeof(NavMeshAgent))] // Garantisce che l'oggetto abbia l'agente
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
     private GameObject currentTarget;
+
+    [Header("Salute")]
+    [SerializeField] private float health = 4f;
+
+    [Header("Grafica e Morte")]
+    [SerializeField] private SpriteRenderer spriteRenderer; 
+    [SerializeField] private Sprite aliveSprite;           
+    [SerializeField] private Sprite deadSprite;            
+    [SerializeField] private float deathDelay = 0.5f;      
 
     [Header("Movimento")]
     public float moveSpeed = 3.5f;
@@ -18,15 +27,18 @@ public class EnemyAI : MonoBehaviour
     public float damageToTarget = 10f;
     public float stopDistance = 1.5f;
     public float targetUpdateInterval = 0.3f;
+    public float attackCooldown = 1.0f; 
 
     private float stopDistanceSqr;
     private float detectionRadiusSqr;
+    private float lastAttackTime;
+    private bool isDead = false;
 
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
 
-        // Applichiamo i parametri di movimento all'agente
+        // Configurazione NavMeshAgent
         agent.speed = moveSpeed;
         agent.acceleration = acceleration;
         agent.angularSpeed = angularSpeed;
@@ -34,6 +46,12 @@ public class EnemyAI : MonoBehaviour
 
         stopDistanceSqr = stopDistance * stopDistance;
         detectionRadiusSqr = detectionRadius * detectionRadius;
+
+        // Imposta la sprite iniziale
+        if (spriteRenderer != null && aliveSprite != null)
+        {
+            spriteRenderer.sprite = aliveSprite;
+        }
     }
 
     void Start()
@@ -41,15 +59,59 @@ public class EnemyAI : MonoBehaviour
         StartCoroutine(UpdateLogicRoutine());
     }
 
+    public void TakeDamage(float amount)
+    {
+        if (isDead) return;
+
+        health -= amount;
+        Debug.Log($"{gameObject.name} ha ricevuto {amount} danni. Vita: {health}");
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+
+        Debug.Log($"{gameObject.name} √® stato eliminato.");
+
+        // 1. Ferma l'intelligenza e il movimento
+        if (agent != null) agent.enabled = false; 
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // 2. Avvia la sparizione visiva ritardata
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        // Cambia la sprite in quella di morte
+        if (spriteRenderer != null && deadSprite != null)
+        {
+            spriteRenderer.sprite = deadSprite;
+        }
+
+        // Aspetta il tempo stabilito
+        yield return new WaitForSeconds(deathDelay);
+
+        // Rimuove definitivamente l'oggetto
+        Destroy(gameObject);
+    }
+
     IEnumerator UpdateLogicRoutine()
     {
-        while (true)
+        while (!isDead)
         {
             if (agent != null && agent.enabled && agent.isOnNavMesh)
             {
                 DecideTarget();
 
-                // OTTIMIZZAZIONE: Impostiamo la destinazione solo qui, non ogni frame
                 if (currentTarget != null)
                 {
                     agent.SetDestination(currentTarget.transform.position);
@@ -65,12 +127,11 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        // Nell'Update lasciamo solo il controllo della distanza (molto leggero)
-        if (currentTarget == null || !agent.isOnNavMesh) return;
+        if (isDead || currentTarget == null || !agent.isOnNavMesh) return;
 
         float distSqr = (currentTarget.transform.position - transform.position).sqrMagnitude;
 
-        if (distSqr < stopDistanceSqr)
+        if (distSqr < stopDistanceSqr && Time.time >= lastAttackTime + attackCooldown)
         {
             Attack();
         }
@@ -78,7 +139,7 @@ public class EnemyAI : MonoBehaviour
 
     void DecideTarget()
     {
-        // Ricerca Player (Priorit‡)
+        // Priorit√† 1: Player
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         GameObject bestTarget = null;
         float closestPlayerDistSqr = detectionRadiusSqr;
@@ -99,7 +160,7 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        // Ricerca Casse (Secondaria)
+        // Priorit√† 2: Casse
         GameObject[] casse = GameObject.FindGameObjectsWithTag("provacassa");
         float closestCassaDistSqr = Mathf.Infinity;
 
@@ -118,21 +179,21 @@ public class EnemyAI : MonoBehaviour
 
     void Attack()
     {
-        // Logica danno
-        DamageReceiver sharedTarget = currentTarget.GetComponent<DamageReceiver>();
-        if (sharedTarget != null)
+        lastAttackTime = Time.time;
+        Debug.Log($"{gameObject.name} sta attaccando {currentTarget.name}!");
+
+        // Applica danno preferendo lo script Health del Player
+        Health targetHealth = currentTarget.GetComponent<Health>();
+        if (targetHealth != null)
         {
-            sharedTarget.TakeDamage(damageToTarget);
+            targetHealth.TakeDamage(damageToTarget);
         }
         else
         {
-            Health targetHealth = currentTarget.GetComponent<Health>();
-            if (targetHealth != null) targetHealth.TakeDamage(damageToTarget);
+            // Fallback per altri tipi di bersagli (es. casse)
+            DamageReceiver sharedTarget = currentTarget.GetComponent<DamageReceiver>();
+            if (sharedTarget != null) sharedTarget.TakeDamage(damageToTarget);
         }
-
-        // Sparisce dopo l'attacco
-        Debug.Log($"{gameObject.name} ha colpito {currentTarget.name} e si Ë sacrificato.");
-        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()
