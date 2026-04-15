@@ -364,15 +364,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   walkingSpeed: 5
   rotationSpeed: 10
-  slideLerpSpeed: 10
   acceleration: 25
   deceleration: 30
-  airControl: 0.4
-  jumpForce: 5
-  gravityMultiplier: 1
   attackRange: 2
   attackDamage: 10
   attackCooldown: 0.3
+  attackHitboxDuration: 0.3
   playerInputManager: {fileID: 0}
   characterController: {fileID: 5521059300592932477}
   gameCamera: {fileID: 0}

@@ -6,14 +6,9 @@ public class PlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float walkingSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
-    [SerializeField] private float slideLerpSpeed = 10f;
     [SerializeField] private float acceleration = 25f;
     [SerializeField] private float deceleration = 30f;
-    [SerializeField] private float airControl = 0.4f;
 
-    [Header("Jump Settings")]
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private float gravityMultiplier = 1f;
 
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2f;
@@ -41,7 +36,6 @@ public class PlayerController : MonoBehaviour
     // CONTROLLER FLAGS
     private bool canMove = true;
     private bool canAttack = true;
-    private bool canJump = true;
     private bool attackPerformed = false;
     private bool isCheckingAttack = false;
 
@@ -52,16 +46,19 @@ public class PlayerController : MonoBehaviour
         cameraForward.Normalize();
         bpm = beatManager._bpm;
         attackCooldown = 60f / (bpm * 2f); // finestra di 1/2 di battito
+        attackHitbox.SetActive(false);
+        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange;
     }
 
     void Update()
     {
         HandleMovement();
         HandleRotation();
-        HandleJump();
         HandleAttack();
 
+        
         currentSpeed = walkingSpeed;
+        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange;
     }
 
     // =========================
@@ -72,14 +69,12 @@ public class PlayerController : MonoBehaviour
     {
         canMove = true;
         canAttack = true;
-        canJump = true;
     }
 
     public void DisableAllControls()
     {
         canMove = false;
         canAttack = false;
-        canJump = false;
     }
 
     public void EnableMovement(bool value)
@@ -92,10 +87,6 @@ public class PlayerController : MonoBehaviour
         canAttack = value;
     }
 
-    public void EnableJump(bool value)
-    {
-        canJump = value;
-    }
 
     // =========================
     // MOVEMENT
@@ -114,8 +105,8 @@ public class PlayerController : MonoBehaviour
 
         Vector3 horizontalVelocity = new Vector3(currentMovement.x, 0, currentMovement.z);
 
-        float accel = characterController.isGrounded ? acceleration : acceleration * airControl;
-        float decel = characterController.isGrounded ? deceleration : deceleration * airControl;
+        float accel = acceleration;
+        float decel = deceleration;
 
         if (input.magnitude > 0.1f)
         {
@@ -139,8 +130,6 @@ public class PlayerController : MonoBehaviour
         // Mantieni Y separata
         currentMovement.x = horizontalVelocity.x;
         currentMovement.z = horizontalVelocity.z;
-
-        HandleGravity();
 
         characterController.Move(currentMovement * Time.deltaTime);
 
@@ -186,7 +175,7 @@ public class PlayerController : MonoBehaviour
     // JUMP & GRAVITY
     // =========================
 
-    private void HandleJump()
+    /*private void HandleJump()
     {
         if (characterController.isGrounded && canJump)
         {
@@ -197,15 +186,7 @@ public class PlayerController : MonoBehaviour
                 currentMovement.y = jumpForce;
             }
         }
-    }
-
-    private void HandleGravity()
-    {
-        if (!characterController.isGrounded)
-        {
-            currentMovement.y += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
-        }
-    }
+    }*/
 
     // =========================
     // ATTACK
@@ -270,7 +251,7 @@ public class PlayerController : MonoBehaviour
 
         PerformAttack();
 
-        yield return new WaitForSeconds(attackHitboxDuration + attackCooldown);
+        yield return new WaitForSeconds(attackCooldown);
 
         canAttack = true;
         canMove = true;
