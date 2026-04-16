@@ -490,7 +490,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 5982149761746337574}
   aliveSprite: {fileID: 21300000, guid: 919f96084eeec2246b0c0f377dc33b09, type: 3}
   deadSprite: {fileID: 21300000, guid: bf54edcf3c1872f4ebe0a829dd5e65f7, type: 3}
-  deathDelay: 0.5
+  deathDelay: 0.25
   moveSpeed: 2.5
   acceleration: 8
   angularSpeed: 120
