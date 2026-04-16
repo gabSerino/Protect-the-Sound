@@ -367,18 +367,22 @@ MonoBehaviour:
   rotationSpeed: 10
   acceleration: 100
   deceleration: 200
-  attackRange: 1.5
-  attackDamage: 10
+  attackRange: 2
+  attackDamage: 1
+  attackDuration: 0.15
   attackCooldown: 0.1
   attackHitboxDuration: 0.1
+  attackMoveSpeedMultiplier: 0.4
+  bpm: 120
+  useBpmCooldown: 0
   playerInputManager: {fileID: 0}
   characterController: {fileID: 5521059300592932477}
   gameCamera: {fileID: 0}
   playerCapsule: {fileID: 3967418410147389121}
   attackHitbox: {fileID: 2150209574076669066}
-  beatManager: {fileID: 0}
-  attackSound: {fileID: 8300000, guid: 217faba88ff0fec47b0e2bba312d3b21, type: 3}
-  audioSource: {fileID: 0}
+  hitboxDamage: {fileID: 0}
+  hitboxRenderer: {fileID: 0}
+  hitboxCollider: {fileID: 0}
 --- !u!143 &5521059300592932477
 CharacterController:
   m_ObjectHideFlags: 0

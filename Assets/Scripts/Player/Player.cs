@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PlayerController : MonoBehaviour
+public class Player : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float walkingSpeed = 5f;
@@ -11,14 +11,14 @@ public class PlayerController : MonoBehaviour
 
 
     [Header("Attack Settings")]
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackDamage = 10f;
+    [SerializeField] private float attackRange = 1f;
+    [SerializeField] private float attackDamage = 1f;
     [SerializeField] private float attackDuration = 0.15f;   // quanto dura il "commit" dell'attacco
     [SerializeField] private float attackCooldown = 0.3f;    // pausa prima del prossimo attacco
     [SerializeField] private float attackHitboxDuration = 0.1f;
     [SerializeField] private float attackMoveSpeedMultiplier = 0.4f; // rallenta invece di bloccare
 
-    [Header("BPM Settings")]
+    [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
     [SerializeField] private bool useBpmCooldown = false;     // toggle dall'Inspector
 
@@ -28,22 +28,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera gameCamera;
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
+    
 
     private Vector3 currentMovement;
-    private float currentSpeed;
-    private Vector3 cameraForward;
     private Vector3 movementDirection;
-    private float lastAttackTime;
+    private HitboxDamage hitboxDamage;
+    private Renderer hitboxRenderer; // Per debug, mostra il hitbox quando attivo
+    private Collider hitboxCollider; // Per disabilitare il collider quando non attivo
+
 
     // CONTROLLER FLAGS
     private bool canMove = true;
     private bool canAttack = true;
-    private bool attackPerformed = false;
-    private bool isCheckingAttack = false;
 
     void Start()
     {
-        attackHitbox.SetActive(false);
+        hitboxDamage = attackHitbox.GetComponent<HitboxDamage>();
+        hitboxCollider = attackHitbox.GetComponent<Collider>();
+        hitboxRenderer = attackHitbox.GetComponent<Renderer>();
+        hitboxCollider.enabled = false;
+        hitboxRenderer.enabled = false;
         RefreshBpmCooldown();
     }
 
@@ -66,8 +70,8 @@ public class PlayerController : MonoBehaviour
         HandleAttack();
 
         
-        currentSpeed = walkingSpeed;
-        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange;
+        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange/2f;
+        attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
     }
 
     // =========================
@@ -216,6 +220,10 @@ public class PlayerController : MonoBehaviour
         // Il giocatore si muove, ma più lentamente durante l'attacco
         float originalSpeed = walkingSpeed;
         walkingSpeed *= attackMoveSpeedMultiplier;
+        bool isOnBeat = IsOnBeat(out float damageMultiplier);
+        hitboxDamage.SetHitboxDamage(attackDamage*damageMultiplier);
+
+        // Avvia l'attacco
 
         PerformAttack();
 
@@ -232,30 +240,30 @@ public class PlayerController : MonoBehaviour
     private void PerformAttack()
     {
         Debug.Log("Attacco eseguito!");
-
-        Debug.DrawRay(transform.position, transform.forward * attackRange, Color.red, 0.2f);
-
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, attackRange))
-        {
-            Debug.Log("Colpito: " + hit.collider.name);
-
-            /*var health = hit.collider.GetComponent<Health>();
-            if (health != null)
-            {
-                health.TakeDamage(attackDamage);
-            }*/
-        }
-
-        StartCoroutine(ActivateHitbox());
+        StartCoroutine(ActivateAttackHitbox());
     }
 
-    private IEnumerator ActivateHitbox()
+    private IEnumerator ActivateAttackHitbox()
     {
         if (attackHitbox == null) yield break;
 
-        attackHitbox.SetActive(true);
+        hitboxCollider.enabled = true;
+        hitboxRenderer.enabled = true;
         yield return new WaitForSeconds(attackHitboxDuration);
+        hitboxCollider.enabled = false;
+        hitboxRenderer.enabled = false;
         attackHitbox.SetActive(false);
+        attackHitbox.SetActive(true); // resetta il collider per la prossima attivazione
+    }
+
+    bool IsOnBeat(out float damageMultiplier)
+    {
+        if (RhythmManager.Instance == null)
+        {
+            damageMultiplier = 0.5f;
+            return false;
+        }
+
+        return RhythmManager.Instance.IsOnBeat(RhythmManager.Instance.perfectInputWindow, RhythmManager.Instance.goodInputWindow, out damageMultiplier);
     }
 }

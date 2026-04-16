@@ -14,6 +14,13 @@ public class RhythmManager : MonoBehaviour
     public float bpm = 120f;
     public float startOffset = 0f; // compensazione latenza (tipo 0.05)
 
+    [Header("Window Settings")]
+    public float perfectInputWindow = 0.1f;
+    public float goodInputWindow = 0.2f;
+    public float normalMultiplier = 0.5f;
+    public float goodMultiplier = 0.75f;
+    public float perfectMultiplier = 1.0f;
+
     private float beatInterval;
     private float songStartTime;
 
@@ -74,17 +81,17 @@ public class RhythmManager : MonoBehaviour
 
         if (error <= perfectWindow)
         {
-            multiplier = 1.0f;
+            multiplier = perfectMultiplier;
             return true;
         }
         else if (error <= goodWindow)
         {
-            multiplier = 0.75f;
+            multiplier = goodMultiplier;
             return true;
         }
         else
         {
-            multiplier = 0.5f;
+            multiplier = normalMultiplier;
             return false;
         }
     }

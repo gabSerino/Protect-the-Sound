@@ -473,8 +473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a61cbb326216149802402b652aa64c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitboxDamage
-  perfectWindow: 0.05
-  goodWindow: 0.1
 --- !u!1 &616968061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1557,6 +1555,11 @@ MonoBehaviour:
   eventPath: event:/test120
   bpm: 120
   startOffset: 0
+  perfectInputWindow: 0.1
+  goodInputWindow: 0.2
+  normalMultiplier: 0.5
+  goodMultiplier: 0.75
+  perfectMultiplier: 1
 --- !u!1 &1478357958
 GameObject:
   m_ObjectHideFlags: 0
