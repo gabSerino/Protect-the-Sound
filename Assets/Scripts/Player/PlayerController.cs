@@ -13,8 +13,14 @@ public class PlayerController : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackDamage = 10f;
-    [SerializeField] private float attackCooldown = 0.2f;
-    [SerializeField] private float attackHitboxDuration = 0.3f;
+    [SerializeField] private float attackDuration = 0.15f;   // quanto dura il "commit" dell'attacco
+    [SerializeField] private float attackCooldown = 0.3f;    // pausa prima del prossimo attacco
+    [SerializeField] private float attackHitboxDuration = 0.1f;
+    [SerializeField] private float attackMoveSpeedMultiplier = 0.4f; // rallenta invece di bloccare
+
+    [Header("BPM Settings")]
+    [SerializeField] private float bpm = 120f;
+    [SerializeField] private bool useBpmCooldown = false;     // toggle dall'Inspector
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -22,16 +28,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera gameCamera;
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
-    [SerializeField] private BeatManager beatManager;
-    [SerializeField] private AudioClip attackSound;
-    [SerializeField] private AudioSource audioSource;
 
     private Vector3 currentMovement;
     private float currentSpeed;
     private Vector3 cameraForward;
     private Vector3 movementDirection;
     private float lastAttackTime;
-    private float bpm;
 
     // CONTROLLER FLAGS
     private bool canMove = true;
@@ -41,13 +43,20 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        cameraForward = gameCamera.transform.forward;
-        cameraForward.y = 0;
-        cameraForward.Normalize();
-        bpm = beatManager._bpm;
-        attackCooldown = 60f / (bpm * 2f); // finestra di 1/2 di battito
         attackHitbox.SetActive(false);
-        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange;
+        RefreshBpmCooldown();
+    }
+
+    public void SetBpm(float newBpm)
+    {
+        bpm = newBpm;
+        RefreshBpmCooldown();
+    }
+
+    private void RefreshBpmCooldown()
+    {
+        if (useBpmCooldown)
+            attackCooldown = 60f / (bpm * 2f);
     }
 
     void Update()
@@ -195,66 +204,29 @@ public class PlayerController : MonoBehaviour
     private void HandleAttack()
     {
         if (!canAttack) return;
+        if (!playerInputManager.AttackInput) return;
 
-        if (playerInputManager.AttackInput && Time.time >= lastAttackTime + attackCooldown)
-        {
-            lastAttackTime = Time.time;
-            StartCoroutine(AttackRoutine());
-        }
+        StartCoroutine(AttackRoutine());
     }
-
-    /*private void HandleAttack()
-    {
-        if (!canAttack) return;
-
-        if (playerInputManager.AttackInput && Time.time >= lastAttackTime + attackCooldown)
-        {
-            lastAttackTime = Time.time;
-            attackPerformed = true;
-        }
-    }
-
-    public void TriggerAttack()
-    {
-        if (!isCheckingAttack)
-        {
-            StartCoroutine(AttackInputWindow());
-        }
-    }
-
-    private IEnumerator AttackInputWindow()
-    {
-        isCheckingAttack = true;
-
-        float timer = 0f;
-
-        while (timer < 60f/(bpm*4)) // finestra di 1/3 di battito
-        {
-            if (attackPerformed)
-            {
-                attackPerformed = false;
-                StartCoroutine(AttackRoutine());
-                break;
-            }
-
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        isCheckingAttack = false;
-    }*/
 
     private IEnumerator AttackRoutine()
     {
         canAttack = false;
-        canMove = false;
+
+        // Il giocatore si muove, ma più lentamente durante l'attacco
+        float originalSpeed = walkingSpeed;
+        walkingSpeed *= attackMoveSpeedMultiplier;
 
         PerformAttack();
+
+        yield return new WaitForSeconds(attackDuration);
+
+        // Ripristina velocità, riabilita attacco dopo il cooldown
+        walkingSpeed = originalSpeed;
 
         yield return new WaitForSeconds(attackCooldown);
 
         canAttack = true;
-        canMove = true;
     }
 
     private void PerformAttack()
@@ -262,7 +234,6 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Attacco eseguito!");
 
         Debug.DrawRay(transform.position, transform.forward * attackRange, Color.red, 0.2f);
-        audioSource.PlayOneShot(attackSound);
 
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.forward, out hit, attackRange))

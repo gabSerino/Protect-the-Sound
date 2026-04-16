@@ -3,24 +3,39 @@ using System.Collections.Generic;
 
 public class HitboxDamage : MonoBehaviour
 {
-    [SerializeField] private BeatManager beatManager; // Ora puntiamo al Manager
     private List<EnemyAI> hitEnemies = new List<EnemyAI>();
+
+    [Header("Timing")]
+    public float perfectWindow = 0.1f;
+    public float goodWindow = 0.25f;
 
     private void OnEnable() => hitEnemies.Clear();
 
     private void OnTriggerEnter(Collider other)
     {
         EnemyAI enemy = other.GetComponent<EnemyAI>();
+
         if (enemy != null && !hitEnemies.Contains(enemy))
         {
-            // Chiediamo al Manager usando la nuova logica dei samples
-            bool aTempo = beatManager.IsOnBeat();
-            float damage = aTempo ? 1.0f : 0.5f;
-            
-            enemy.TakeDamage(damage);
+            bool aTempo = IsOnBeat(out float multiplier);
+
+            enemy.TakeDamage(multiplier);
             hitEnemies.Add(enemy);
 
-            Debug.Log(aTempo ? "<color=green>♪ A TEMPO! 1.0 ♪</color>" : "<color=yellow>× FUORI TEMPO! 0.5 ×</color>");
+            Debug.Log(aTempo 
+                ? $"<color=green>♪ A TEMPO! x{multiplier} ♪</color>" 
+                : $"<color=yellow>× FUORI TEMPO! x{multiplier} ×</color>");
         }
+    }
+
+    bool IsOnBeat(out float damageMultiplier)
+    {
+        if (RhythmManager.Instance == null)
+        {
+            damageMultiplier = 0.5f;
+            return false;
+        }
+
+        return RhythmManager.Instance.IsOnBeat(perfectWindow, goodWindow, out damageMultiplier);
     }
 }
