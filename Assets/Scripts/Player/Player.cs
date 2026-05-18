@@ -15,8 +15,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float attackDamage = 1f;
     [SerializeField] private float attackDuration = 0.15f;   // quanto dura il "commit" dell'attacco
     [SerializeField] private float attackCooldown = 0.3f;    // pausa prima del prossimo attacco
-    [SerializeField] private float attackHitboxDuration = 0.1f;
-    [SerializeField] private float attackMoveSpeedMultiplier = 0.4f; // rallenta invece di bloccare
+    [SerializeField] private float attackMoveSpeedMultiplier = 0.65f; // rallenta invece di bloccare
+    [SerializeField] private float attackMoveEaseTime = 0.1f; // tempo per ridurre/riportare la velocità gradualmente
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
     // CONTROLLER FLAGS
     private bool canMove = true;
     private bool canAttack = true;
+    private bool isAttacking = false;   // blocca rotazione durante attacco e cooldown
 
     void Start()
     {
@@ -152,109 +153,74 @@ public class Player : MonoBehaviour
 
     private void HandleRotation()
     {
-        Vector3 targetDirection = movementDirection;
-        targetDirection.y = 0;
+        // Lock durante attacco e cooldown
+        if (isAttacking) return;
 
-        // Evita rotazioni inutili quando non c'è input
-        if (targetDirection.sqrMagnitude < 0.01f)
+        Vector3 rawDirection = movementDirection;
+        rawDirection.y = 0;
+
+        if (rawDirection.sqrMagnitude < 0.01f)
             return;
 
-        targetDirection.Normalize();
+        // Snap alle 8 direzioni cardinali/ordinali
+        Vector3 snappedDirection = SnapTo8Directions(rawDirection);
 
-        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+        Quaternion targetRotation = Quaternion.LookRotation(snappedDirection);
 
-        // Più reattivo quando sei fermo
-        float currentRotSpeed = (new Vector3(currentMovement.x, 0, currentMovement.z).magnitude > 0.1f)
-            ? rotationSpeed
-            : rotationSpeed * 2f;
-
-        // SNAP per cambi di direzione bruschi (tipo action games)
-        float dot = Vector3.Dot(transform.forward, targetDirection);
-        if (dot < 0.5f) // angolo ampio
-        {
-            transform.rotation = targetRotation;
-        }
-        else
-        {
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                currentRotSpeed * Time.deltaTime
-            );
-        }
+        // Con lo snap non serve più lo Slerp graduato né il dot-check:
+        // la rotazione è sempre un salto netto a uno degli 8 angoli
+        transform.rotation = targetRotation;
     }
 
-    // =========================
-    // JUMP & GRAVITY
-    // =========================
-
-    /*private void HandleJump()
+    private Vector3 SnapTo8Directions(Vector3 direction)
     {
-        if (characterController.isGrounded && canJump)
-        {
-            currentMovement.y = -0.5f;
+        float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+        float snapped = Mathf.Round(angle / 45f) * 45f;
+        float rad = snapped * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
+    }
 
-            if (playerInputManager.JumpInput)
-            {
-                currentMovement.y = jumpForce;
-            }
-        }
-    }*/
+    private IEnumerator AttackRoutine()
+    {
+        canAttack = false;
+        isAttacking = true;   // blocca rotazione
 
-    // =========================
-    // ATTACK
-    // =========================
+        float originalSpeed = walkingSpeed;
+
+        walkingSpeed *= attackMoveSpeedMultiplier;
+
+        bool isOnBeat = IsOnBeat(out float damageMultiplier);
+
+        hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
+
+        hitboxCollider.enabled = true;
+        hitboxRenderer.enabled = true;
+
+        yield return new WaitForSeconds(attackDuration);
+
+        hitboxCollider.enabled = false;
+        hitboxRenderer.enabled = false;
+
+        attackHitbox.SetActive(false);
+        attackHitbox.SetActive(true);
+
+        walkingSpeed = originalSpeed;
+
+        yield return new WaitForSeconds(attackCooldown);
+
+        isAttacking = false;  // sblocca rotazione
+        canAttack = true;
+    }
 
     private void HandleAttack()
     {
         if (!canAttack) return;
         if (!playerInputManager.AttackInput) return;
 
+        Debug.Log("Attacco eseguito!");
         StartCoroutine(AttackRoutine());
     }
 
-    private IEnumerator AttackRoutine()
-    {
-        canAttack = false;
-
-        // Il giocatore si muove, ma più lentamente durante l'attacco
-        float originalSpeed = walkingSpeed;
-        walkingSpeed *= attackMoveSpeedMultiplier;
-        bool isOnBeat = IsOnBeat(out float damageMultiplier);
-        hitboxDamage.SetHitboxDamage(attackDamage*damageMultiplier);
-
-        // Avvia l'attacco
-
-        PerformAttack();
-
-        yield return new WaitForSeconds(attackDuration);
-
-        // Ripristina velocità, riabilita attacco dopo il cooldown
-        walkingSpeed = originalSpeed;
-
-        yield return new WaitForSeconds(attackCooldown);
-
-        canAttack = true;
-    }
-
-    private void PerformAttack()
-    {
-        Debug.Log("Attacco eseguito!");
-        StartCoroutine(ActivateAttackHitbox());
-    }
-
-    private IEnumerator ActivateAttackHitbox()
-    {
-        if (attackHitbox == null) yield break;
-
-        hitboxCollider.enabled = true;
-        hitboxRenderer.enabled = true;
-        yield return new WaitForSeconds(attackHitboxDuration);
-        hitboxCollider.enabled = false;
-        hitboxRenderer.enabled = false;
-        attackHitbox.SetActive(false);
-        attackHitbox.SetActive(true); // resetta il collider per la prossima attivazione
-    }
 
     bool IsOnBeat(out float damageMultiplier)
     {

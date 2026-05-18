@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dca4628ea6a684e41adabb2378f8e6ee, type: 3}
+  m_Name: MDMA
+  m_EditorClassIdentifier: Assembly-CSharp::Drug
+  drugType: 3
+  drugDisplayName: MDMA
+  subtitle: Trick or treat?
+  description: 
+  icon: {fileID: 0}
+  attackType: 3
+  attackRateMultiplier: 0
+  damageMultiplier: 0
+  damageOverTime: 0
+  damageDecayRate: 0
+  decayCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  healthMultiplier: 0
+  StaminaRecoverMultiplier: 0
+  speedMultiplier: 0
+  badTripChance: 0
