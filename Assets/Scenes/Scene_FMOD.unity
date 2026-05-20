@@ -2508,6 +2508,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6356157293563166590, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6776112550944333803, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: m_Name
       value: Player
@@ -2520,6 +2524,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: uiJuice
+      value: 
+      objectReference: {fileID: 1815132739}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: jumpForce
       value: 7
@@ -2537,13 +2545,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
-      propertyPath: attackDamage
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
-      propertyPath: walkingSpeed
-      value: 8
-      objectReference: {fileID: 0}
+      propertyPath: healthSlider
+      value: 
+      objectReference: {fileID: 1815132738}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: attackCooldown
       value: 0.15
@@ -2560,10 +2564,6 @@ PrefabInstance:
       propertyPath: playerInputManager
       value: 
       objectReference: {fileID: 254813699}
-    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
-      propertyPath: attackMoveSpeedMultiplier
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 8967466737068654175, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
@@ -2580,6 +2580,83 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 609273640}
   m_SourcePrefab: {fileID: 100100000, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+--- !u!1001 &4019061613512740363
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3888335886803409878, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Name
+      value: Drug
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: drugData
+      value: 
+      objectReference: {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Size.x
+      value: 3.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Size.y
+      value: 3.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8ea5678c01dbbd04d90386a546e6b6ca, type: 3}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2594,3 +2671,4 @@ SceneRoots:
   - {fileID: 1298740549}
   - {fileID: 653847645}
   - {fileID: 3604288669057188150}
+  - {fileID: 4019061613512740363}

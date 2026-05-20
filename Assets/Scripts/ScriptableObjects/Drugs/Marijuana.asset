@@ -16,18 +16,18 @@ MonoBehaviour:
   drugDisplayName: Mary Jane
   subtitle: No DJ, no cry.
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f62a0c5f3248e6a41b4b8026106e94eb, type: 3}
   attackType: 1
   attackRateMultiplier: 0.5
-  damageMultiplier: 2
   damageOverTime: 0
-  damageDecayRate: 0
-  decayCurve:
+  damageChangeTime: 0
+  damageCurve:
     serializedVersion: 2
     m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  damageMultiplier: 2
   healthMultiplier: 1
   StaminaRecoverMultiplier: 0.75
   speedMultiplier: 0.75

@@ -18,7 +18,7 @@ MonoBehaviour:
   description: 
   icon: {fileID: 0}
   attackType: 3
-  attackRateMultiplier: 0
+  attackRateMultiplier: 1
   damageMultiplier: 0
   damageOverTime: 0
   damageDecayRate: 0

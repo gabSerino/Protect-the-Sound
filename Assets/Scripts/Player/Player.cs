@@ -1,26 +1,42 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    // =========================
+    // SERIALIZED FIELDS
+    // =========================
+
     [Header("Movement Settings")]
     [SerializeField] private float walkingSpeed = 5f;
     [SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float acceleration = 25f;
     [SerializeField] private float deceleration = 30f;
 
-
     [Header("Attack Settings")]
+    [SerializeField] private AttackType attackType = AttackType.DEFAULT;
     [SerializeField] private float attackRange = 1f;
     [SerializeField] private float attackDamage = 1f;
-    [SerializeField] private float attackDuration = 0.15f;   // quanto dura il "commit" dell'attacco
-    [SerializeField] private float attackCooldown = 0.3f;    // pausa prima del prossimo attacco
+    [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
+    [SerializeField] private float attackTime = 0.15f;              // pausa prima del prossimo attacco
     [SerializeField] private float attackMoveSpeedMultiplier = 0.65f; // rallenta invece di bloccare
-    [SerializeField] private float attackMoveEaseTime = 0.1f; // tempo per ridurre/riportare la velocità gradualmente
+    [SerializeField] private float attackMoveEaseTime = 0.1f;       // tempo per ridurre/riportare la velocità gradualmente
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
-    [SerializeField] private bool useBpmCooldown = false;     // toggle dall'Inspector
+    [SerializeField] private bool useBpmCooldown = false;           // toggle dall'Inspector
+
+    [Header("Health Settings")]
+    public float maxHealthPoints = 100f;
+
+    [Header("Invulnerability Settings")]
+    public float invulnerabilityDuration = 2f;
+    public float flickerInterval = 0.1f;
+
+    [Header("UI")]
+    public Slider healthSlider;
+    public UIJuice uiJuice;
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -28,40 +44,65 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera gameCamera;
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
-    
 
+
+    // =========================
+    // PROPERTIES
+    // =========================
+
+    public float currentHealthPoints { get; private set; }
+
+
+    // =========================
+    // PRIVATE FIELDS
+    // =========================
+
+    // Movement
     private Vector3 currentMovement;
     private Vector3 movementDirection;
+
+    // Attack / Hitbox
     private HitboxDamage hitboxDamage;
-    private Renderer hitboxRenderer; // Per debug, mostra il hitbox quando attivo
-    private Collider hitboxCollider; // Per disabilitare il collider quando non attivo
+    private Renderer hitboxRenderer;   // Per debug, mostra il hitbox quando attivo
+    private Collider hitboxCollider;   // Per disabilitare il collider quando non attivo
 
-
-    // CONTROLLER FLAGS
+    // Controller flags
     private bool canMove = true;
     private bool canAttack = true;
-    private bool isAttacking = false;   // blocca rotazione durante attacco e cooldown
+    private bool isAttacking = false;  // blocca rotazione durante attacco e cooldown
+
+    // Health / Invulnerability
+    private CharacterController _controller;
+    private Renderer[] _playerRenderers;
+    private bool _isInvulnerable = false;
+
+
+    // =========================
+    // UNITY CALLBACKS
+    // =========================
+
+    void Awake()
+    {
+        _controller = GetComponent<CharacterController>();
+
+        // Cerca i Renderer sul Player e su tutti i figli (Face, Player Capsule, ecc.)
+        _playerRenderers = GetComponentsInChildren<Renderer>();
+
+        if (_playerRenderers == null || _playerRenderers.Length == 0)
+            Debug.LogError("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");
+    }
 
     void Start()
     {
         hitboxDamage = attackHitbox.GetComponent<HitboxDamage>();
         hitboxCollider = attackHitbox.GetComponent<Collider>();
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
+
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
-        RefreshBpmCooldown();
-    }
 
-    public void SetBpm(float newBpm)
-    {
-        bpm = newBpm;
         RefreshBpmCooldown();
-    }
-
-    private void RefreshBpmCooldown()
-    {
-        if (useBpmCooldown)
-            attackCooldown = 60f / (bpm * 2f);
+        ResetHealth();
     }
 
     void Update()
@@ -70,10 +111,12 @@ public class Player : MonoBehaviour
         HandleRotation();
         HandleAttack();
 
-        
-        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange/2f;
+        attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
         attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
+
+        Debug.Log("Current health: " + currentHealthPoints);
     }
+
 
     // =========================
     // CONTROLS ENABLE / DISABLE
@@ -91,15 +134,9 @@ public class Player : MonoBehaviour
         canAttack = false;
     }
 
-    public void EnableMovement(bool value)
-    {
-        canMove = value;
-    }
+    public void EnableMovement(bool value) => canMove = value;
 
-    public void EnableAttack(bool value)
-    {
-        canAttack = value;
-    }
+    public void EnableAttack(bool value) => canAttack = value;
 
 
     // =========================
@@ -116,28 +153,24 @@ public class Player : MonoBehaviour
         desiredDirection.Normalize();
 
         float targetSpeed = walkingSpeed * input.magnitude;
-
         Vector3 horizontalVelocity = new Vector3(currentMovement.x, 0, currentMovement.z);
-
-        float accel = acceleration;
-        float decel = deceleration;
 
         if (input.magnitude > 0.1f)
         {
-            // ACCELERAZIONE
+            // Accelerazione
             horizontalVelocity = Vector3.MoveTowards(
                 horizontalVelocity,
                 desiredDirection * targetSpeed,
-                accel * Time.deltaTime
+                acceleration * Time.deltaTime
             );
         }
         else
         {
-            // DECELERAZIONE
+            // Decelerazione
             horizontalVelocity = Vector3.MoveTowards(
                 horizontalVelocity,
                 Vector3.zero,
-                decel * Time.deltaTime
+                deceleration * Time.deltaTime
             );
         }
 
@@ -147,7 +180,7 @@ public class Player : MonoBehaviour
 
         characterController.Move(currentMovement * Time.deltaTime);
 
-        // Aggiorna direzione per rotazione
+        // Aggiorna direzione per la rotazione
         movementDirection = desiredDirection;
     }
 
@@ -159,17 +192,11 @@ public class Player : MonoBehaviour
         Vector3 rawDirection = movementDirection;
         rawDirection.y = 0;
 
-        if (rawDirection.sqrMagnitude < 0.01f)
-            return;
+        if (rawDirection.sqrMagnitude < 0.01f) return;
 
         // Snap alle 8 direzioni cardinali/ordinali
         Vector3 snappedDirection = SnapTo8Directions(rawDirection);
-
-        Quaternion targetRotation = Quaternion.LookRotation(snappedDirection);
-
-        // Con lo snap non serve più lo Slerp graduato né il dot-check:
-        // la rotazione è sempre un salto netto a uno degli 8 angoli
-        transform.rotation = targetRotation;
+        transform.rotation = Quaternion.LookRotation(snappedDirection);
     }
 
     private Vector3 SnapTo8Directions(Vector3 direction)
@@ -180,37 +207,10 @@ public class Player : MonoBehaviour
         return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
     }
 
-    private IEnumerator AttackRoutine()
-    {
-        canAttack = false;
-        isAttacking = true;   // blocca rotazione
 
-        float originalSpeed = walkingSpeed;
-
-        walkingSpeed *= attackMoveSpeedMultiplier;
-
-        bool isOnBeat = IsOnBeat(out float damageMultiplier);
-
-        hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
-
-        hitboxCollider.enabled = true;
-        hitboxRenderer.enabled = true;
-
-        yield return new WaitForSeconds(attackDuration);
-
-        hitboxCollider.enabled = false;
-        hitboxRenderer.enabled = false;
-
-        attackHitbox.SetActive(false);
-        attackHitbox.SetActive(true);
-
-        walkingSpeed = originalSpeed;
-
-        yield return new WaitForSeconds(attackCooldown);
-
-        isAttacking = false;  // sblocca rotazione
-        canAttack = true;
-    }
+    // =========================
+    // ATTACK
+    // =========================
 
     private void HandleAttack()
     {
@@ -221,8 +221,55 @@ public class Player : MonoBehaviour
         StartCoroutine(AttackRoutine());
     }
 
+    private IEnumerator AttackRoutine()
+    {
+        canAttack = false;
+        isAttacking = true;  // blocca rotazione
 
-    bool IsOnBeat(out float damageMultiplier)
+        float originalSpeed = walkingSpeed;
+        walkingSpeed *= attackMoveSpeedMultiplier;
+
+        bool isOnBeat = IsOnBeat(out float damageMultiplier);
+        hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
+
+        hitboxCollider.enabled = true;
+        hitboxRenderer.enabled = true;
+
+        yield return new WaitForSeconds(attackBoxDuration);
+
+        hitboxCollider.enabled = false;
+        hitboxRenderer.enabled = false;
+
+        // Reset hitbox
+        attackHitbox.SetActive(false);
+        attackHitbox.SetActive(true);
+
+        walkingSpeed = originalSpeed;
+
+        yield return new WaitForSeconds(attackTime - attackBoxDuration);
+
+        isAttacking = false;  // sblocca rotazione
+        canAttack = true;
+    }
+
+
+    // =========================
+    // RHYTHM
+    // =========================
+
+    public void SetBpm(float newBpm)
+    {
+        bpm = newBpm;
+        RefreshBpmCooldown();
+    }
+
+    private void RefreshBpmCooldown()
+    {
+        if (useBpmCooldown)
+            attackTime = 60f / (bpm * 2f);
+    }
+
+    private bool IsOnBeat(out float damageMultiplier)
     {
         if (RhythmManager.Instance == null)
         {
@@ -230,6 +277,131 @@ public class Player : MonoBehaviour
             return false;
         }
 
-        return RhythmManager.Instance.IsOnBeat(RhythmManager.Instance.perfectInputWindow, RhythmManager.Instance.goodInputWindow, out damageMultiplier);
+        return RhythmManager.Instance.IsOnBeat(
+            RhythmManager.Instance.perfectInputWindow,
+            RhythmManager.Instance.goodInputWindow,
+            out damageMultiplier
+        );
+    }
+
+
+    // =========================
+    // HEALTH & DAMAGE
+    // =========================
+
+    public void TakeDamage(float amount)
+    {
+        if (_isInvulnerable) return;
+
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
+        UpdateUI();
+
+        if (uiJuice != null) uiJuice.Shake();
+
+        if (currentHealthPoints <= 0)
+            Respawn();
+    }
+
+    private void Respawn()
+    {
+        ResetHealth();
+
+        if (_controller != null) _controller.enabled = false;
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+        if (_controller != null) _controller.enabled = true;
+
+        if (_playerRenderers != null && _playerRenderers.Length > 0)
+            StartCoroutine(MultiRendererInvulnerabilityRoutine());
+    }
+
+    private IEnumerator MultiRendererInvulnerabilityRoutine()
+    {
+        _isInvulnerable = true;
+
+        float timer = 0;
+        bool currentlyVisible = true;
+
+        while (timer < invulnerabilityDuration)
+        {
+            currentlyVisible = !currentlyVisible;
+
+            foreach (Renderer r in _playerRenderers)
+            {
+                if (r != null) r.enabled = currentlyVisible;
+            }
+
+            yield return new WaitForSeconds(flickerInterval);
+            timer += flickerInterval;
+        }
+
+        // Ripristino finale di tutti i Renderer
+        foreach (Renderer r in _playerRenderers)
+        {
+            if (r != null) r.enabled = true;
+        }
+
+        _isInvulnerable = false;
+    }
+
+    private void ResetHealth()
+    {
+        currentHealthPoints = maxHealthPoints;
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealthPoints;
+            healthSlider.value = currentHealthPoints;
+        }
+    }
+
+
+    // =========================
+    // DRUGS
+    // =========================
+
+    public void ApplyDrug(DrugData drugData)
+    {
+        walkingSpeed *= drugData.speedMultiplier;
+        attackTime /= drugData.attackRateMultiplier;
+        attackType = drugData.attackType;
+
+        float previousMaxHealth = this.maxHealthPoints;
+        maxHealthPoints *= drugData.healthMultiplier;
+
+        if (currentHealthPoints > maxHealthPoints)
+            currentHealthPoints = maxHealthPoints;
+        if (maxHealthPoints > previousMaxHealth)
+            currentHealthPoints += maxHealthPoints - previousMaxHealth;
+
+        UpdateUI();
+
+        if (drugData.damageOverTime)
+            ApplyDamageOverTime(drugData.damageChangeTime, drugData.damageCurve);
+        else
+            attackDamage *= drugData.damageMultiplier;
+    }
+
+    public void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
+    {
+        StartCoroutine(DamageOverTimeRoutine(damageChangeTime, damageCurve));
+    }
+
+    private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
+    {
+        float elapsedTime = 0f;
+        float initialAttackDamage = attackDamage;
+
+        while (elapsedTime <= damageChangeTime)
+        {
+            Debug.Log("Applying damage over time...");
+            attackDamage = initialAttackDamage * damageCurve.Evaluate(elapsedTime / damageChangeTime);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
     }
 }

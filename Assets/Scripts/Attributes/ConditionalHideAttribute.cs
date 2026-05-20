@@ -1,12 +1,13 @@
 using UnityEngine;
-using System;
 
-[AttributeUsage(AttributeTargets.Field)]
 public class ConditionalHideAttribute : PropertyAttribute
 {
-    public string conditionField;
-    public ConditionalHideAttribute(string conditionField)
+    public string conditionalSourceField;
+    public bool requiredValue;
+
+    public ConditionalHideAttribute(string conditionalSourceField, bool requiredValue = true)
     {
-        this.conditionField = conditionField;
+        this.conditionalSourceField = conditionalSourceField;
+        this.requiredValue = requiredValue;
     }
 }

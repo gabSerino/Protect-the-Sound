@@ -325,7 +325,6 @@ GameObject:
   - component: {fileID: 3390883603148105037}
   - component: {fileID: 8250142717216852404}
   - component: {fileID: 5521059300592932477}
-  - component: {fileID: 169347055632778202}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -367,12 +366,13 @@ MonoBehaviour:
   rotationSpeed: 10
   acceleration: 100
   deceleration: 200
+  attackType: 0
   attackRange: 2
-  attackDamage: 1
-  attackDuration: 0.15
-  attackCooldown: 0.1
-  attackHitboxDuration: 0.1
-  attackMoveSpeedMultiplier: 0.4
+  attackDamage: 15
+  attackBoxDuration: 0.15
+  attackTime: 0.3
+  attackMoveSpeedMultiplier: 0.5
+  attackMoveEaseTime: 0.1
   bpm: 120
   useBpmCooldown: 0
   playerInputManager: {fileID: 0}
@@ -380,9 +380,11 @@ MonoBehaviour:
   gameCamera: {fileID: 0}
   playerCapsule: {fileID: 3967418410147389121}
   attackHitbox: {fileID: 2150209574076669066}
-  hitboxDamage: {fileID: 0}
-  hitboxRenderer: {fileID: 0}
-  hitboxCollider: {fileID: 0}
+  maxHealthPoints: 100
+  invulnerabilityDuration: 2
+  flickerInterval: 0.1
+  healthSlider: {fileID: 0}
+  uiJuice: {fileID: 0}
 --- !u!143 &5521059300592932477
 CharacterController:
   m_ObjectHideFlags: 0
@@ -408,20 +410,3 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &169347055632778202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6776112550944333803}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b7c644a03b1c3b43a5d48aaa14c4877, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  maxPoints: 100
-  invulnerabilityDuration: 0.5
-  flickerInterval: 0.1
-  healthSlider: {fileID: 0}
-  uiJuice: {fileID: 0}

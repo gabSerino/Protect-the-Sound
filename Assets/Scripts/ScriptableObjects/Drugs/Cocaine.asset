@@ -16,13 +16,12 @@ MonoBehaviour:
   drugDisplayName: Cocaine
   subtitle: My nose dropped!
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8ea5678c01dbbd04d90386a546e6b6ca, type: 3}
   attackType: 2
   attackRateMultiplier: 2
-  damageMultiplier: 1.5
   damageOverTime: 1
-  damageDecayRate: 0.1
-  decayCurve:
+  damageChangeTime: 10
+  damageCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -32,7 +31,7 @@ MonoBehaviour:
       outSlope: -1.25
       tangentMode: 34
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
@@ -46,6 +45,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  damageMultiplier: 1.5
   healthMultiplier: 1.25
   StaminaRecoverMultiplier: 1.5
   speedMultiplier: 1.5
