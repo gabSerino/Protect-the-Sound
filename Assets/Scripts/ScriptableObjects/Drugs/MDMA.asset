@@ -12,23 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca4628ea6a684e41adabb2378f8e6ee, type: 3}
   m_Name: MDMA
   m_EditorClassIdentifier: Assembly-CSharp::Drug
-  drugType: 3
-  drugDisplayName: MDMA
+  itemType: 1
+  drugType: 2
+  displayName: MDMA
   subtitle: Trick or treat?
   description: 
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b47f9ae1bea646945a8f020bbb6c413b, type: 3}
   attackType: 3
   attackRateMultiplier: 1
-  damageMultiplier: 0
   damageOverTime: 0
-  damageDecayRate: 0
-  decayCurve:
+  damageChangeTime: 0
+  damageCurve:
     serializedVersion: 2
     m_Curve: []
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  healthMultiplier: 0
-  StaminaRecoverMultiplier: 0
-  speedMultiplier: 0
-  badTripChance: 0
+  damageMultiplier: 0.5
+  healthMultiplier: 1
+  StaminaRecoverMultiplier: 1
+  speedMultiplier: 1
+  badTripChance: 0.15

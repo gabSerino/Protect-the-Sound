@@ -11,10 +11,21 @@ public class ConditionalHideDrawer : PropertyDrawer
             : attr.conditionalSourceField;
 
         SerializedProperty sourceField = property.serializedObject.FindProperty(path);
-        if (sourceField == null || sourceField.propertyType != SerializedPropertyType.Boolean)
-            return true;
+        if (sourceField == null) return true;
 
-        return sourceField.boolValue == attr.requiredValue;
+        switch (attr.conditionType)
+        {
+            case ConditionalHideAttribute.ConditionType.Bool:
+                if (sourceField.propertyType != SerializedPropertyType.Boolean) return true;
+                return sourceField.boolValue == attr.requiredBool;
+
+            case ConditionalHideAttribute.ConditionType.Enum:
+                if (sourceField.propertyType != SerializedPropertyType.Enum) return true;
+                return sourceField.enumValueIndex == attr.requiredEnumValue;
+
+            default:
+                return true;
+        }
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -27,7 +38,6 @@ public class ConditionalHideDrawer : PropertyDrawer
     {
         if (IsConditionMet(property, (ConditionalHideAttribute)attribute))
             return EditorGUI.GetPropertyHeight(property, label);
-
-        return -EditorGUIUtility.standardVerticalSpacing; // collassa lo spazio
+        return -EditorGUIUtility.standardVerticalSpacing;
     }
 }

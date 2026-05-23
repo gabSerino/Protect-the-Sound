@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca4628ea6a684e41adabb2378f8e6ee, type: 3}
   m_Name: Marijuana
   m_EditorClassIdentifier: Assembly-CSharp::Drug
-  drugType: 1
-  drugDisplayName: Mary Jane
+  itemType: 1
+  drugType: 0
+  displayName: Marijuana
   subtitle: No DJ, no cry.
   description: 
   icon: {fileID: 21300000, guid: f62a0c5f3248e6a41b4b8026106e94eb, type: 3}

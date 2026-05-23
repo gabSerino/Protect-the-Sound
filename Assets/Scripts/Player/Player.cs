@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -9,26 +10,28 @@ public class Player : MonoBehaviour
     // =========================
 
     [Header("Movement Settings")]
-    [SerializeField] private float walkingSpeed = 5f;
+    [SerializeField] private float walkingSpeed = 8f;
     [SerializeField] private float rotationSpeed = 10f;
-    [SerializeField] private float acceleration = 25f;
-    [SerializeField] private float deceleration = 30f;
+    [SerializeField] private float acceleration = 100f;
+    [SerializeField] private float deceleration = 200f;
 
     [Header("Attack Settings")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
-    [SerializeField] private float attackRange = 1f;
-    [SerializeField] private float attackDamage = 1f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackDamage = 15f;
     [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
-    [SerializeField] private float attackTime = 0.15f;              // pausa prima del prossimo attacco
-    [SerializeField] private float attackMoveSpeedMultiplier = 0.65f; // rallenta invece di bloccare
-    [SerializeField] private float attackMoveEaseTime = 0.1f;       // tempo per ridurre/riportare la velocità gradualmente
+    [SerializeField] private float attackTime = 0.3f;              // pausa prima del prossimo attacco
+    [SerializeField] private float attackMoveSpeedMultiplier = 0.5f; // rallenta invece di bloccare
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
     [SerializeField] private bool useBpmCooldown = false;           // toggle dall'Inspector
 
     [Header("Health Settings")]
-    public float maxHealthPoints = 100f;
+    private float maxHealthPoints = 100f;
+
+    [Header("Music Points Settings")]
+    private float maxMusicPoints = 100f;
 
     [Header("Invulnerability Settings")]
     public float invulnerabilityDuration = 2f;
@@ -45,12 +48,31 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
 
+    // DEFAULT STATS
+    private const float DEFAULT_WALKING_SPEED = 8f;
+    private const float DEFAULT_ROTATION_SPEED = 10f;
+    private const float DEFAULT_ACCELERATION = 100f;
+    private const float DEFAULT_DECELERATION = 200f;
+    private const float DEFAULT_ATTACK_RANGE = 2f;
+    private const float DEFAULT_ATTACK_DAMAGE = 15f;
+    private const float DEFAULT_ATTACK_BOX_DURATION = 0.15f;
+    private const float DEFAULT_ATTACK_TIME = 0.3f;
+    private const float DEFAULT_ATTACK_MOVE_SPEED_MULTIPLIER = 0.5f;
+    private const float DEFAULT_INVULNERABILITY_DURATION = 2f;
+    private const float DEFAULT_FLICKER_INTERVAL = 0.1f;
+
+    private const float DEFAULT_MAX_HEALTH_POINTS = 100f;
+    private const float DEFAULT_MAX_MUSIC_POINTS = 100f;
+
 
     // =========================
     // PROPERTIES
     // =========================
 
     public float currentHealthPoints { get; private set; }
+
+    public float currentMusicPoints { get; private set; }
+
 
 
     // =========================
@@ -75,6 +97,9 @@ public class Player : MonoBehaviour
     private CharacterController _controller;
     private Renderer[] _playerRenderers;
     private bool _isInvulnerable = false;
+
+    // Inventory
+    private Inventory _inventory;
 
 
     // =========================
@@ -103,6 +128,7 @@ public class Player : MonoBehaviour
 
         RefreshBpmCooldown();
         ResetHealth();
+        ResetMusicPoints();
     }
 
     void Update()
@@ -113,8 +139,6 @@ public class Player : MonoBehaviour
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
         attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
-
-        Debug.Log("Current health: " + currentHealthPoints);
     }
 
 
@@ -350,6 +374,41 @@ public class Player : MonoBehaviour
         UpdateUI();
     }
 
+    public void Heal(float amount)
+    {
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints + amount, 0, maxHealthPoints);
+        UpdateUI();
+    }
+
+    public void SetHealth(float amount)
+    {
+        currentHealthPoints = Mathf.Clamp(amount, 0, maxHealthPoints);
+        UpdateUI();
+    }
+
+    public void SetMaxHealth(float amount)
+    {
+        maxHealthPoints = amount;
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
+        UpdateUI();
+    }
+
+    private void ResetMusicPoints()
+    {
+        currentMusicPoints = 0;
+    }
+
+    public void SetMusicPoints(float amount)
+    {
+        currentMusicPoints = Mathf.Clamp(currentMusicPoints + amount, 0, maxMusicPoints);
+    }
+
+    public void SetMaxMusicPoints(float amount)
+    {
+        maxMusicPoints = amount;
+        currentMusicPoints = Mathf.Clamp(currentMusicPoints, 0, maxMusicPoints);
+    }
+
     private void UpdateUI()
     {
         if (healthSlider != null)
@@ -364,7 +423,8 @@ public class Player : MonoBehaviour
     // DRUGS
     // =========================
 
-    public void ApplyDrug(DrugData drugData)
+    /*
+    public void ApplyDrug(DrugData drugData)    // Applica moltiplicatori su stato corrente
     {
         walkingSpeed *= drugData.speedMultiplier;
         attackTime /= drugData.attackRateMultiplier;
@@ -373,8 +433,7 @@ public class Player : MonoBehaviour
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints *= drugData.healthMultiplier;
 
-        if (currentHealthPoints > maxHealthPoints)
-            currentHealthPoints = maxHealthPoints;
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
         if (maxHealthPoints > previousMaxHealth)
             currentHealthPoints += maxHealthPoints - previousMaxHealth;
 
@@ -384,6 +443,27 @@ public class Player : MonoBehaviour
             ApplyDamageOverTime(drugData.damageChangeTime, drugData.damageCurve);
         else
             attackDamage *= drugData.damageMultiplier;
+    }*/
+
+    public void ApplyMultipliers(ItemData itemData)    // Applica moltiplicatori su stato default
+    {
+        walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
+        attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
+        attackType = itemData.attackType;
+
+        float previousMaxHealth = this.maxHealthPoints;
+        maxHealthPoints = DEFAULT_MAX_HEALTH_POINTS * itemData.healthMultiplier;
+
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
+        if (maxHealthPoints > previousMaxHealth)
+            currentHealthPoints += maxHealthPoints - previousMaxHealth;
+
+        UpdateUI();
+
+        if (itemData.damageOverTime)
+            ApplyDamageOverTime(itemData.damageChangeTime, itemData.damageCurve);
+        else
+            attackDamage = DEFAULT_ATTACK_DAMAGE * itemData.damageMultiplier;
     }
 
     public void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
@@ -394,7 +474,9 @@ public class Player : MonoBehaviour
     private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
     {
         float elapsedTime = 0f;
-        float initialAttackDamage = attackDamage;
+        float initialAttackDamage =
+        //    attackDamage;    // su stato corrente
+            DEFAULT_ATTACK_DAMAGE;    // su stato default
 
         while (elapsedTime <= damageChangeTime)
         {

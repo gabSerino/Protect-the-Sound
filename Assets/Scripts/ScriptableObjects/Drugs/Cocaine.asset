@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca4628ea6a684e41adabb2378f8e6ee, type: 3}
   m_Name: Cocaine
   m_EditorClassIdentifier: Assembly-CSharp::Drug
-  drugType: 2
-  drugDisplayName: Cocaine
+  itemType: 1
+  drugType: 1
+  displayName: Cocaine
   subtitle: My nose dropped!
   description: 
   icon: {fileID: 21300000, guid: 8ea5678c01dbbd04d90386a546e6b6ca, type: 3}
