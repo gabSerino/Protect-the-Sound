@@ -2,16 +2,18 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] private int inventorySize;
-    private Item[] items;
-    public int selectedIndex = 0;
+    private int inventorySize;
+    private ItemData[] items;
+    private int selectedIndex = 0;
 
-    void Awake()
+    public Inventory(int size)
     {
-        items = new Item[inventorySize];
+        inventorySize = size;
+        items = new ItemData[inventorySize];
     }
 
-    public void AddItem(Item item)
+
+    public void AddItem(ItemData item)
     {
         for (int i = 0; i < items.Length; i++)
         {
@@ -23,11 +25,11 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void AddItem(Item item, int index)
+    public void AddItem(ItemData item, int index)
     {
         items[index] = item;
     }
-    public void AddItemInHead(Item item)
+    public void AddItemInHead(ItemData item)
     {
         // Adds item in first slot and shifts the other items to the right
         for (int i = inventorySize - 1; i > 0; i--)
@@ -37,7 +39,7 @@ public class Inventory : MonoBehaviour
         items[0] = item;
     }
 
-    public Item GetItem(int index)
+    public ItemData GetItem(int index)
     {
         return items[index];
     }
@@ -45,6 +47,18 @@ public class Inventory : MonoBehaviour
     public void RemoveItem(int index)
     {
         items[index] = null;
+    }
+
+    public void RemoveItem(ItemData item)
+    {
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] == item)
+            {
+                items[i] = null;
+                break;
+            }
+        }
     }
 
     public void RemoveItem(Item item)
@@ -61,10 +75,10 @@ public class Inventory : MonoBehaviour
 
     public void ClearInventory()
     {
-        items = new Item[inventorySize];
+        items = new ItemData[inventorySize];
     }
 
-    public int GetItemIndex(Item item)
+    public int GetItemIndex(ItemData item)
     {
         for (int i = 0; i < items.Length; i++)
         {
@@ -105,12 +119,12 @@ public class Inventory : MonoBehaviour
         return inventorySize;
     }
 
-    public Item[] GetItems()
+    public ItemData[] GetItems()
     {
         return items;
     }
 
-    public void SetItems(Item[] newItems)
+    public void SetItems(ItemData[] newItems)
     {
         items = newItems;
     }
@@ -119,7 +133,7 @@ public class Inventory : MonoBehaviour
     {
         // Set inventory size without losing items
         inventorySize = newSize;
-        Item[] newItems = new Item[inventorySize];
+        ItemData[] newItems = new ItemData[inventorySize];
         for (int i = 0; i < inventorySize; i++)
         {
             newItems[i] = items[i];
@@ -130,6 +144,7 @@ public class Inventory : MonoBehaviour
     public void SetSelectedIndex(int index)
     {
         selectedIndex = index;
+        Debug.Log("Selected index: " + (selectedIndex + 1));
     }
 
     public int GetSelectedIndex()
@@ -137,29 +152,28 @@ public class Inventory : MonoBehaviour
         return selectedIndex;
     }
 
-    public void GoLeft()
+    public ItemData GetSelectedItem()
     {
-        if (selectedIndex > 0)
-        {
-            selectedIndex--;
-        }
-        else
-        {
-            selectedIndex = inventorySize - 1;
-        }
+        return items[selectedIndex];
     }
 
-    public void GoRight()
+    public void SortItems()
     {
-        if (selectedIndex < inventorySize - 1)
+        //If there are null spaces, they go to the last slots
+        for (int i = 0; i < items.Length; i++)
         {
-            selectedIndex++;
-        }
-        else
-        {
-            selectedIndex = 0;
+            if (items[i] == null)
+            {
+                for (int j = i + 1; j < items.Length; j++)
+                {
+                    if (items[j] != null)
+                    {
+                        items[i] = items[j];
+                        items[j] = null;
+                        break;
+                    }
+                }
+            }
         }
     }
-
-    
 }

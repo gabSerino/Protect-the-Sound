@@ -279,6 +279,9 @@ MonoBehaviour:
   actionMapName: Player
   move: Move
   attack: Attack
+  goLeftInventorySlot: Go Left Inventory Slot
+  goRightInventorySlot: Go Right Inventory Slot
+  useItem: Use Item
 --- !u!1 &423010989
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,6 +694,87 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &661541340
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3888335886803409878, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Name
+      value: Water
+      objectReference: {fileID: 0}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: drugData
+      value: 
+      objectReference: {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: 43e78cdf9017f8d4cbb5bb0d14fc670c, type: 2}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Size.x
+      value: 3.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Size.y
+      value: 3.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e356582556c5dad43aa4f45ff89f0c5e, type: 3}
+    - target: {fileID: 5205112416269770216, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
 --- !u!1 &725860123
 GameObject:
   m_ObjectHideFlags: 0
@@ -844,6 +928,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
       propertyPath: drugData
+      value: 
+      objectReference: {fileID: 11400000, guid: 6b0531630f7e0e842b47eab01636990e, type: 2}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: itemData
       value: 
       objectReference: {fileID: 11400000, guid: 6b0531630f7e0e842b47eab01636990e, type: 2}
     - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
@@ -1444,6 +1532,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
       propertyPath: drugData
+      value: 
+      objectReference: {fileID: 11400000, guid: e5b15b4a2036bf4418d490a4689f6e67, type: 2}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: itemData
       value: 
       objectReference: {fileID: 11400000, guid: e5b15b4a2036bf4418d490a4689f6e67, type: 2}
     - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
@@ -2494,6 +2586,10 @@ PrefabInstance:
       propertyPath: drugData
       value: 
       objectReference: {fileID: 11400000, guid: ed0b779f495dfee4393b0fd2f9905756, type: 2}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: ed0b779f495dfee4393b0fd2f9905756, type: 2}
     - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3
@@ -2831,6 +2927,10 @@ PrefabInstance:
       propertyPath: drugData
       value: 
       objectReference: {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
+    - target: {fileID: 3894470090595487317, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
+      propertyPath: itemData
+      value: 
+      objectReference: {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
     - target: {fileID: 5156110305580680301, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1
@@ -2907,6 +3007,7 @@ SceneRoots:
   - {fileID: 653847645}
   - {fileID: 3604288669057188150}
   - {fileID: 4019061613512740363}
+  - {fileID: 661541340}
   - {fileID: 2005797825}
   - {fileID: 1422854280}
   - {fileID: 814045202}

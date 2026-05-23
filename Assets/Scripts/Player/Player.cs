@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using Random = UnityEngine.Random;
 
 public class Player : MonoBehaviour
 {
@@ -32,10 +34,16 @@ public class Player : MonoBehaviour
 
     [Header("Music Points Settings")]
     private float maxMusicPoints = 100f;
+    [Header("Mental Status Settings")]
+    private PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
 
     [Header("Invulnerability Settings")]
-    public float invulnerabilityDuration = 2f;
-    public float flickerInterval = 0.1f;
+    [SerializeField] private float invulnerabilityDuration = 2f;
+    [SerializeField] private float flickerInterval = 0.1f;
+
+    [Header("Inventory Settings")]
+    [SerializeField] private int inventorySize = 3;
+    [SerializeField] private float itemUseDelay = 0.5f;
 
     [Header("UI")]
     public Slider healthSlider;
@@ -92,14 +100,15 @@ public class Player : MonoBehaviour
     private bool canMove = true;
     private bool canAttack = true;
     private bool isAttacking = false;  // blocca rotazione durante attacco e cooldown
+    private bool canUseInventory = true;
 
     // Health / Invulnerability
-    private CharacterController _controller;
-    private Renderer[] _playerRenderers;
-    private bool _isInvulnerable = false;
+    private CharacterController controller;
+    private Renderer[] playerRenderers;
+    private bool isInvulnerable = false;
 
     // Inventory
-    private Inventory _inventory;
+    private Inventory inventory;
 
 
     // =========================
@@ -108,20 +117,20 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        _controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
+        hitboxDamage = attackHitbox.GetComponent<HitboxDamage>();
+        hitboxCollider = attackHitbox.GetComponent<Collider>();
+        hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
         // Cerca i Renderer sul Player e su tutti i figli (Face, Player Capsule, ecc.)
-        _playerRenderers = GetComponentsInChildren<Renderer>();
+        playerRenderers = GetComponentsInChildren<Renderer>();
 
-        if (_playerRenderers == null || _playerRenderers.Length == 0)
+        if (playerRenderers == null || playerRenderers.Length == 0)
             Debug.LogError("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");
     }
 
     void Start()
     {
-        hitboxDamage = attackHitbox.GetComponent<HitboxDamage>();
-        hitboxCollider = attackHitbox.GetComponent<Collider>();
-        hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
@@ -129,6 +138,8 @@ public class Player : MonoBehaviour
         RefreshBpmCooldown();
         ResetHealth();
         ResetMusicPoints();
+
+        inventory = new Inventory(inventorySize);
     }
 
     void Update()
@@ -136,6 +147,7 @@ public class Player : MonoBehaviour
         HandleMovement();
         HandleRotation();
         HandleAttack();
+        HandleInventory();
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
         attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
@@ -243,6 +255,7 @@ public class Player : MonoBehaviour
 
         Debug.Log("Attacco eseguito!");
         StartCoroutine(AttackRoutine());
+        playerInputManager.ConsumeAttackInput();
     }
 
     private IEnumerator AttackRoutine()
@@ -315,7 +328,7 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
-        if (_isInvulnerable) return;
+        if (isInvulnerable) return;
 
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
         UpdateUI();
@@ -330,18 +343,18 @@ public class Player : MonoBehaviour
     {
         ResetHealth();
 
-        if (_controller != null) _controller.enabled = false;
+        if (controller != null) controller.enabled = false;
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
-        if (_controller != null) _controller.enabled = true;
+        if (controller != null) controller.enabled = true;
 
-        if (_playerRenderers != null && _playerRenderers.Length > 0)
+        if (playerRenderers != null && playerRenderers.Length > 0)
             StartCoroutine(MultiRendererInvulnerabilityRoutine());
     }
 
     private IEnumerator MultiRendererInvulnerabilityRoutine()
     {
-        _isInvulnerable = true;
+        isInvulnerable = true;
 
         float timer = 0;
         bool currentlyVisible = true;
@@ -350,7 +363,7 @@ public class Player : MonoBehaviour
         {
             currentlyVisible = !currentlyVisible;
 
-            foreach (Renderer r in _playerRenderers)
+            foreach (Renderer r in playerRenderers)
             {
                 if (r != null) r.enabled = currentlyVisible;
             }
@@ -360,12 +373,12 @@ public class Player : MonoBehaviour
         }
 
         // Ripristino finale di tutti i Renderer
-        foreach (Renderer r in _playerRenderers)
+        foreach (Renderer r in playerRenderers)
         {
             if (r != null) r.enabled = true;
         }
 
-        _isInvulnerable = false;
+        isInvulnerable = false;
     }
 
     private void ResetHealth()
@@ -418,9 +431,83 @@ public class Player : MonoBehaviour
         }
     }
 
+    // =========================
+    // INVENTORY
+    // =========================
+
+    private void HandleInventory()
+    {
+        if(!canUseInventory) return;
+        if (playerInputManager.GoLeftInventorySlotInput)
+        {
+            GoLeftInventorySlot();
+            playerInputManager.ConsumeGoLeftInventorySlotInput();
+        }
+        if (playerInputManager.GoRightInventorySlotInput)
+        {
+            GoRightInventorySlot();
+            playerInputManager.ConsumeGoRightInventorySlotInput();
+        }
+        if (playerInputManager.UseItemInput)
+        {
+            UseItem(inventory.GetSelectedItem());
+            RemoveItem(inventory.GetSelectedIndex());
+            inventory.SortItems();
+            DelayAfterItemUse(itemUseDelay);
+            playerInputManager.ConsumeUseItemInput();
+        }
+    }
+
+    private void DelayAfterItemUse(float delayTime)
+    {
+        StartCoroutine(DelayAfterItemUseRoutine(delayTime));
+    }
+
+    private IEnumerator DelayAfterItemUseRoutine(float delayTime)
+        {
+            yield return new WaitForSeconds(delayTime);
+        }
+
+    public void AddItem(ItemData item)
+    {
+        inventory.AddItemInHead(item);
+    }
+
+    public void AddItem(ItemData item, int index)
+    {
+        inventory.AddItem(item, index);
+    }
+
+    public void RemoveItem(ItemData item)
+    {
+        inventory.RemoveItem(item);
+    }
+
+    public void RemoveItem(int index)
+    {
+        inventory.RemoveItem(index);
+    }
+
+    public void ClearInventory()
+    {
+        inventory.ClearInventory();
+    }
+
+    public void GoLeftInventorySlot()
+    {
+        int size = inventory.GetInventorySize();
+        inventory.SetSelectedIndex((inventory.GetSelectedIndex() + size - 1) % size);
+    }
+
+    public void GoRightInventorySlot()
+    {
+        int size = inventory.GetInventorySize();
+        inventory.SetSelectedIndex((inventory.GetSelectedIndex() + 1) % size);
+    }
+
 
     // =========================
-    // DRUGS
+    // ITEMS
     // =========================
 
     /*
@@ -445,7 +532,35 @@ public class Player : MonoBehaviour
             attackDamage *= drugData.damageMultiplier;
     }*/
 
-    public void ApplyMultipliers(ItemData itemData)    // Applica moltiplicatori su stato default
+    public void UseItem(ItemData itemData)    // Applica moltiplicatori su stato corrente
+    {
+        if (itemData == null) return;
+        ApplyMultipliers(itemData);
+        switch (itemData.itemType)
+        {
+            case ItemType.WATER:
+                ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
+                break;
+            case ItemType.DRUG:
+                if (IsGettingBadTrip(itemData.badTripChance))
+                    ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
+                else
+                    ApplyMentalStatus(PlayerMentalStatus.STUNNED);
+                break;
+        }
+    }
+
+    private bool IsGettingBadTrip(float badTripChance)
+    {
+        return Convert.ToBoolean(Random.Range(0, 100) < badTripChance*100);
+    }
+
+    private void ApplyMentalStatus(PlayerMentalStatus mentalStatus)
+    {
+        this.mentalStatus = mentalStatus;
+    }
+
+    private void ApplyMultipliers(ItemData itemData)    // Applica moltiplicatori su stato default
     {
         walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
@@ -466,7 +581,7 @@ public class Player : MonoBehaviour
             attackDamage = DEFAULT_ATTACK_DAMAGE * itemData.damageMultiplier;
     }
 
-    public void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
+    private void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
     {
         StartCoroutine(DamageOverTimeRoutine(damageChangeTime, damageCurve));
     }

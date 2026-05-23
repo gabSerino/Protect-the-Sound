@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum PlayerMentalState {
+public enum PlayerMentalStatus {
     DEFAULT,
     STUNNED,
     BADTRIP,

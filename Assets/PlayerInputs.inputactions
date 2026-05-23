@@ -25,7 +25,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Switch Item Left",
+                    "name": "Go Left Inventory Slot",
                     "type": "Button",
                     "id": "061fc70c-18a8-4d1f-8f9d-27c3def0d8dd",
                     "expectedControlType": "",
@@ -34,9 +34,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Switch Item Right",
+                    "name": "Go Right Inventory Slot",
                     "type": "Button",
                     "id": "139ec38c-3564-464d-823c-2f150c81aebe",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Use Item",
+                    "type": "Button",
+                    "id": "08af61bc-c3e4-42c2-a8af-436c3c9e746f",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -117,7 +126,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Switch Item Left",
+                    "action": "Go Left Inventory Slot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -128,7 +137,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Switch Item Right",
+                    "action": "Go Right Inventory Slot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0d951168-cc74-4ffe-88de-ceda74ff6c76",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Use Item",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

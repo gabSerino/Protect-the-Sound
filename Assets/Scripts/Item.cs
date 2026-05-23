@@ -16,7 +16,7 @@ public class Item : MonoBehaviour
         Player player = other.GetComponent<Player>();
         if (player != null)
         {
-            player.ApplyMultipliers(itemData);
+            player.AddItem(itemData);
             Destroy(gameObject);
         }
     }
