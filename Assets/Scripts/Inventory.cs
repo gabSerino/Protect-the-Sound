@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class Inventory 
 {
     private int inventorySize;
     private ItemData[] items;

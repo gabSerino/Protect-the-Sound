@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     [Header("UI")]
     public Slider healthSlider;
     public UIJuice uiJuice;
+    public InventoryUI inventoryUI;
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -140,6 +141,7 @@ public class Player : MonoBehaviour
         ResetMusicPoints();
 
         inventory = new Inventory(inventorySize);
+        UpdateInventoryUI();
     }
 
     void Update()
@@ -437,23 +439,31 @@ public class Player : MonoBehaviour
 
     private void HandleInventory()
     {
-        if(!canUseInventory) return;
+        if (!canUseInventory) return;
+
         if (playerInputManager.GoLeftInventorySlotInput)
         {
             GoLeftInventorySlot();
+            UpdateInventoryUI(); // <-- AGGIUNTO: Aggiorna la cornice visiva
             playerInputManager.ConsumeGoLeftInventorySlotInput();
         }
         if (playerInputManager.GoRightInventorySlotInput)
         {
             GoRightInventorySlot();
+            UpdateInventoryUI(); // <-- AGGIUNTO: Aggiorna la cornice visiva
             playerInputManager.ConsumeGoRightInventorySlotInput();
         }
         if (playerInputManager.UseItemInput)
         {
-            UseItem(inventory.GetSelectedItem());
-            RemoveItem(inventory.GetSelectedIndex());
-            inventory.SortItems();
-            DelayAfterItemUse(itemUseDelay);
+            ItemData itemToUse = inventory.GetSelectedItem();
+            if (itemToUse != null)
+            {
+                UseItem(itemToUse);
+                RemoveItem(inventory.GetSelectedIndex());
+                inventory.SortItems();
+                UpdateInventoryUI(); // <-- AGGIUNTO: Spegne l'icona dell'oggetto consumato
+                DelayAfterItemUse(itemUseDelay);
+            }
             playerInputManager.ConsumeUseItemInput();
         }
     }
@@ -471,11 +481,13 @@ public class Player : MonoBehaviour
     public void AddItem(ItemData item)
     {
         inventory.AddItemInHead(item);
+        UpdateInventoryUI();
     }
 
     public void AddItem(ItemData item, int index)
     {
         inventory.AddItem(item, index);
+        UpdateInventoryUI();
     }
 
     public void RemoveItem(ItemData item)
@@ -505,6 +517,14 @@ public class Player : MonoBehaviour
         inventory.SetSelectedIndex((inventory.GetSelectedIndex() + 1) % size);
     }
 
+    private void UpdateInventoryUI()
+    {
+        if (inventoryUI != null && inventory != null)
+        {
+            // Passiamo sia l'inventario che l'attackType attuale del Player
+            inventoryUI.RefreshUI(inventory, attackType);
+        }
+    }
 
     // =========================
     // ITEMS
