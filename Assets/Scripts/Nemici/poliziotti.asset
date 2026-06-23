@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9eb19a13769a88f4c92712dfc7ab830a, type: 3}
+  m_Name: poliziotti
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
+  maxHealth: 30
+  moveSpeed: 3.5
+  acceleration: 8
+  angularSpeed: 120
+  damage: 10
+  attackRange: 2
+  attackCooldown: 1
+  aggroRadius: 10
+  dropChance: 0.509
+  possibleDrops:
+  - {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
+  - {fileID: 11400000, guid: ed0b779f495dfee4393b0fd2f9905756, type: 2}
+  - {fileID: 11400000, guid: 6b0531630f7e0e842b47eab01636990e, type: 2}
+  - {fileID: 11400000, guid: e5b15b4a2036bf4418d490a4689f6e67, type: 2}

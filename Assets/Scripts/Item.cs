@@ -8,13 +8,30 @@ public class Item : MonoBehaviour
     void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        spriteRenderer.sprite = itemData.icon;
+
+        // Se l'itemData è stato assegnato a mano nell'Inspector, lo carichiamo subito
+        if (itemData != null)
+        {
+            Initialize(itemData);
+        }
+    }
+
+    // NUOVO METODO: Inietta i dati quando il nemico droppa l'oggetto
+    public void Initialize(ItemData newData)
+    {
+        itemData = newData;
+        if (spriteRenderer != null && itemData != null)
+        {
+            spriteRenderer.sprite = itemData.icon;
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Player player = other.GetComponent<Player>();
-        if (player != null)
+        // Cerca il player anche se colpisce un figlio (come abbiamo fatto per i danni)
+        Player player = other.GetComponentInParent<Player>();
+
+        if (player != null && itemData != null)
         {
             player.AddItem(itemData);
             Destroy(gameObject);
@@ -23,11 +40,11 @@ public class Item : MonoBehaviour
 
     void OnBecameVisible()
     {
-        spriteRenderer.enabled = true;
+        if (spriteRenderer != null) spriteRenderer.enabled = true;
     }
 
     void OnBecameInvisible()
     {
-        spriteRenderer.enabled = false;
+        if (spriteRenderer != null) spriteRenderer.enabled = false;
     }
 }

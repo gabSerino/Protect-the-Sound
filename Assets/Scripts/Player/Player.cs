@@ -57,6 +57,9 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
 
+    [Header("Grafica Player (Per il Lampeggio)")]
+    [SerializeField] private Renderer[] playerRenderers;
+
     // DEFAULT STATS
     private const float DEFAULT_WALKING_SPEED = 8f;
     private const float DEFAULT_ROTATION_SPEED = 10f;
@@ -105,7 +108,7 @@ public class Player : MonoBehaviour
 
     // Health / Invulnerability
     private CharacterController controller;
-    private Renderer[] playerRenderers;
+    // private Renderer[] playerRenderers;
     private bool isInvulnerable = false;
 
     // Inventory
@@ -124,7 +127,7 @@ public class Player : MonoBehaviour
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
         // Cerca i Renderer sul Player e su tutti i figli (Face, Player Capsule, ecc.)
-        playerRenderers = GetComponentsInChildren<Renderer>();
+        // playerRenderers = GetComponentsInChildren<Renderer>();
 
         if (playerRenderers == null || playerRenderers.Length == 0)
             Debug.LogError("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");

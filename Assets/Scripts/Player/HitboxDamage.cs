@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class HitboxDamage : MonoBehaviour
 {
-    private List<EnemyAI> hitEnemies = new List<EnemyAI>();
-    private Color[] hitboxColors; // 0 = normal, 1 = good, 2 = perfect
+    private List<EnemyBase> hitEnemies = new List<EnemyBase>();
+    private Color[] hitboxColors;
     private Renderer myRenderer;
 
     private void OnEnable() => hitEnemies.Clear();
@@ -13,7 +13,6 @@ public class HitboxDamage : MonoBehaviour
 
     void Awake()
     {
-        // Cache del renderer per ottimizzare le prestazioni
         myRenderer = GetComponent<Renderer>();
 
         hitboxColors = new Color[3];
@@ -24,7 +23,9 @@ public class HitboxDamage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        EnemyAI enemy = other.GetComponent<EnemyAI>();
+        // RICERCA IN PARENT: Trova EnemyBase che sta sul Padre, partendo dalla Capsula figlia
+        EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
+
         if (enemy == null) return;
         if (hitEnemies.Contains(enemy)) return;
 
@@ -48,16 +49,14 @@ public class HitboxDamage : MonoBehaviour
         {
             index = 2;
         }
-        // Se non è né good né perfect, resta 0 (Normal)
 
-        // Cambia il colore immediatamente
         if (index >= 0 && index < hitboxColors.Length)
         {
             myRenderer.material.color = hitboxColors[index];
         }
     }
 
-    private void KnockbackEnemy(EnemyAI enemy, float force)
+    private void KnockbackEnemy(EnemyBase enemy, float force)
     {
         Vector3 direction = (enemy.transform.position - transform.position).normalized;
         enemy.transform.position += direction * force * Time.deltaTime;

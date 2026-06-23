@@ -322,15 +322,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 829731318747434900, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.69201
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 829731318747434900, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.77517
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 829731318747434900, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 829731318747434900, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_LocalRotation.w
@@ -360,12 +360,19 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6148133051538006883, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
+      propertyPath: m_Size.y
+      value: 16.58
+      objectReference: {fileID: 0}
     - target: {fileID: 8295905177623442457, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_Name
       value: police
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 0}
+    - target: {fileID: 8295905177623442457, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -521,7 +528,7 @@ GameObject:
   - component: {fileID: 739963630}
   - component: {fileID: 739963629}
   - component: {fileID: 739963632}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: attrazione nemici
   m_TagString: provacassa
   m_Icon: {fileID: 0}
@@ -695,7 +702,7 @@ GameObject:
   - component: {fileID: 1058306894}
   - component: {fileID: 1058306893}
   - component: {fileID: 1058306896}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: attrazione nemici
   m_TagString: provacassa
   m_Icon: {fileID: 0}
@@ -1032,7 +1039,7 @@ GameObject:
   - component: {fileID: 1946381178}
   - component: {fileID: 1946381177}
   - component: {fileID: 1946381180}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: attrazione nemici
   m_TagString: provacassa
   m_Icon: {fileID: 0}
