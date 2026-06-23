@@ -21,5 +21,8 @@ public class EnemyStats : ScriptableObject
     [Header("Loot (Drop alla morte)")]
     [Range(0f, 1f)]
     public float dropChance = 0.5f;
-    public ItemData[] possibleDrops;
+
+    //riferimento alla LootTable
+    [Tooltip("Trascina qui il file Loot Table per questo nemico")]
+    public LootTable lootTable;
 }

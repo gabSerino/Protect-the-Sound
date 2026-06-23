@@ -21,9 +21,5 @@ MonoBehaviour:
   attackRange: 2
   attackCooldown: 1
   aggroRadius: 5
-  dropChance: 0.509
-  possibleDrops:
-  - {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
-  - {fileID: 11400000, guid: ed0b779f495dfee4393b0fd2f9905756, type: 2}
-  - {fileID: 11400000, guid: 6b0531630f7e0e842b47eab01636990e, type: 2}
-  - {fileID: 11400000, guid: e5b15b4a2036bf4418d490a4689f6e67, type: 2}
+  dropChance: 0.5
+  lootTable: {fileID: 11400000, guid: 8044bb0aef9b3774d94ac843dfa212e0, type: 2}

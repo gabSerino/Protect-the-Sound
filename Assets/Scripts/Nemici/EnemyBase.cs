@@ -66,20 +66,46 @@ public class EnemyBase : MonoBehaviour
 
     private void DropLoot()
     {
-        if (stats == null || stats.possibleDrops.Length == 0 || genericItemPrefab == null) return;
+        // 1. Controlli di sicurezza aggiornati (verifica che la Loot Table non sia vuota)
+        if (stats == null || stats.lootTable == null || stats.lootTable.drops.Length == 0 || genericItemPrefab == null) return;
 
+        // 2. Lancio della moneta per decidere SE droppare qualcosa
         if (Random.value <= stats.dropChance)
         {
-            ItemData itemToDrop = stats.possibleDrops[Random.Range(0, stats.possibleDrops.Length)];
-            GameObject droppedItemObj = Instantiate(genericItemPrefab, transform.position, Quaternion.identity);
+            float totalWeight = 0f;
 
-            Item itemScript = droppedItemObj.GetComponent<Item>();
-            if (itemScript != null)
+            // 3. Legge i drop dalla Loot Table
+            foreach (LootDrop drop in stats.lootTable.drops)
             {
-                itemScript.Initialize(itemToDrop);
+                totalWeight += drop.weight;
             }
 
-            Debug.Log($"{gameObject.name} ha droppato {itemToDrop.displayName}!");
+            float randomVal = Random.Range(0, totalWeight);
+            ItemData itemToDrop = null;
+
+            foreach (LootDrop drop in stats.lootTable.drops)
+            {
+                if (randomVal <= drop.weight)
+                {
+                    itemToDrop = drop.item;
+                    break;
+                }
+                randomVal -= drop.weight;
+            }
+
+            // 4. Istanzia l'oggetto
+            if (itemToDrop != null)
+            {
+                GameObject droppedItemObj = Instantiate(genericItemPrefab, transform.position, Quaternion.identity);
+                Item itemScript = droppedItemObj.GetComponent<Item>();
+
+                if (itemScript != null)
+                {
+                    itemScript.Initialize(itemToDrop);
+                }
+
+                Debug.Log($"{gameObject.name} ha droppato {itemToDrop.displayName} usando la Loot Table!");
+            }
         }
     }
 
