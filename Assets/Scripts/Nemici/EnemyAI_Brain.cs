@@ -4,14 +4,14 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(EnemyBase))]
 public class EnemyAI_Brain : MonoBehaviour
 {
-    private enum EnemyState { Idle, MovingToCrate, AttackingCrate, ChasingPlayer, AttackingPlayer }
+    private enum EnemyState { Idle, MovingToCassa, AttackingCassa, PreparingCharge, ChasingPlayer, AttackingPlayer }
 
     [Header("Stato Corrente (Per Debug)")]
     [SerializeField] private EnemyState currentState;
 
     [Header("Riferimenti")]
     public LayerMask playerLayer;
-    public LayerMask crateLayer;
+    public LayerMask cassaLayer;
 
     private NavMeshAgent agent;
     private EnemyBase enemyBase;
@@ -19,6 +19,8 @@ public class EnemyAI_Brain : MonoBehaviour
 
     private Transform currentTarget;
     private float lastAttackTime;
+    private float windupTimer = 0f;
+
 
     void Awake()
     {
@@ -53,31 +55,32 @@ public class EnemyAI_Brain : MonoBehaviour
 
         if (hitPlayers.Length > 0)
         {
-            // Il player è nel raggio!
             Transform player = hitPlayers[0].transform;
 
             if (currentTarget != player)
             {
                 currentTarget = player;
-                currentState = EnemyState.ChasingPlayer;
 
-                // NUOVO: Inserisci la marcia alta (Carica)
-                if (stats != null && agent != null)
+                // NUOVO: Invece di correre subito, entra nello stato di preparazione
+                currentState = EnemyState.PreparingCharge;
+                windupTimer = 0f;
+
+                if (agent != null)
                 {
-                    agent.speed = stats.chargeSpeed;
+                    agent.isStopped = true; // Tira il freno a mano: si ferma sul posto!
                 }
             }
         }
-        else if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer)
+        //  Aggiunto il controllo per interrompere la preparazione se il player scappa troppo in fretta
+        else if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer || currentState == EnemyState.PreparingCharge)
         {
-            // Il player è scappato fuori dal raggio
             currentTarget = null;
             currentState = EnemyState.Idle;
 
-            // NUOVO: Torna a camminare normale
             if (stats != null && agent != null)
             {
-                agent.speed = stats.moveSpeed;
+                agent.isStopped = false; // Toglie il freno a mano
+                agent.speed = stats.moveSpeed; // Torna calmo
             }
         }
     }
@@ -87,23 +90,23 @@ public class EnemyAI_Brain : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Idle:
-                FindNearestCrate();
+                FindNearestCassa();
                 break;
 
-            case EnemyState.MovingToCrate:
+            case EnemyState.MovingToCassa:
                 if (currentTarget == null) { currentState = EnemyState.Idle; break; }
                 agent.SetDestination(currentTarget.position);
 
                 if (Vector3.Distance(transform.position, currentTarget.position) <= stats.attackRange)
-                    currentState = EnemyState.AttackingCrate;
+                    currentState = EnemyState.AttackingCassa;
                 break;
 
-            case EnemyState.AttackingCrate:
+            case EnemyState.AttackingCassa:
                 if (currentTarget == null) { currentState = EnemyState.Idle; break; }
                 PerformAttack();
 
                 if (Vector3.Distance(transform.position, currentTarget.position) > stats.attackRange)
-                    currentState = EnemyState.MovingToCrate;
+                    currentState = EnemyState.MovingToCassa;
                 break;
 
             case EnemyState.ChasingPlayer:
@@ -121,30 +124,47 @@ public class EnemyAI_Brain : MonoBehaviour
                 if (Vector3.Distance(transform.position, currentTarget.position) > stats.attackRange)
                     currentState = EnemyState.ChasingPlayer;
                 break;
+
+            case EnemyState.PreparingCharge:
+                if (currentTarget == null) { currentState = EnemyState.Idle; break; }
+
+                windupTimer += Time.deltaTime; // Il tempo scorre...
+
+                // È scaduto il tempo? Parte la vera carica!
+                if (windupTimer >= stats.chargeWindupTime)
+                {
+                    currentState = EnemyState.ChasingPlayer;
+                    if (agent != null && stats != null)
+                    {
+                        agent.isStopped = false; // Toglie il freno a mano
+                        agent.speed = stats.chargeSpeed; // Inserisce la marcia alta!
+                    }
+                }
+                break;
         }
     }
 
-    private void FindNearestCrate()
+    private void FindNearestCassa()
     {
-        Collider[] hitCrates = Physics.OverlapSphere(transform.position, 50f, crateLayer);
+        Collider[] hitCassas = Physics.OverlapSphere(transform.position, 50f, cassaLayer);
 
-        if (hitCrates.Length > 0)
+        if (hitCassas.Length > 0)
         {
             float closestDistance = Mathf.Infinity;
-            Transform bestCrate = null;
+            Transform bestCassa = null;
 
-            foreach (Collider crate in hitCrates)
+            foreach (Collider cassa in hitCassas)
             {
-                float dist = Vector3.Distance(transform.position, crate.transform.position);
+                float dist = Vector3.Distance(transform.position, cassa.transform.position);
                 if (dist < closestDistance)
                 {
                     closestDistance = dist;
-                    bestCrate = crate.transform;
+                    bestCassa= cassa.transform;
                 }
             }
 
-            currentTarget = bestCrate;
-            currentState = EnemyState.MovingToCrate;
+            currentTarget = bestCassa;
+            currentState = EnemyState.MovingToCassa;
         }
     }
 
@@ -168,8 +188,8 @@ public class EnemyAI_Brain : MonoBehaviour
             }
             else
             {
-                DamageReceiver crateHealth = currentTarget.GetComponentInParent<DamageReceiver>();
-                if (crateHealth != null) crateHealth.TakeDamage(stats.damage);
+                DamageReceiver CassaHealth = currentTarget.GetComponentInParent<DamageReceiver>();
+                if (CassaHealth != null) CassaHealth.TakeDamage(stats.damage);
             }
         }
     }

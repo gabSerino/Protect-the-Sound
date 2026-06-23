@@ -156,8 +156,13 @@ public class Player : MonoBehaviour
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
         attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
+        if (transform.position.y > 0.05f)
+        {
+            Vector3 bloccatoAlSuolo = transform.position;
+            bloccatoAlSuolo.y = 0f; // Lo inchioda a terra!
+            transform.position = bloccatoAlSuolo;
+        }
     }
-
 
     // =========================
     // CONTROLS ENABLE / DISABLE

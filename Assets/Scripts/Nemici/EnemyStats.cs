@@ -9,6 +9,7 @@ public class EnemyStats : ScriptableObject
     [Header("Movimento")]
     public float moveSpeed = 3.5f;
     public float chargeSpeed = 6.0f; // Velocità durante la carica
+    public float chargeWindupTime = 0.5f; // Tempo di esitazione (es. mezzo secondo)
     public float acceleration = 8f;
     public float angularSpeed = 120f;
 
