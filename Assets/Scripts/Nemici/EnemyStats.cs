@@ -8,12 +8,13 @@ public class EnemyStats : ScriptableObject
 
     [Header("Movimento")]
     public float moveSpeed = 3.5f;
+    public float chargeSpeed = 6.0f; // Velocità durante la carica
     public float acceleration = 8f;
     public float angularSpeed = 120f;
 
     [Header("Attacco")]
     public float damage = 10f;
-    public float attackRange = 2.0f; // Tenuto a 2.0 per evitare incastri fisici
+    public float attackRange = 2.0f;
     public float attackCooldown = 1.0f;
     public float aggroRadius = 10f;
 

@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: poliziotti
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
   maxHealth: 30
-  moveSpeed: 3.5
+  moveSpeed: 3
+  chargeSpeed: 6
   acceleration: 8
   angularSpeed: 120
   damage: 10
   attackRange: 2
   attackCooldown: 1
-  aggroRadius: 10
+  aggroRadius: 5
   dropChance: 0.509
   possibleDrops:
   - {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}

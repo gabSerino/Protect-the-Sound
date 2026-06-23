@@ -53,18 +53,32 @@ public class EnemyAI_Brain : MonoBehaviour
 
         if (hitPlayers.Length > 0)
         {
+            // Il player è nel raggio!
             Transform player = hitPlayers[0].transform;
 
             if (currentTarget != player)
             {
                 currentTarget = player;
                 currentState = EnemyState.ChasingPlayer;
+
+                // NUOVO: Inserisci la marcia alta (Carica)
+                if (stats != null && agent != null)
+                {
+                    agent.speed = stats.chargeSpeed;
+                }
             }
         }
         else if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer)
         {
+            // Il player è scappato fuori dal raggio
             currentTarget = null;
             currentState = EnemyState.Idle;
+
+            // NUOVO: Torna a camminare normale
+            if (stats != null && agent != null)
+            {
+                agent.speed = stats.moveSpeed;
+            }
         }
     }
 

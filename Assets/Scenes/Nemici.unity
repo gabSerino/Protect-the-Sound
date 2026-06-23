@@ -360,10 +360,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6148133051538006883, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
-      propertyPath: m_Size.y
-      value: 16.58
-      objectReference: {fileID: 0}
     - target: {fileID: 8295905177623442457, guid: 4df1cbb614b76084388b085a111dc66b, type: 3}
       propertyPath: m_Name
       value: police

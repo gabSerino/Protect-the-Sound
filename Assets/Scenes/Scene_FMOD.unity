@@ -3569,7 +3569,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5521059300592932477, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: m_StepOffset
-      value: 0.3
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5941630634085796633, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: m_LocalRotation.x
