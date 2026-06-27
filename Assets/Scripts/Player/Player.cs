@@ -4,6 +4,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
+using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -17,9 +18,17 @@ public class Player : MonoBehaviour
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
 
+    private Vector2 virtualAimPosition = Vector2.zero;
+
+    [Header("Virtual Mouse Settings")]
+    [SerializeField] private float mouseSensitivity = 1f;
+    [SerializeField] private float maxAimRadius = 200f; // Il raggio massimo (in pixel) della tua scatola invisibile
+    [SerializeField] private float minAimDeadzone = 20f;  // Per evitare micro-sfarfallii al centro
+
     [Header("Attack Settings")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
     [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackWidth = 1f;
     [SerializeField] private float attackDamage = 15f;
     [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
     [SerializeField] private float attackTime = 0.3f;              // pausa prima del prossimo attacco
@@ -66,6 +75,7 @@ public class Player : MonoBehaviour
     private const float DEFAULT_ACCELERATION = 100f;
     private const float DEFAULT_DECELERATION = 200f;
     private const float DEFAULT_ATTACK_RANGE = 2f;
+    private const float DEFAULT_ATTACK_WIDTH = 1f;
     private const float DEFAULT_ATTACK_DAMAGE = 15f;
     private const float DEFAULT_ATTACK_BOX_DURATION = 0.15f;
     private const float DEFAULT_ATTACK_TIME = 0.3f;
@@ -155,7 +165,7 @@ public class Player : MonoBehaviour
         HandleInventory();
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
-        attackHitbox.transform.localScale = new Vector3(1f, 1f, attackRange);
+        attackHitbox.transform.localScale = new Vector3(attackWidth, 1f, attackRange);
         if (transform.position.y > 0.05f)
         {
             Vector3 bloccatoAlSuolo = transform.position;
@@ -227,10 +237,10 @@ public class Player : MonoBehaviour
         characterController.Move(currentMovement * Time.deltaTime);
 
         // Aggiorna direzione per la rotazione
-        movementDirection = desiredDirection;
+        //movementDirection = desiredDirection;
     }
 
-    private void HandleRotation()
+    /*private void HandleRotation()
     {
         // Lock durante attacco e cooldown
         if (isAttacking) return;
@@ -243,8 +253,55 @@ public class Player : MonoBehaviour
         // Snap alle 8 direzioni cardinali/ordinali
         Vector3 snappedDirection = SnapTo8Directions(rawDirection);
         transform.rotation = Quaternion.LookRotation(snappedDirection);
+    }*/
+
+private void HandleRotation()
+{
+    Vector3 targetDirection = Vector3.zero;
+
+    // 1. Leggiamo il Delta del mouse (assicurati che nell'Input System sia impostato su Delta)
+    Vector2 mouseDelta = playerInputManager.AttackDirectionInput;
+
+    // 2. Aggiorniamo la posizione del nostro mirino virtuale usando il delta e la sensibilità
+    virtualAimPosition += mouseDelta * mouseSensitivity;
+
+    // 3. LIMITIAMO il mirino virtuale: se si allontana troppo dal centro (0,0), lo blocchiamo al raggio massimo
+    if (virtualAimPosition.magnitude > maxAimRadius)
+    {
+        virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
     }
 
+    // Controlliamo se stiamo effettivamente mirando (fuori dalla piccolissima deadzone centrale)
+    bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
+
+    if (isAimingWithMouse)
+    {
+        // Convertiamo la posizione del mirino virtuale 2D in coordinate 3D (X e Z)
+        Vector3 mouseWorldDirection = new Vector3(virtualAimPosition.x, 0f, virtualAimPosition.y);
+
+        // Rendiamo la direzione relativa alla Camera
+        targetDirection = gameCamera.transform.forward * mouseWorldDirection.z + gameCamera.transform.right * mouseWorldDirection.x;
+        targetDirection.y = 0f;
+    }
+    // 4. Se il mirino virtuale è al centro e NON stiamo attaccando, seguiamo il movimento del player
+    else if (!isAttacking)
+    {
+        targetDirection = movementDirection;
+        targetDirection.y = 0f;
+    }
+    // 5. Se stiamo attaccando ma non muoviamo il mirino, blocca la rotazione
+    else
+    {
+        return;
+    }
+
+    // Se non c'è una direzione valida, esci
+    if (targetDirection.sqrMagnitude < 0.01f) return;
+
+    // 6. Applichiamo lo snap a 8 direzioni (45 gradi)
+    Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
+    transform.rotation = Quaternion.LookRotation(snappedDirection);
+}
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
         float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -560,10 +617,10 @@ public class Player : MonoBehaviour
             attackDamage *= drugData.damageMultiplier;
     }*/
 
-    public void UseItem(ItemData itemData)    // Applica moltiplicatori su stato corrente
+    public void UseItem(ItemData itemData)
     {
         if (itemData == null) return;
-        ApplyMultipliers(itemData);
+        ApplyModifiers(itemData);
         switch (itemData.itemType)
         {
             case ItemType.WATER:
@@ -588,11 +645,11 @@ public class Player : MonoBehaviour
         this.mentalStatus = mentalStatus;
     }
 
-    private void ApplyMultipliers(ItemData itemData)    // Applica moltiplicatori su stato default
+    private void ApplyModifiers(ItemData itemData)    // Applica moltiplicatori su stato default
     {
         walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
-        attackType = itemData.attackType;
+        ChangeAttackType(itemData.attackType);
 
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints = DEFAULT_MAX_HEALTH_POINTS * itemData.healthMultiplier;
@@ -607,6 +664,34 @@ public class Player : MonoBehaviour
             ApplyDamageOverTime(itemData.damageChangeTime, itemData.damageCurve);
         else
             attackDamage = DEFAULT_ATTACK_DAMAGE * itemData.damageMultiplier;
+    }
+
+    private void ChangeAttackType(AttackType attackType)
+    {
+        this.attackType = attackType;
+        switch (attackType)
+        {
+            case AttackType.DEFAULT:
+                attackRange = DEFAULT_ATTACK_RANGE;
+                attackWidth = DEFAULT_ATTACK_WIDTH;
+                break;
+            case AttackType.CLAYMORE:
+                attackRange = 1.5f*DEFAULT_ATTACK_RANGE;
+                attackWidth = 1.25f*DEFAULT_ATTACK_WIDTH;
+                break;
+            case AttackType.DAGGERS:
+                attackRange = 0.5f*DEFAULT_ATTACK_RANGE;
+                attackWidth = 2f*DEFAULT_ATTACK_WIDTH;
+                break;
+            case AttackType.LONGSWORD:
+                attackRange = 2f*DEFAULT_ATTACK_RANGE;
+                attackWidth = 0.75f*DEFAULT_ATTACK_WIDTH;
+                break;
+            case AttackType.WHIP:
+                attackRange = 2.5f*DEFAULT_ATTACK_RANGE;
+                attackWidth = 0.25f*DEFAULT_ATTACK_WIDTH;
+                break;
+        }
     }
 
     private void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)

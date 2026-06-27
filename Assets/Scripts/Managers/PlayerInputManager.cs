@@ -10,32 +10,40 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private string actionMapName = "Player";
     [Header("Action Names")]
     [SerializeField] private string move = "Move";
+    [SerializeField] private string attackDirection = "Attack Direction";
     [SerializeField] private string attack = "Attack";
     [SerializeField] private string goLeftInventorySlot = "Go Left Inventory Slot";
     [SerializeField] private string goRightInventorySlot = "Go Right Inventory Slot";
     [SerializeField] private string useItem = "Use Item";
+    [SerializeField] private string dash = "Dash";
 
 
     private InputAction moveAction;
+    private InputAction attackDirectionAction;
     private InputAction attackAction;
     private InputAction goLeftInventorySlotAction;
     private InputAction goRightInventorySlotAction;
     private InputAction useItemAction;
+    private InputAction dashAction;
 
     public Vector2 MoveInput { get; private set; }
+    public Vector2 AttackDirectionInput { get; private set; }
     public bool AttackInput { get; private set; }
     public bool GoLeftInventorySlotInput { get; private set; }
     public bool GoRightInventorySlotInput { get; private set; }
     public bool UseItemInput { get; private set; }
+    public bool DashInput { get; private set; }
 
     private void Awake()
     {
         InputActionMap actionMap = inputActions.FindActionMap(actionMapName);
         moveAction = actionMap.FindAction(move);
+        attackDirectionAction = actionMap.FindAction(attackDirection);
         attackAction = actionMap.FindAction(attack);
         goLeftInventorySlotAction = actionMap.FindAction(goLeftInventorySlot);
         goRightInventorySlotAction = actionMap.FindAction(goRightInventorySlot);
         useItemAction = actionMap.FindAction(useItem);
+        dashAction = actionMap.FindAction(dash);
         BindActions();
     }
 
@@ -43,6 +51,9 @@ public class PlayerInputManager : MonoBehaviour
     {
         moveAction.performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
         moveAction.canceled += ctx => MoveInput = Vector2.zero;
+
+        attackDirectionAction.performed += ctx => AttackDirectionInput = ctx.ReadValue<Vector2>();
+        attackDirectionAction.canceled += ctx => AttackDirectionInput = Vector2.zero;
 
         attackAction.performed += ctx => AttackInput = true;
         attackAction.canceled += ctx => AttackInput = false;
@@ -55,10 +66,14 @@ public class PlayerInputManager : MonoBehaviour
 
         useItemAction.performed += ctx => UseItemInput = true;
         useItemAction.canceled += ctx => UseItemInput = false;
+
+        dashAction.performed += ctx => DashInput = true;
+        dashAction.canceled += ctx => DashInput = false;
     }
 
     public void ConsumeGoLeftInventorySlotInput() => GoLeftInventorySlotInput = false;
     public void ConsumeGoRightInventorySlotInput() => GoRightInventorySlotInput = false;
     public void ConsumeAttackInput() => AttackInput = false;
     public void ConsumeUseItemInput() => UseItemInput = false;
+    public void ConsumeDashInput() => DashInput = false;
 }

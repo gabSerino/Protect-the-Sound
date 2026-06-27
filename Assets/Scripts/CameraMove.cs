@@ -3,7 +3,7 @@ using UnityEngine;
 public class CameraMove : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    [SerializeField] private float smoothSpeed = 0.125f;
+    [SerializeField] private float smoothSpeed = 0.02f;
     [SerializeField] private Vector3 offset;
 
     private void LateUpdate()
@@ -13,4 +13,3 @@ public class CameraMove : MonoBehaviour
         transform.position = smoothedPosition;
     }
 }
-

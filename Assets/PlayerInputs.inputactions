@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Attack Direction",
+                    "type": "PassThrough",
+                    "id": "8ea37c19-dbf4-4301-ad33-2205db67b5e8",
+                    "expectedControlType": "Delta",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Go Left Inventory Slot",
                     "type": "Button",
                     "id": "061fc70c-18a8-4d1f-8f9d-27c3def0d8dd",
@@ -46,6 +55,15 @@
                     "name": "Use Item",
                     "type": "Button",
                     "id": "08af61bc-c3e4-42c2-a8af-436c3c9e746f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dash",
+                    "type": "Button",
+                    "id": "b682c30f-98cf-4e10-bcf5-223fc762363d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -125,7 +143,7 @@
                     "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard & Mouse",
                     "action": "Go Left Inventory Slot",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -136,7 +154,7 @@
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard & Mouse",
                     "action": "Go Right Inventory Slot",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -147,8 +165,30 @@
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard & Mouse",
                     "action": "Use Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "832bb90d-a4dc-42a4-8fbb-2d83c279555c",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Attack Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "09d3d205-2b11-4b2f-8e00-ab84402e7194",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{8aadf123-4ece-408b-af84-5665f94bf276}">
+		<property name="name">
+			<value>Attack Type</value>
+		</property>
+		<relationship name="folder">
+			<destination>{755fec8c-6140-4d8f-ab28-c4470e34c8ac}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{e9afcd83-61c2-4480-88f1-02d90d2a11eb}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{e9afcd83-61c2-4480-88f1-02d90d2a11eb}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>5</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>DEFAULT</value>
+			<value>DAGGERS</value>
+			<value>LONGSWORD</value>
+			<value>CLAYMORE</value>
+			<value>WHIP</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>
