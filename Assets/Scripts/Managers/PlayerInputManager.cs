@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputManager : MonoBehaviour
 {
+    [Header("Cursor Settings")]
+    [SerializeField] private bool cursorVisible = true;
+
     [Header("Input Action Asset")]
     [SerializeField] private InputActionAsset inputActions;
 
@@ -39,6 +42,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.visible = cursorVisible;
         InputActionMap actionMap = inputActions.FindActionMap(actionMapName);
 
         moveAction = actionMap.FindAction(move);
