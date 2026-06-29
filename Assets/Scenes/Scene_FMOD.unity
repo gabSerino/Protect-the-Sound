@@ -284,6 +284,7 @@ MonoBehaviour:
   goRightInventorySlot: Go Right Inventory Slot
   useItem: Use Item
   dash: Dash
+  dodge: Dodge
 --- !u!1 &277491972
 GameObject:
   m_ObjectHideFlags: 0
@@ -3979,6 +3980,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: dodgeSpeed
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: gameCamera
       value: 
       objectReference: {fileID: 1298740548}
@@ -3998,6 +4003,10 @@ PrefabInstance:
       propertyPath: healthSlider
       value: 
       objectReference: {fileID: 1815132738}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: dodgeDuration
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: attackCooldown
       value: 0.15

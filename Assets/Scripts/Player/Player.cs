@@ -22,9 +22,19 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashSpeed = 25f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private float dashInvincibilityTime = 0.3f; 
 
     private bool isDashing = false;
     private bool canDash = true;
+
+    [Header("Dodge Settings")]
+    [SerializeField] private float dodgeSpeed = 30f;
+    [SerializeField] private float dodgeDuration = 0.2f;
+    [SerializeField] private float dodgeCooldown = 1f;
+    [SerializeField] private float dodgeInvincibilityTime = 0.25f; 
+
+    private bool isDodging = false;
+    private bool canDodge = true;
 
     private Vector2 virtualAimPosition = Vector2.zero;
 
@@ -51,6 +61,7 @@ public class Player : MonoBehaviour
 
     [Header("Music Points Settings")]
     private float maxMusicPoints = 100f;
+
     [Header("Mental Status Settings")]
     private PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
 
@@ -93,17 +104,13 @@ public class Player : MonoBehaviour
 
     private const float DEFAULT_MAX_HEALTH_POINTS = 100f;
     private const float DEFAULT_MAX_MUSIC_POINTS = 100f;
-
+  
 
     // =========================
     // PROPERTIES
     // =========================
-
     public float currentHealthPoints { get; private set; }
-
     public float currentMusicPoints { get; private set; }
-
-
 
     // =========================
     // PRIVATE FIELDS
@@ -115,20 +122,19 @@ public class Player : MonoBehaviour
 
     // Attack / Hitbox
     private HitboxDamage hitboxDamage;
-    private Renderer hitboxRenderer;   // Per debug, mostra il hitbox quando attivo
-    private Collider hitboxCollider;   // Per disabilitare il collider quando non attivo
+    private Renderer hitboxRenderer;
+    private Collider hitboxCollider;
 
     // Controller flags
     private bool canMove = true;
     private bool canAttack = true;
-    private bool isAttacking = false;  // blocca rotazione durante attacco e cooldown
+    private bool isAttacking = false;
     private bool canUseInventory = true;
 
     // Health / Invulnerability
     private CharacterController controller;
-    // private Renderer[] playerRenderers;
     private bool isInvulnerable = false;
-
+    private Coroutine activeInvincibilityCoroutine;
     // Inventory
     private Inventory inventory;
 
@@ -144,16 +150,12 @@ public class Player : MonoBehaviour
         hitboxCollider = attackHitbox.GetComponent<Collider>();
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
-        // Cerca i Renderer sul Player e su tutti i figli (Face, Player Capsule, ecc.)
-        // playerRenderers = GetComponentsInChildren<Renderer>();
-
         if (playerRenderers == null || playerRenderers.Length == 0)
-            Debug.LogError("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");
+            Debug.LogWarning("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");
     }
 
     void Start()
     {
-
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
 
@@ -167,11 +169,11 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        // 1. Controlliamo prima il Dash
+        HandleDodge();
         HandleDash();
 
-        // 2. Se stiamo dashando, blocchiamo movimento e rotazione standard per non interferire
-        if (!isDashing)
+        // Se non sta schivando e non sta scattando, muoviti normalmente
+        if (!isDodging && !isDashing)
         {
             HandleMovement();
             HandleRotation();
@@ -182,6 +184,7 @@ public class Player : MonoBehaviour
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
         attackHitbox.transform.localScale = new Vector3(attackWidth, 1f, attackRange);
+
         if (transform.position.y > 0.05f)
         {
             Vector3 bloccatoAlSuolo = transform.position;
@@ -207,9 +210,33 @@ public class Player : MonoBehaviour
     }
 
     public void EnableMovement(bool value) => canMove = value;
-
     public void EnableAttack(bool value) => canAttack = value;
 
+    // =========================
+    // TEMPORARY INVINCIBILITY
+    // =========================
+
+    public void GrantTemporaryInvincibility(float time)
+    {
+        // Se c'è già un'altra invincibilità in corso (es. hai appena schivato e ora scatti), la fermiamo
+        if (activeInvincibilityCoroutine != null)
+        {
+            StopCoroutine(activeInvincibilityCoroutine);
+        }
+
+        // Avviamo la nuova coroutine e la salviamo nella variabile
+        activeInvincibilityCoroutine = StartCoroutine(TemporaryInvincibilityRoutine(time));
+    }
+
+    private IEnumerator TemporaryInvincibilityRoutine(float time)
+    {
+        isInvulnerable = true;
+
+        yield return new WaitForSeconds(time);
+
+        isInvulnerable = false;
+        activeInvincibilityCoroutine = null; // Svuotiamo la variabile quando ha finito
+    }
 
     // =========================
     // MOVEMENT
@@ -229,7 +256,6 @@ public class Player : MonoBehaviour
 
         if (input.magnitude > 0.1f)
         {
-            // Accelerazione
             horizontalVelocity = Vector3.MoveTowards(
                 horizontalVelocity,
                 desiredDirection * targetSpeed,
@@ -238,7 +264,6 @@ public class Player : MonoBehaviour
         }
         else
         {
-            // Decelerazione
             horizontalVelocity = Vector3.MoveTowards(
                 horizontalVelocity,
                 Vector3.zero,
@@ -246,78 +271,47 @@ public class Player : MonoBehaviour
             );
         }
 
-        // Mantieni Y separata
         currentMovement.x = horizontalVelocity.x;
         currentMovement.z = horizontalVelocity.z;
-
         characterController.Move(currentMovement * Time.deltaTime);
-
-        // Aggiorna direzione per la rotazione
-        //movementDirection = desiredDirection;
     }
 
-    /*private void HandleRotation()
+    private void HandleRotation()
     {
-        // Lock durante attacco e cooldown
-        if (isAttacking) return;
+        Vector3 targetDirection = Vector3.zero;
 
-        Vector3 rawDirection = movementDirection;
-        rawDirection.y = 0;
+        Vector2 mouseDelta = playerInputManager.AttackDirectionInput;
+        virtualAimPosition += mouseDelta * mouseSensitivity;
 
-        if (rawDirection.sqrMagnitude < 0.01f) return;
+        if (virtualAimPosition.magnitude > maxAimRadius)
+        {
+            virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
+        }
 
-        // Snap alle 8 direzioni cardinali/ordinali
-        Vector3 snappedDirection = SnapTo8Directions(rawDirection);
+        bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
+
+        if (isAimingWithMouse)
+        {
+            Vector3 mouseWorldDirection = new Vector3(virtualAimPosition.x, 0f, virtualAimPosition.y);
+            targetDirection = gameCamera.transform.forward * mouseWorldDirection.z + gameCamera.transform.right * mouseWorldDirection.x;
+            targetDirection.y = 0f;
+        }
+        else if (!isAttacking)
+        {
+            targetDirection = movementDirection;
+            targetDirection.y = 0f;
+        }
+        else
+        {
+            return;
+        }
+
+        if (targetDirection.sqrMagnitude < 0.01f) return;
+
+        Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
         transform.rotation = Quaternion.LookRotation(snappedDirection);
-    }*/
-
-private void HandleRotation()
-{
-    Vector3 targetDirection = Vector3.zero;
-
-    // 1. Leggiamo il Delta del mouse (assicurati che nell'Input System sia impostato su Delta)
-    Vector2 mouseDelta = playerInputManager.AttackDirectionInput;
-
-    // 2. Aggiorniamo la posizione del nostro mirino virtuale usando il delta e la sensibilità
-    virtualAimPosition += mouseDelta * mouseSensitivity;
-
-    // 3. LIMITIAMO il mirino virtuale: se si allontana troppo dal centro (0,0), lo blocchiamo al raggio massimo
-    if (virtualAimPosition.magnitude > maxAimRadius)
-    {
-        virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
     }
 
-    // Controlliamo se stiamo effettivamente mirando (fuori dalla piccolissima deadzone centrale)
-    bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
-
-    if (isAimingWithMouse)
-    {
-        // Convertiamo la posizione del mirino virtuale 2D in coordinate 3D (X e Z)
-        Vector3 mouseWorldDirection = new Vector3(virtualAimPosition.x, 0f, virtualAimPosition.y);
-
-        // Rendiamo la direzione relativa alla Camera
-        targetDirection = gameCamera.transform.forward * mouseWorldDirection.z + gameCamera.transform.right * mouseWorldDirection.x;
-        targetDirection.y = 0f;
-    }
-    // 4. Se il mirino virtuale è al centro e NON stiamo attaccando, seguiamo il movimento del player
-    else if (!isAttacking)
-    {
-        targetDirection = movementDirection;
-        targetDirection.y = 0f;
-    }
-    // 5. Se stiamo attaccando ma non muoviamo il mirino, blocca la rotazione
-    else
-    {
-        return;
-    }
-
-    // Se non c'è una direzione valida, esci
-    if (targetDirection.sqrMagnitude < 0.01f) return;
-
-    // 6. Applichiamo lo snap a 8 direzioni (45 gradi)
-    Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
-    transform.rotation = Quaternion.LookRotation(snappedDirection);
-}
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
         float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -344,7 +338,7 @@ private void HandleRotation()
     private IEnumerator AttackRoutine()
     {
         canAttack = false;
-        isAttacking = true;  // blocca rotazione
+        isAttacking = true;
 
         float originalSpeed = walkingSpeed;
         walkingSpeed *= attackMoveSpeedMultiplier;
@@ -360,7 +354,6 @@ private void HandleRotation()
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
 
-        // Reset hitbox
         attackHitbox.SetActive(false);
         attackHitbox.SetActive(true);
 
@@ -368,12 +361,12 @@ private void HandleRotation()
 
         yield return new WaitForSeconds(attackTime - attackBoxDuration);
 
-        isAttacking = false;  // sblocca rotazione
+        isAttacking = false;
         canAttack = true;
     }
 
     // =========================
-    // DASH
+    // DASH E DODGE
     // =========================
 
     private void HandleDash()
@@ -389,36 +382,65 @@ private void HandleRotation()
 
     private IEnumerator DashRoutine()
     {
-        // Inizia il dash
         canDash = false;
         isDashing = true;
 
-        // ATTIVA L'IMMUNITÀ
-        isInvulnerable = true;
+        // RICHIAMO LA NUOVA FUNZIONE!
+        GrantTemporaryInvincibility(dashInvincibilityTime);
 
-        // Calcola la direzione del dash: 
-        // Se il giocatore si sta muovendo, dasha in quella direzione. Altrimenti dasha in avanti.
         Vector3 dashDirection = (currentMovement.sqrMagnitude > 0.1f) ? currentMovement.normalized : transform.forward;
         dashDirection.y = 0f;
 
         float startTime = Time.time;
 
-        // Muovi il player per la durata del dash
         while (Time.time < startTime + dashDuration)
         {
             characterController.Move(dashDirection * dashSpeed * Time.deltaTime);
-            yield return null; // Aspetta il frame successivo
+            yield return null;
         }
 
-        // Fine del dash
         isDashing = false;
 
-        // DISATTIVA L'IMMUNITÀ
-        isInvulnerable = false;
-
-        // Aspetta il cooldown prima di poter dashare di nuovo
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
+    }
+
+    private void HandleDodge()
+    {
+        if (!canMove || !canDodge || isAttacking || isDashing) return;
+
+        if (playerInputManager.DodgeInput)
+        {
+            StartCoroutine(DodgeRoutine());
+            playerInputManager.ConsumeDodgeInput();
+        }
+    }
+
+    private IEnumerator DodgeRoutine()
+    {
+        canDodge = false;
+        isDodging = true;
+
+        GrantTemporaryInvincibility(dodgeInvincibilityTime);
+
+        Vector3 direction = (currentMovement.sqrMagnitude > 0.1f)
+            ? currentMovement.normalized
+            : -transform.forward;
+
+        direction.y = 0f;
+
+        float startTime = Time.time;
+
+        while (Time.time < startTime + dodgeDuration)
+        {
+            characterController.Move(direction * dodgeSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        isDodging = false;
+
+        yield return new WaitForSeconds(dodgeCooldown);
+        canDodge = true;
     }
 
 
@@ -504,7 +526,6 @@ private void HandleRotation()
             timer += flickerInterval;
         }
 
-        // Ripristino finale di tutti i Renderer
         foreach (Renderer r in playerRenderers)
         {
             if (r != null) r.enabled = true;
@@ -574,13 +595,13 @@ private void HandleRotation()
         if (playerInputManager.GoLeftInventorySlotInput)
         {
             GoLeftInventorySlot();
-            UpdateInventoryUI(); // <-- AGGIUNTO: Aggiorna la cornice visiva
+            UpdateInventoryUI();
             playerInputManager.ConsumeGoLeftInventorySlotInput();
         }
         if (playerInputManager.GoRightInventorySlotInput)
         {
             GoRightInventorySlot();
-            UpdateInventoryUI(); // <-- AGGIUNTO: Aggiorna la cornice visiva
+            UpdateInventoryUI();
             playerInputManager.ConsumeGoRightInventorySlotInput();
         }
         if (playerInputManager.UseItemInput)
@@ -591,7 +612,7 @@ private void HandleRotation()
                 UseItem(itemToUse);
                 RemoveItem(inventory.GetSelectedIndex());
                 inventory.SortItems();
-                UpdateInventoryUI(); // <-- AGGIUNTO: Spegne l'icona dell'oggetto consumato
+                UpdateInventoryUI();
                 DelayAfterItemUse(itemUseDelay);
             }
             playerInputManager.ConsumeUseItemInput();
@@ -604,9 +625,9 @@ private void HandleRotation()
     }
 
     private IEnumerator DelayAfterItemUseRoutine(float delayTime)
-        {
-            yield return new WaitForSeconds(delayTime);
-        }
+    {
+        yield return new WaitForSeconds(delayTime);
+    }
 
     public void AddItem(ItemData item)
     {
@@ -651,7 +672,6 @@ private void HandleRotation()
     {
         if (inventoryUI != null && inventory != null)
         {
-            // Passiamo sia l'inventario che l'attackType attuale del Player
             inventoryUI.RefreshUI(inventory, attackType);
         }
     }
@@ -659,28 +679,6 @@ private void HandleRotation()
     // =========================
     // ITEMS
     // =========================
-
-    /*
-    public void ApplyDrug(DrugData drugData)    // Applica moltiplicatori su stato corrente
-    {
-        walkingSpeed *= drugData.speedMultiplier;
-        attackTime /= drugData.attackRateMultiplier;
-        attackType = drugData.attackType;
-
-        float previousMaxHealth = this.maxHealthPoints;
-        maxHealthPoints *= drugData.healthMultiplier;
-
-        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
-        if (maxHealthPoints > previousMaxHealth)
-            currentHealthPoints += maxHealthPoints - previousMaxHealth;
-
-        UpdateUI();
-
-        if (drugData.damageOverTime)
-            ApplyDamageOverTime(drugData.damageChangeTime, drugData.damageCurve);
-        else
-            attackDamage *= drugData.damageMultiplier;
-    }*/
 
     public void UseItem(ItemData itemData)
     {
@@ -702,7 +700,7 @@ private void HandleRotation()
 
     private bool IsGettingBadTrip(float badTripChance)
     {
-        return Convert.ToBoolean(Random.Range(0, 100) < badTripChance*100);
+        return Convert.ToBoolean(Random.Range(0, 100) < badTripChance * 100);
     }
 
     private void ApplyMentalStatus(PlayerMentalStatus mentalStatus)
@@ -710,7 +708,7 @@ private void HandleRotation()
         this.mentalStatus = mentalStatus;
     }
 
-    private void ApplyModifiers(ItemData itemData)    // Applica moltiplicatori su stato default
+    private void ApplyModifiers(ItemData itemData)
     {
         walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
@@ -741,20 +739,20 @@ private void HandleRotation()
                 attackWidth = DEFAULT_ATTACK_WIDTH;
                 break;
             case AttackType.CLAYMORE:
-                attackRange = 1.5f*DEFAULT_ATTACK_RANGE;
-                attackWidth = 1.25f*DEFAULT_ATTACK_WIDTH;
+                attackRange = 1.5f * DEFAULT_ATTACK_RANGE;
+                attackWidth = 1.25f * DEFAULT_ATTACK_WIDTH;
                 break;
             case AttackType.DAGGERS:
-                attackRange = 0.5f*DEFAULT_ATTACK_RANGE;
-                attackWidth = 2f*DEFAULT_ATTACK_WIDTH;
+                attackRange = 0.5f * DEFAULT_ATTACK_RANGE;
+                attackWidth = 2f * DEFAULT_ATTACK_WIDTH;
                 break;
             case AttackType.LONGSWORD:
-                attackRange = 2f*DEFAULT_ATTACK_RANGE;
-                attackWidth = 0.75f*DEFAULT_ATTACK_WIDTH;
+                attackRange = 2f * DEFAULT_ATTACK_RANGE;
+                attackWidth = 0.75f * DEFAULT_ATTACK_WIDTH;
                 break;
             case AttackType.WHIP:
-                attackRange = 2.5f*DEFAULT_ATTACK_RANGE;
-                attackWidth = 0.25f*DEFAULT_ATTACK_WIDTH;
+                attackRange = 2.5f * DEFAULT_ATTACK_RANGE;
+                attackWidth = 0.25f * DEFAULT_ATTACK_WIDTH;
                 break;
         }
     }
@@ -767,13 +765,10 @@ private void HandleRotation()
     private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
     {
         float elapsedTime = 0f;
-        float initialAttackDamage =
-        //    attackDamage;    // su stato corrente
-            DEFAULT_ATTACK_DAMAGE;    // su stato default
+        float initialAttackDamage = DEFAULT_ATTACK_DAMAGE;
 
         while (elapsedTime <= damageChangeTime)
         {
-            Debug.Log("Applying damage over time...");
             attackDamage = initialAttackDamage * damageCurve.Evaluate(elapsedTime / damageChangeTime);
             elapsedTime += Time.deltaTime;
             yield return null;
