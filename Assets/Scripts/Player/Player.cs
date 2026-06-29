@@ -18,6 +18,14 @@ public class Player : MonoBehaviour
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
 
+    [Header("Dash Settings")]
+    [SerializeField] private float dashSpeed = 25f;
+    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashCooldown = 1f;
+
+    private bool isDashing = false;
+    private bool canDash = true;
+
     private Vector2 virtualAimPosition = Vector2.zero;
 
     [Header("Virtual Mouse Settings")]
@@ -159,8 +167,16 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        HandleMovement();
-        HandleRotation();
+        // 1. Controlliamo prima il Dash
+        HandleDash();
+
+        // 2. Se stiamo dashando, blocchiamo movimento e rotazione standard per non interferire
+        if (!isDashing)
+        {
+            HandleMovement();
+            HandleRotation();
+        }
+
         HandleAttack();
         HandleInventory();
 
@@ -354,6 +370,55 @@ private void HandleRotation()
 
         isAttacking = false;  // sblocca rotazione
         canAttack = true;
+    }
+
+    // =========================
+    // DASH
+    // =========================
+
+    private void HandleDash()
+    {
+        if (!canMove || !canDash || isAttacking) return;
+
+        if (playerInputManager.DashInput)
+        {
+            StartCoroutine(DashRoutine());
+            playerInputManager.ConsumeDashInput();
+        }
+    }
+
+    private IEnumerator DashRoutine()
+    {
+        // Inizia il dash
+        canDash = false;
+        isDashing = true;
+
+        // ATTIVA L'IMMUNITÀ
+        isInvulnerable = true;
+
+        // Calcola la direzione del dash: 
+        // Se il giocatore si sta muovendo, dasha in quella direzione. Altrimenti dasha in avanti.
+        Vector3 dashDirection = (currentMovement.sqrMagnitude > 0.1f) ? currentMovement.normalized : transform.forward;
+        dashDirection.y = 0f;
+
+        float startTime = Time.time;
+
+        // Muovi il player per la durata del dash
+        while (Time.time < startTime + dashDuration)
+        {
+            characterController.Move(dashDirection * dashSpeed * Time.deltaTime);
+            yield return null; // Aspetta il frame successivo
+        }
+
+        // Fine del dash
+        isDashing = false;
+
+        // DISATTIVA L'IMMUNITÀ
+        isInvulnerable = false;
+
+        // Aspetta il cooldown prima di poter dashare di nuovo
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
 
