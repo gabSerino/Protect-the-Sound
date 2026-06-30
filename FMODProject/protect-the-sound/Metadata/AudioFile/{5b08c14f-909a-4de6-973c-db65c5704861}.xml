@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{5b08c14f-909a-4de6-973c-db65c5704861}">
+		<property name="assetPath">
+			<value>SFX/snd_bat_swing/snd_bat_swing_03.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>1</value>
+		</property>
+		<property name="length">
+			<value>1.0052083333333333</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{3c9ed914-268c-4cf5-967b-54870a2cfb75}</destination>
+		</relationship>
+	</object>
+</objects>

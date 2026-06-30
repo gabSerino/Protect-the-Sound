@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.03.00">
 	<object class="AudioFile" id="{9abfa247-0ac6-4997-873a-e97bf7e45ec1}">
 		<property name="assetPath">
-			<value>bonk.wav</value>
+			<value>test/bonk.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>48</value>

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
   maxHealth: 30
   moveSpeed: 3
-  chargeSpeed: 6
+  chargeSpeed: 5
   chargeWindupTime: 0.5
   acceleration: 8
   angularSpeed: 120

@@ -38,7 +38,6 @@ public class PlayerInputManager : MonoBehaviour
     public bool GoRightInventorySlotInput { get; private set; }
     public bool UseItemInput { get; private set; }
     public bool DashInput { get; private set; }
-    public bool DodgeInput { get; private set; }
 
     private void Awake()
     {
@@ -52,7 +51,6 @@ public class PlayerInputManager : MonoBehaviour
         goRightInventorySlotAction = actionMap.FindAction(goRightInventorySlot);
         useItemAction = actionMap.FindAction(useItem);
         dashAction = actionMap.FindAction(dash);
-        dodgeAction = actionMap.FindAction(dodge);
 
         BindActions();
     }
@@ -100,12 +98,6 @@ public class PlayerInputManager : MonoBehaviour
             dashAction.performed += ctx => DashInput = true;
             dashAction.canceled += ctx => DashInput = false;
         }
-
-        if (dodgeAction != null)
-        {
-            dodgeAction.performed += ctx => DodgeInput = true;
-            dodgeAction.canceled += ctx => DodgeInput = false;
-        }
     }
 
     public void ConsumeGoLeftInventorySlotInput() => GoLeftInventorySlotInput = false;
@@ -113,5 +105,4 @@ public class PlayerInputManager : MonoBehaviour
     public void ConsumeAttackInput() => AttackInput = false;
     public void ConsumeUseItemInput() => UseItemInput = false;
     public void ConsumeDashInput() => DashInput = false;
-    public void ConsumeDodgeInput() => DodgeInput = false;
 }

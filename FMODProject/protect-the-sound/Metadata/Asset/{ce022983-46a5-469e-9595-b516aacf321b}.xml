@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="EncodableAsset" id="{ce022983-46a5-469e-9595-b516aacf321b}">
+		<property name="assetPath">
+			<value>SFX/snd_bat_swing/</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{3c9ed914-268c-4cf5-967b-54870a2cfb75}</destination>
+		</relationship>
+	</object>
+</objects>

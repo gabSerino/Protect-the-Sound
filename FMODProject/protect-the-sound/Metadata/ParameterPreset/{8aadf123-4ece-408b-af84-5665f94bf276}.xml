@@ -20,9 +20,9 @@
 		</property>
 		<property name="enumerationLabels">
 			<value>DEFAULT</value>
+			<value>CLAYMORE</value>
 			<value>DAGGERS</value>
 			<value>LONGSWORD</value>
-			<value>CLAYMORE</value>
 			<value>WHIP</value>
 		</property>
 		<property name="initialValue">

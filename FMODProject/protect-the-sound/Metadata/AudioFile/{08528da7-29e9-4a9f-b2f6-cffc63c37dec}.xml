@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{08528da7-29e9-4a9f-b2f6-cffc63c37dec}">
+		<property name="assetPath">
+			<value>Music/mus_rave_default_riser.ogg</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>10.005208333333334</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{3c9ed914-268c-4cf5-967b-54870a2cfb75}</destination>
+		</relationship>
+	</object>
+</objects>

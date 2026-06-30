@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="AudioFile" id="{0148079a-7d87-45f7-9153-230de1490a93}">
+		<property name="assetPath">
+			<value>Music/mus_rave_default.ogg</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>112.328125</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{3c9ed914-268c-4cf5-967b-54870a2cfb75}</destination>
+		</relationship>
+	</object>
+</objects>

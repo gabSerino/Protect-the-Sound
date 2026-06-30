@@ -12,10 +12,9 @@ public class RhythmManager : MonoBehaviour
 
     [Header("Rhythm Settings")]
     public float bpm = 120f;
-    public float startOffset = 0f; // compensazione latenza (tipo 0.05)
+    public float startOffset = 0f; // compensazione latenza output (in secondi, es. 0.05)
 
     [Header("Window Settings")]
-    // Window a 120 bpm
     public float perfectInputWindow = 0.1f;
     public float goodInputWindow = 0.2f;
     public float normalMultiplier = 0.75f;
@@ -23,7 +22,7 @@ public class RhythmManager : MonoBehaviour
     public float perfectMultiplier = 1.5f;
 
     private float beatInterval;
-    private float songStartTime;
+    private bool musicStarted = false;
 
     void Awake()
     {
@@ -32,60 +31,63 @@ public class RhythmManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
     }
 
     void Start()
     {
         beatInterval = 60f / bpm;
-
         musicInstance = RuntimeManager.CreateInstance(eventPath);
         musicInstance.start();
-
-        // segniamo quando parte la musica
-        songStartTime = Time.time + startOffset;
     }
 
-    // 🔥 tempo attuale della "musica"
+    // 🔥 tempo attuale della "musica" preso DIRETTAMENTE da FMOD, non da Time.time
     public float GetSongTime()
     {
-        return Time.time - songStartTime;
+        // getTimelinePosition ritorna i millisecondi reali di playback dell'evento
+        musicInstance.getTimelinePosition(out int posMs);
+
+        // Se la posizione è ancora 0 e non abbiamo confermato l'avvio, l'evento
+        // potrebbe non essere ancora effettivamente partito (latenza di start).
+        PLAYBACK_STATE state;
+        musicInstance.getPlaybackState(out state);
+        if (state != PLAYBACK_STATE.PLAYING && !musicStarted)
+        {
+            return 0f;
+        }
+        musicStarted = true;
+
+        return (posMs / 1000f) - startOffset;
     }
 
-    // 🔥 beat corrente (numero intero)
     public int GetCurrentBeat()
     {
         return Mathf.FloorToInt(GetSongTime() / beatInterval);
     }
 
-    // 🔥 tempo del beat corrente
     public float GetBeatTime(int beatIndex)
     {
         return beatIndex * beatInterval;
     }
 
-    // 🔥 quanto sei fuori tempo dal beat più vicino
     public float GetBeatError()
     {
         float songTime = GetSongTime();
-
         float nearestBeat = Mathf.Round(songTime / beatInterval) * beatInterval;
-
         return Mathf.Abs(songTime - nearestBeat);
     }
 
-    // 🔥 valutazione timing (per gameplay)
     public bool IsOnBeat(float perfectWindow, float goodWindow, out float multiplier)
     {
         float error = GetBeatError();
+        float scale = beatInterval / (60f / 120f); // scala finestra in base al bpm reale
 
-        if (error <= perfectWindow*120f/bpm)
+        if (error <= perfectWindow * scale)
         {
             multiplier = perfectMultiplier;
             return true;
         }
-        else if (error <= goodWindow*120f/bpm)
+        else if (error <= goodWindow * scale)
         {
             multiplier = goodMultiplier;
             return true;

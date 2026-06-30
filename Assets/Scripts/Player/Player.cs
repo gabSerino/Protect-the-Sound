@@ -33,9 +33,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float dodgeCooldown = 1f;
     [SerializeField] private float dodgeInvincibilityTime = 0.25f; 
 
-    private bool isDodging = false;
-    private bool canDodge = true;
-
     private Vector2 virtualAimPosition = Vector2.zero;
 
     [Header("Virtual Mouse Settings")]
@@ -46,11 +43,11 @@ public class Player : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
     [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackWidth = 1f;
+    [SerializeField] private float attackWidth = 2f;
     [SerializeField] private float attackDamage = 15f;
     [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
     [SerializeField] private float attackTime = 0.3f;              // pausa prima del prossimo attacco
-    [SerializeField] private float attackMoveSpeedMultiplier = 0.5f; // rallenta invece di bloccare
+    [SerializeField] private float attackMoveSpeedMultiplier = 0f; // rallenta invece di bloccare
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
@@ -78,6 +75,12 @@ public class Player : MonoBehaviour
     public UIJuice uiJuice;
     public InventoryUI inventoryUI;
 
+    [Header("Audio")]
+    [SerializeField] private FMODUnity.EventReference attackSoundEvent = new FMODUnity.EventReference();
+    [SerializeField] private string attackSoundParameter = "Attack Type";
+    [SerializeField] private FMODUnity.EventReference dashSoundEvent = new FMODUnity.EventReference();
+    [SerializeField] private FMODUnity.EventReference hitSoundEvent = new FMODUnity.EventReference();
+
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
     [SerializeField] private CharacterController characterController;
@@ -94,7 +97,7 @@ public class Player : MonoBehaviour
     private const float DEFAULT_ACCELERATION = 100f;
     private const float DEFAULT_DECELERATION = 200f;
     private const float DEFAULT_ATTACK_RANGE = 2f;
-    private const float DEFAULT_ATTACK_WIDTH = 1f;
+    private const float DEFAULT_ATTACK_WIDTH = 2f;
     private const float DEFAULT_ATTACK_DAMAGE = 15f;
     private const float DEFAULT_ATTACK_BOX_DURATION = 0.15f;
     private const float DEFAULT_ATTACK_TIME = 0.3f;
@@ -169,11 +172,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        HandleDodge();
         HandleDash();
 
         // Se non sta schivando e non sta scattando, muoviti normalmente
-        if (!isDodging && !isDashing)
+        if (!isDashing)
         {
             HandleMovement();
             HandleRotation();
@@ -183,7 +185,7 @@ public class Player : MonoBehaviour
         HandleInventory();
 
         attackHitbox.transform.position = playerCapsule.transform.position + playerCapsule.transform.forward * attackRange / 2f;
-        attackHitbox.transform.localScale = new Vector3(attackWidth, 1f, attackRange);
+        attackHitbox.transform.localScale = new Vector3(attackWidth, 0.1f, attackRange);
 
         if (transform.position.y > 0.05f)
         {
@@ -346,6 +348,8 @@ public class Player : MonoBehaviour
         bool isOnBeat = IsOnBeat(out float damageMultiplier);
         hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
 
+        PlayAttackSound();
+
         hitboxCollider.enabled = true;
         hitboxRenderer.enabled = true;
 
@@ -365,6 +369,32 @@ public class Player : MonoBehaviour
         canAttack = true;
     }
 
+    private void PlayAttackSound()
+    {
+        if (attackSoundEvent.IsNull) return;
+
+        FMOD.Studio.EventInstance attackInstance = FMODUnity.RuntimeManager.CreateInstance(attackSoundEvent);
+
+        attackInstance.setParameterByName(attackSoundParameter, GetAttackTypeParamValue(attackType));
+
+        attackInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        attackInstance.start();
+        attackInstance.release();
+    }
+
+    private float GetAttackTypeParamValue(AttackType type)
+{
+    switch (type)
+    {
+        case AttackType.DEFAULT:   return 0f;
+        case AttackType.CLAYMORE:  return 1f;
+        case AttackType.DAGGERS:   return 2f;
+        case AttackType.LONGSWORD: return 3f;
+        case AttackType.WHIP:      return 4f;
+        default: return 0f;
+    }
+}
+
     // =========================
     // DASH E DODGE
     // =========================
@@ -375,6 +405,7 @@ public class Player : MonoBehaviour
 
         if (playerInputManager.DashInput)
         {
+            Debug.Log("Dash eseguito!");
             StartCoroutine(DashRoutine());
             playerInputManager.ConsumeDashInput();
         }
@@ -391,6 +422,8 @@ public class Player : MonoBehaviour
         Vector3 dashDirection = (currentMovement.sqrMagnitude > 0.1f) ? currentMovement.normalized : transform.forward;
         dashDirection.y = 0f;
 
+        PlayDashSound();
+
         float startTime = Time.time;
 
         while (Time.time < startTime + dashDuration)
@@ -405,44 +438,15 @@ public class Player : MonoBehaviour
         canDash = true;
     }
 
-    private void HandleDodge()
+    private void PlayDashSound()
     {
-        if (!canMove || !canDodge || isAttacking || isDashing) return;
+        if (dashSoundEvent.IsNull) return;
 
-        if (playerInputManager.DodgeInput)
-        {
-            StartCoroutine(DodgeRoutine());
-            playerInputManager.ConsumeDodgeInput();
-        }
+        FMOD.Studio.EventInstance dashInstance = FMODUnity.RuntimeManager.CreateInstance(dashSoundEvent);
+        dashInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        dashInstance.start();
+        dashInstance.release();
     }
-
-    private IEnumerator DodgeRoutine()
-    {
-        canDodge = false;
-        isDodging = true;
-
-        GrantTemporaryInvincibility(dodgeInvincibilityTime);
-
-        Vector3 direction = (currentMovement.sqrMagnitude > 0.1f)
-            ? currentMovement.normalized
-            : -transform.forward;
-
-        direction.y = 0f;
-
-        float startTime = Time.time;
-
-        while (Time.time < startTime + dodgeDuration)
-        {
-            characterController.Move(direction * dodgeSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        isDodging = false;
-
-        yield return new WaitForSeconds(dodgeCooldown);
-        canDodge = true;
-    }
-
 
     // =========================
     // RHYTHM
@@ -484,6 +488,8 @@ public class Player : MonoBehaviour
     {
         if (isInvulnerable) return;
 
+        PlayHitSound();
+
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
         UpdateUI();
 
@@ -491,6 +497,16 @@ public class Player : MonoBehaviour
 
         if (currentHealthPoints <= 0)
             Respawn();
+    }
+
+    private void PlayHitSound()
+    {
+        if (hitSoundEvent.IsNull) return;
+
+        FMOD.Studio.EventInstance hitInstance = FMODUnity.RuntimeManager.CreateInstance(hitSoundEvent);
+        hitInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        hitInstance.start();
+        hitInstance.release();
     }
 
     private void Respawn()
