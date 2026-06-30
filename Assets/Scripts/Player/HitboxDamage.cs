@@ -36,7 +36,7 @@ public class HitboxDamage : MonoBehaviour
         KnockbackEnemy(enemy, 20f);
         hitEnemies.Add(enemy);
 
-        // NUOVO: Se hai colpito a tempo, invia il segnale all'interfaccia UI!
+        // Se hai colpito a tempo, invia il segnale all'interfaccia UI!
         if (attaccoATempo && ComboMeterUI.Instance != null)
         {
             ComboMeterUI.Instance.AggiungiCombo(10f); // Riempe la barra di 10 punti
@@ -56,7 +56,7 @@ public class HitboxDamage : MonoBehaviour
         if (Mathf.Approximately(multiplier, RhythmManager.Instance.goodMultiplier))
         {
             index = 1;
-            attaccoATempo = true;
+
         }
         else if (Mathf.Approximately(multiplier, RhythmManager.Instance.perfectMultiplier))
         {

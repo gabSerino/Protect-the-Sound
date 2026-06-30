@@ -35,14 +35,23 @@ public class ComboMeterUI : MonoBehaviour
     // Questa funzione verrà chiamata dalla Hitbox
     public void AggiungiCombo(float quantita)
     {
-        // 1. Aumenta la barra
+        // 1. Aumenta il valore della combo
         currentCombo += quantita;
-        currentCombo = Mathf.Clamp(currentCombo, 0, maxCombo); // Non supera il massimo
 
+        // 2. Controllo: se raggiunge o supera il massimo, azzera tutto
+        if (currentCombo >= maxCombo)
+        {
+            currentCombo = 0f;
+
+            // Qui puoi chiamare un'altra funzione quando la barra si riempie!
+            // es AttivaPowerUp(); oppure RiproduciSuonoMaxCombo();
+        }
+
+        // 3. Aggiorna l'interfaccia grafica
         if (anelloImage != null)
             anelloImage.fillAmount = currentCombo / maxCombo;
 
-        // 2. Fa partire l'animazione di tremolio
+        // 4. Fa partire l'animazione di tremolio
         if (oggettoDaTremare != null)
         {
             StopAllCoroutines(); // Blocca tremolii precedenti se colpisci molto veloce
