@@ -921,7 +921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComboMeterUI
   anelloImage: {fileID: 492353895}
   oggettoDaTremare: {fileID: 492353893}
-  maxCombo: 100
+  maxCombo: 300
   durataTremolio: 0.15
   forzaTremolio: 5
 --- !u!114 &492353895
@@ -1980,7 +1980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae215e177a7bf5148b472397932e5f07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SharedHealth
-  maxPoints: 100
+  maxPoints: 800
   healthSlider: {fileID: 1889909828}
   shakeThreshold: 30
   shakeIntensity: 5

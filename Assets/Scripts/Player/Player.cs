@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField] private float walkingSpeed = 8f;
-    [SerializeField] private float rotationSpeed = 10f;
+    //[SerializeField] private float rotationSpeed = 10f;
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
 
