@@ -15,11 +15,13 @@ MonoBehaviour:
   maxHealth: 30
   moveSpeed: 3
   chargeSpeed: 6
+  chargeWindupTime: 0.5
   acceleration: 8
   angularSpeed: 120
   damage: 10
   attackRange: 2
   attackCooldown: 1
-  aggroRadius: 5
+  firstAttackDelay: 0.4
+  aggroRadius: 7
   dropChance: 0.5
   lootTable: {fileID: 11400000, guid: 8044bb0aef9b3774d94ac843dfa212e0, type: 2}
