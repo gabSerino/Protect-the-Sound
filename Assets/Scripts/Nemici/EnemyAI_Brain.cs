@@ -18,7 +18,7 @@ public class EnemyAI_Brain : MonoBehaviour
     private EnemyStats stats;
 
     private Transform currentTarget;
-    private float lastAttackTime;
+    private float nextAttackTime;
     private float windupTimer = 0f;
 
 
@@ -98,7 +98,10 @@ public class EnemyAI_Brain : MonoBehaviour
                 agent.SetDestination(currentTarget.position);
 
                 if (Vector3.Distance(transform.position, currentTarget.position) <= stats.attackRange)
+                {
                     currentState = EnemyState.AttackingCassa;
+                    nextAttackTime = Time.time + stats.firstAttackDelay;
+                }
                 break;
 
             case EnemyState.AttackingCassa:
@@ -114,7 +117,10 @@ public class EnemyAI_Brain : MonoBehaviour
                 agent.SetDestination(currentTarget.position);
 
                 if (Vector3.Distance(transform.position, currentTarget.position) <= stats.attackRange)
+                {
                     currentState = EnemyState.AttackingPlayer;
+                    nextAttackTime = Time.time + stats.firstAttackDelay;
+                }
                 break;
 
             case EnemyState.AttackingPlayer:
@@ -170,9 +176,11 @@ public class EnemyAI_Brain : MonoBehaviour
 
     private void PerformAttack()
     {
-        if (Time.time >= lastAttackTime + stats.attackCooldown)
+        //Controlla se siamo arrivati al momento giusto per colpire
+        if (Time.time >= nextAttackTime)
         {
-            lastAttackTime = Time.time;
+            // Resetta il timer per i COLPI SUCCESSIVI usando il Cooldown normale
+            nextAttackTime = Time.time + stats.attackCooldown;
 
             // CERCA LO SCRIPT SUL PADRE DEL BERSAGLIO
             Player playerScript = currentTarget.GetComponentInParent<Player>();
