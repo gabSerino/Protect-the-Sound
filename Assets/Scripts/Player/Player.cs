@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashSpeed = 25f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 1f;
-    [SerializeField] private float dashInvincibilityTime = 0.3f; 
+    [SerializeField] private float dashInvincibilityTime = 0.3f;
 
     private bool isDashing = false;
     private bool canDash = true;
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float dodgeSpeed = 30f;
     [SerializeField] private float dodgeDuration = 0.2f;
     [SerializeField] private float dodgeCooldown = 1f;
-    [SerializeField] private float dodgeInvincibilityTime = 0.25f; 
+    [SerializeField] private float dodgeInvincibilityTime = 0.25f;
 
     private Vector2 virtualAimPosition = Vector2.zero;
 
@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float attackWidth = 2f;
     [SerializeField] private float attackDamage = 15f;
     [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
-    [SerializeField] private float attackTime = 0.3f;              // pausa prima del prossimo attacco
+    [SerializeField] private float attackTime = 0.3f;               // pausa prima del prossimo attacco
     [SerializeField] private float attackMoveSpeedMultiplier = 0f; // rallenta invece di bloccare
 
     [Header("Rhythm Settings")]
@@ -55,6 +55,10 @@ public class Player : MonoBehaviour
 
     [Header("Health Settings")]
     private float maxHealthPoints = 100f;
+
+    [Header("Death Settings")]
+    [SerializeField] private float respawnDelay = 2f; // Tempo di attesa prima del respawn
+    private bool isDead = false; // Impedisce di morire più volte durante l'attesa
 
     [Header("Music Points Settings")]
     private float maxMusicPoints = 100f;
@@ -107,7 +111,7 @@ public class Player : MonoBehaviour
 
     private const float DEFAULT_MAX_HEALTH_POINTS = 100f;
     private const float DEFAULT_MAX_MUSIC_POINTS = 100f;
-  
+
 
     // =========================
     // PROPERTIES
@@ -138,6 +142,7 @@ public class Player : MonoBehaviour
     private CharacterController controller;
     private bool isInvulnerable = false;
     private Coroutine activeInvincibilityCoroutine;
+
     // Inventory
     private Inventory inventory;
 
@@ -383,17 +388,17 @@ public class Player : MonoBehaviour
     }
 
     private float GetAttackTypeParamValue(AttackType type)
-{
-    switch (type)
     {
-        case AttackType.DEFAULT:   return 0f;
-        case AttackType.CLAYMORE:  return 1f;
-        case AttackType.DAGGERS:   return 2f;
-        case AttackType.LONGSWORD: return 3f;
-        case AttackType.WHIP:      return 4f;
-        default: return 0f;
+        switch (type)
+        {
+            case AttackType.DEFAULT: return 0f;
+            case AttackType.CLAYMORE: return 1f;
+            case AttackType.DAGGERS: return 2f;
+            case AttackType.LONGSWORD: return 3f;
+            case AttackType.WHIP: return 4f;
+            default: return 0f;
+        }
     }
-}
 
     // =========================
     // DASH E DODGE
@@ -481,12 +486,13 @@ public class Player : MonoBehaviour
 
 
     // =========================
-    // HEALTH & DAMAGE
+    // HEALTH, DAMAGE & DEATH
     // =========================
 
     public void TakeDamage(float amount)
     {
-        if (isInvulnerable) return;
+        // Se il player è invulnerabile o è GIA' MORTO, ignora i danni
+        if (isInvulnerable || isDead) return;
 
         PlayHitSound();
 
@@ -496,7 +502,28 @@ public class Player : MonoBehaviour
         if (uiJuice != null) uiJuice.Shake();
 
         if (currentHealthPoints <= 0)
-            Respawn();
+        {
+            // Avvia la routine di morte invece del respawn immediato
+            StartCoroutine(DeathRoutine());
+        }
+    }
+
+    private IEnumerator DeathRoutine()
+    {
+        isDead = true;
+        DisableAllControls(); // Impedisce al giocatore di muoversi o attaccare da morto
+
+        // --- INSERISCI QUI LA GRAFICA DELLA MORTE ---
+        // Esempio: GetComponent<Animator>().SetTrigger("Death");
+
+        // Aspetta i secondi definiti nell'Inspector per far vedere l'animazione/sprite
+        yield return new WaitForSeconds(respawnDelay);
+
+        // Ora esegue il respawn effettivo
+        Respawn();
+
+        EnableAllControls(); // Restituisce i comandi al giocatore
+        isDead = false; // Il giocatore è tornato in vita
     }
 
     private void PlayHitSound()
