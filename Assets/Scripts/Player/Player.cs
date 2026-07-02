@@ -44,9 +44,10 @@ public class Player : MonoBehaviour
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackWidth = 2f;
-    [SerializeField] private float attackDamage = 15f;
-    [SerializeField] private float attackBoxDuration = 0.15f;       // quanto dura il "commit" dell'attacco
-    [SerializeField] private float attackTime = 0.3f;               // pausa prima del prossimo attacco
+    [SerializeField] private float attackDamage = 15f;              // pausa prima del prossimo attacco
+
+    [SerializeField] private float attackBoxDuration = 0.2f;       // quanto dura il "commit" dell'attacco
+    [SerializeField] private float attackTime = 0.4f;              // pausa prima del prossimo attacco
     [SerializeField] private float attackMoveSpeedMultiplier = 0f; // rallenta invece di bloccare
 
     [Header("Rhythm Settings")]
@@ -91,6 +92,7 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera gameCamera;
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
+    [SerializeField] private Animator playerAnimator;
 
     [Header("Grafica Player (Per il Lampeggio)")]
     [SerializeField] private Renderer[] playerRenderers;
@@ -103,8 +105,8 @@ public class Player : MonoBehaviour
     private const float DEFAULT_ATTACK_RANGE = 2f;
     private const float DEFAULT_ATTACK_WIDTH = 2f;
     private const float DEFAULT_ATTACK_DAMAGE = 15f;
-    private const float DEFAULT_ATTACK_BOX_DURATION = 0.15f;
-    private const float DEFAULT_ATTACK_TIME = 0.3f;
+    private const float DEFAULT_ATTACK_BOX_DURATION = 0.2f;
+    private const float DEFAULT_ATTACK_TIME = 0.4f;
     private const float DEFAULT_ATTACK_MOVE_SPEED_MULTIPLIER = 0.5f;
     private const float DEFAULT_INVULNERABILITY_DURATION = 2f;
     private const float DEFAULT_FLICKER_INTERVAL = 0.1f;
@@ -353,6 +355,7 @@ public class Player : MonoBehaviour
         bool isOnBeat = IsOnBeat(out float damageMultiplier);
         hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
 
+        playerAnimator.SetTrigger("Attack");
         PlayAttackSound();
 
         hitboxCollider.enabled = true;
@@ -755,6 +758,7 @@ public class Player : MonoBehaviour
     {
         walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
+        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION / itemData.attackRateMultiplier;
         ChangeAttackType(itemData.attackType);
 
         float previousMaxHealth = this.maxHealthPoints;
