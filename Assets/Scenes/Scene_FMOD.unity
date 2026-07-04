@@ -20724,6 +20724,7 @@ MonoBehaviour:
       Data4: -277798120
     Path: event:/Enemy/enemy_hit
   timingParameter: Timing
+  knockbackForce: 75
 --- !u!1 &610720580
 GameObject:
   m_ObjectHideFlags: 0
@@ -47356,10 +47357,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RhythmManager
   eventPath: event:/Music/RAVE
-  bpm: 120
+  musicStyle: 0
   startOffset: 0
   perfectInputWindow: 0.1
-  goodInputWindow: 0.2
+  goodInputWindow: 0.175
   normalMultiplier: 0.75
   goodMultiplier: 1
   perfectMultiplier: 1.5

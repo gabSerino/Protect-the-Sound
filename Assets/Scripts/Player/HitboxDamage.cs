@@ -1,11 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class HitboxDamage : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] private FMODUnity.EventReference hitSoundEvent = new FMODUnity.EventReference();
     [SerializeField] private string timingParameter = "Timing";
+    [SerializeField] private float knockbackForce = 20f;
+    private Player player;
 
     private List<EnemyBase> hitEnemies = new List<EnemyBase>();
     private Color[] hitboxColors;
@@ -18,6 +21,7 @@ public class HitboxDamage : MonoBehaviour
 
     void Awake()
     {
+        player = GetComponentInParent<Player>();
         myRenderer = GetComponent<Renderer>();
         hitboxColors = new Color[3];
         hitboxColors[0] = Color.red;    // Normal
@@ -34,14 +38,15 @@ public class HitboxDamage : MonoBehaviour
 
         // Infligge danno e spinge indietro
         enemy.TakeDamage(damage);
-        KnockbackEnemy(enemy, 20f);
+        KnockbackEnemy(enemy, knockbackForce);
         hitEnemies.Add(enemy);
 
         PlayHitSound(other.ClosestPoint(transform.position));
 
         // Se hai colpito a tempo, invia il segnale all'interfaccia UI!
-        if (attaccoATempo && ComboMeterUI.Instance != null)
+        if (attaccoATempo && ComboMeterUI.Instance != null && RhythmManager.Instance.musicType == MusicType.DEFAULT)
         {
+            player.AddMusicPoints(10f);
             ComboMeterUI.Instance.AggiungiCombo(10f); // Riempe la barra di 10 punti
         }
     }

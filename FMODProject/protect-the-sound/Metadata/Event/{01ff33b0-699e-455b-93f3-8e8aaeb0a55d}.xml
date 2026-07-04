@@ -114,6 +114,12 @@
 	</object>
 	<object class="MixerBusPanner" id="{8973ee6a-efff-418d-80ae-336015870a21}" />
 	<object class="MultiSound" id="{1fb52de2-cdd3-400f-a2b5-e04df7c6a389}">
+		<property name="startOffset">
+			<value>4</value>
+		</property>
+		<property name="volume">
+			<value>4</value>
+		</property>
 		<property name="pitch">
 			<value>3.79999995</value>
 		</property>
@@ -144,6 +150,9 @@
 	<object class="MultiSound" id="{c09194f5-3d84-44a2-a9fa-330b79d827d9}">
 		<property name="start">
 			<value>1</value>
+		</property>
+		<property name="startOffset">
+			<value>7.5</value>
 		</property>
 		<property name="pitch">
 			<value>-0.600000024</value>
@@ -270,13 +279,13 @@
 	</object>
 	<object class="EventMixerGroup" id="{98788d53-6bb3-4e55-ac59-cc4e36728d73}">
 		<property name="volume">
-			<value>1</value>
+			<value>4</value>
 		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
 		<relationship name="modulators">
-			<destination>{fe8bfcfb-471c-4d91-855f-663dba03a0f2}</destination>
+			<destination>{f4b5fb92-149c-46bb-a7aa-85c46d0424a8}</destination>
 		</relationship>
 		<relationship name="effectChain">
 			<destination>{599c7a1b-fa0d-46ac-8e8b-3463533941e5}</destination>
@@ -445,7 +454,7 @@
 			<destination>{b4dd770b-07cd-42d5-850c-35b542a03ca0}</destination>
 		</relationship>
 	</object>
-	<object class="ADSRModulator" id="{fe8bfcfb-471c-4d91-855f-663dba03a0f2}">
+	<object class="ADSRModulator" id="{f4b5fb92-149c-46bb-a7aa-85c46d0424a8}">
 		<property name="nameOfPropertyBeingModulated">
 			<value>volume</value>
 		</property>
@@ -453,25 +462,10 @@
 			<value>-80</value>
 		</property>
 		<property name="attackTime">
-			<value>0</value>
+			<value>57.6923409</value>
 		</property>
-		<property name="holdTime">
-			<value>0</value>
-		</property>
-		<property name="decayTime">
-			<value>794.871948</value>
-		</property>
-		<property name="decayShape">
-			<value>0.0635772571</value>
-		</property>
-		<property name="sustainValue">
-			<value>-80</value>
-		</property>
-		<property name="releaseTime">
-			<value>0</value>
-		</property>
-		<property name="releaseShape">
-			<value>-0.095856823</value>
+		<property name="peakValue">
+			<value>0.577777863</value>
 		</property>
 		<property name="finalValue">
 			<value>-80</value>
@@ -530,7 +524,7 @@
 			<value>-35.5</value>
 		</property>
 		<property name="gain">
-			<value>14.5</value>
+			<value>9.5</value>
 		</property>
 	</object>
 </objects>

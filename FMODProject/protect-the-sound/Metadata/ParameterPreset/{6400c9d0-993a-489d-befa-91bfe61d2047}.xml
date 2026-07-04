@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{6400c9d0-993a-489d-befa-91bfe61d2047}">
+		<property name="name">
+			<value>Music</value>
+		</property>
+		<relationship name="folder">
+			<destination>{755fec8c-6140-4d8f-ab28-c4470e34c8ac}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{581d7d25-9ed9-43f6-ae05-0ff6bd75b032}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{581d7d25-9ed9-43f6-ae05-0ff6bd75b032}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>5</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>DEFAULT</value>
+			<value>DnB</value>
+			<value>Synthwave</value>
+			<value>Raggae</value>
+			<value>Breakcore</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

@@ -5,5 +5,6 @@ public enum DrugType
     MARIJUANA,
     COCAINE,
     MDMA,
-    LSD
+    LSD,
+    NONE
 }

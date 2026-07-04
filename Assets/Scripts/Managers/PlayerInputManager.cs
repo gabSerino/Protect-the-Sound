@@ -20,7 +20,9 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private string goRightInventorySlot = "Go Right Inventory Slot"; 
     [SerializeField] private string useItem = "Use Item"; 
     [SerializeField] private string dash = "Dash";
-    [SerializeField] private string dodge = "Dodge";
+
+    [SerializeField] private string songSwitch = "Song Switch";
+    [SerializeField] private string songConfirm = "Song Confirm";
 
     private InputAction moveAction;
     private InputAction attackDirectionAction;
@@ -29,7 +31,8 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction goRightInventorySlotAction;
     private InputAction useItemAction;
     private InputAction dashAction;
-    private InputAction dodgeAction;
+    private InputAction songSwitchAction;
+    private InputAction songConfirmAction;
 
     public Vector2 MoveInput { get; private set; }
     public Vector2 AttackDirectionInput { get; private set; }
@@ -38,6 +41,8 @@ public class PlayerInputManager : MonoBehaviour
     public bool GoRightInventorySlotInput { get; private set; }
     public bool UseItemInput { get; private set; }
     public bool DashInput { get; private set; }
+    public bool SongSwitchInput { get; private set; }
+    public bool SongConfirmInput { get; private set; }
 
     private void Awake()
     {
@@ -51,6 +56,8 @@ public class PlayerInputManager : MonoBehaviour
         goRightInventorySlotAction = actionMap.FindAction(goRightInventorySlot);
         useItemAction = actionMap.FindAction(useItem);
         dashAction = actionMap.FindAction(dash);
+        songSwitchAction = actionMap.FindAction(songSwitch);
+        songConfirmAction = actionMap.FindAction(songConfirm);
 
         BindActions();
     }
@@ -98,6 +105,18 @@ public class PlayerInputManager : MonoBehaviour
             dashAction.performed += ctx => DashInput = true;
             dashAction.canceled += ctx => DashInput = false;
         }
+
+        if (songSwitchAction != null)
+        {
+            songSwitchAction.performed += ctx => SongSwitchInput = true;
+            songSwitchAction.canceled += ctx => SongSwitchInput = false;
+        }
+
+        if (songConfirmAction != null)
+        {
+            songConfirmAction.performed += ctx => SongConfirmInput = true;
+            songConfirmAction.canceled += ctx => SongConfirmInput = false;
+        }
     }
 
     public void ConsumeGoLeftInventorySlotInput() => GoLeftInventorySlotInput = false;
@@ -105,4 +124,6 @@ public class PlayerInputManager : MonoBehaviour
     public void ConsumeAttackInput() => AttackInput = false;
     public void ConsumeUseItemInput() => UseItemInput = false;
     public void ConsumeDashInput() => DashInput = false;
+    public void ConsumeSongSwitchInput() => SongSwitchInput = false;
+    public void ConsumeSongConfirmInput() => SongConfirmInput = false;
 }

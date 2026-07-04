@@ -27,12 +27,6 @@ public class Player : MonoBehaviour
     private bool isDashing = false;
     private bool canDash = true;
 
-    [Header("Dodge Settings")]
-    [SerializeField] private float dodgeSpeed = 30f;
-    [SerializeField] private float dodgeDuration = 0.2f;
-    [SerializeField] private float dodgeCooldown = 1f;
-    [SerializeField] private float dodgeInvincibilityTime = 0.25f;
-
     private Vector2 virtualAimPosition = Vector2.zero;
 
     [Header("Virtual Mouse Settings")]
@@ -61,11 +55,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float respawnDelay = 2f; // Tempo di attesa prima del respawn
     private bool isDead = false; // Impedisce di morire più volte durante l'attesa
 
-    [Header("Music Points Settings")]
+    [Header("Music Settings")]
     private float maxMusicPoints = 100f;
+    private float musicPtsThreshold = 75f;
 
     [Header("Mental Status Settings")]
-    private PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
+    public PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
+    public DrugType consumedDrug = DrugType.NONE;
 
     [Header("Invulnerability Settings")]
     [SerializeField] private float invulnerabilityDuration = 2f;
@@ -120,6 +116,7 @@ public class Player : MonoBehaviour
     // =========================
     public float currentHealthPoints { get; private set; }
     public float currentMusicPoints { get; private set; }
+    public MusicType selectedMusicType = MusicType.DEFAULT;
 
     // =========================
     // PRIVATE FIELDS
@@ -179,6 +176,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        HandleMusicChange();
         HandleDash();
 
         // Se non sta schivando e non sta scattando, muoviti normalmente
@@ -404,7 +402,7 @@ public class Player : MonoBehaviour
     }
 
     // =========================
-    // DASH E DODGE
+    // DASH
     // =========================
 
     private void HandleDash()
@@ -607,10 +605,15 @@ public class Player : MonoBehaviour
 
     private void ResetMusicPoints()
     {
-        currentMusicPoints = 0;
+        currentMusicPoints = 80f;
     }
 
     public void SetMusicPoints(float amount)
+    {
+        currentMusicPoints = Mathf.Clamp(currentMusicPoints + amount, 0, maxMusicPoints);
+    }
+
+    public void AddMusicPoints(float amount)
     {
         currentMusicPoints = Mathf.Clamp(currentMusicPoints + amount, 0, maxMusicPoints);
     }
@@ -619,6 +622,28 @@ public class Player : MonoBehaviour
     {
         maxMusicPoints = amount;
         currentMusicPoints = Mathf.Clamp(currentMusicPoints, 0, maxMusicPoints);
+    }
+
+    private void ChangeSelectedMusicType(MusicType musicType) => selectedMusicType = musicType;
+    private void ConfirmMusicType()
+    {
+        RhythmManager.Instance.SetMusicStyle(selectedMusicType);
+    }
+    private void HandleMusicChange()
+    {
+        if(playerInputManager.SongSwitchInput)
+        {
+            ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1)% 5));
+            Debug.Log(selectedMusicType);
+            playerInputManager.ConsumeSongSwitchInput();
+        }
+        if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT || selectedMusicType == RhythmManager.Instance.musicType) return;
+        if (playerInputManager.SongConfirmInput)
+        {
+            ConfirmMusicType();
+            playerInputManager.ConsumeSongConfirmInput();
+            DecreaseMusicPointsOverTime(1f,0.25f);
+        }
     }
 
     private void UpdateUI()
@@ -733,9 +758,11 @@ public class Player : MonoBehaviour
         switch (itemData.itemType)
         {
             case ItemType.WATER:
+                ApplyDrugStatus(DrugType.NONE);
                 ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
                 break;
             case ItemType.DRUG:
+                ApplyDrugStatus(itemData.drugType);
                 if (IsGettingBadTrip(itemData.badTripChance))
                     ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
                 else
@@ -752,6 +779,11 @@ public class Player : MonoBehaviour
     private void ApplyMentalStatus(PlayerMentalStatus mentalStatus)
     {
         this.mentalStatus = mentalStatus;
+    }
+
+    private void ApplyDrugStatus(DrugType drugType)
+    {
+        this.consumedDrug = drugType;
     }
 
     private void ApplyModifiers(ItemData itemData)
@@ -820,5 +852,22 @@ public class Player : MonoBehaviour
             elapsedTime += Time.deltaTime;
             yield return null;
         }
+    }
+
+    private void DecreaseMusicPointsOverTime(float amount, float interval)
+    {
+        StartCoroutine(DecreaseMusicPointsRoutine(amount, interval));
+    }
+
+    private IEnumerator DecreaseMusicPointsRoutine(float amount, float interval)
+    {
+        yield return new WaitForSeconds(1.5f);
+        while (currentMusicPoints > 0)
+        {
+            currentMusicPoints = Mathf.Clamp(currentMusicPoints - amount, 0, maxMusicPoints);
+            yield return new WaitForSeconds(interval);
+            Debug.Log(currentMusicPoints);
+        }
+        RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
     }
 }
