@@ -60,12 +60,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float damageIncreasePerLevel = 5f;
     [SerializeField] private float speedIncreasePerLevel = 1.5f;
 
-    private int currentKills = 0;
+    [SerializeField] private int currentKills = 0;
     [field: SerializeField] public int currentLevel { get; private set; } = 1;
 
     [Header("Death Settings")]
     [SerializeField] private float respawnDelay = 2f;
-    private bool isDead = false;
+    [SerializeField] private float hideDuration = 1.5f;
+    [field: SerializeField] public bool IsDead { get; private set; } = false;
 
     [Header("Music Settings")]
     private float maxMusicPoints = 100f;
@@ -163,7 +164,6 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        // Inizializza le statistiche attuali partendo da quelle "base"
         walkingSpeed = baseWalkingSpeed;
         attackDamage = baseAttackDamage;
         maxHealthPoints = baseMaxHealth;
@@ -182,6 +182,10 @@ public class Player : MonoBehaviour
     void Update()
     {
         HandleMusicChange();
+
+        // --- RISOLUZIONE BUG "INACTIVE CONTROLLER" ---
+        if (IsDead) return;
+
         HandleDash();
 
         if (!isDashing)
@@ -382,7 +386,7 @@ public class Player : MonoBehaviour
         if (targetDirection.sqrMagnitude < 0.01f) return;
 
         //Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
-        Vector3 snappedDirection = targetDirection.normalized;
+        Vector3 snappedDirection = (targetDirection.normalized);
         playerAnimator.SetFloat("X_atk", snappedDirection.x);
         playerAnimator.SetFloat("Y_atk", snappedDirection.z);
         transform.rotation = Quaternion.LookRotation(snappedDirection);
@@ -550,7 +554,7 @@ public class Player : MonoBehaviour
     // HEALTH, DAMAGE & DEATH
     // =========================
 
-    // Overload normale (usato ad esempio per trappole o danni senza spinta)
+    // Overload normale
     public void TakeDamage(float amount)
     {
         TakeDamage(amount, transform.position, 0f);
@@ -559,7 +563,7 @@ public class Player : MonoBehaviour
     // Overload completo con gestione Knockback
     public void TakeDamage(float amount, Vector3 attackerPosition, float knockbackForce)
     {
-        if (isInvulnerable || isDead) return;
+        if (isInvulnerable || IsDead) return;
 
         if (knockbackForce > 0f)
         {
@@ -583,15 +587,34 @@ public class Player : MonoBehaviour
 
     private IEnumerator DeathRoutine()
     {
-        isDead = true;
+        IsDead = true;
         DisableAllControls();
 
+        // NOVITÀ: Disattiviamo SUBITO il CharacterController. 
+        // Il corpo rimane visibile a terra per la "Fase 1", ma diventa intangibile.
+        // I nemici e gli oggetti fisici ora gli passeranno attraverso come se fosse un fantasma!
+        if (controller != null) controller.enabled = false;
+
+        // FASE 1: Il cadavere rimane fermo a terra
         yield return new WaitForSeconds(respawnDelay);
 
+        // FASE 2: Nasconde i renderer (il cadavere svanisce)
+        foreach (Renderer r in playerRenderers)
+        {
+            if (r != null) r.enabled = false;
+        }
+
+        // (Niente più teletrasporto a -1000! Il player resta esattamente dov'è, 
+        // invisibile e intangibile. La telecamera resta tranquilla.)
+
+        // Aspetta i secondi di assenza (schermo vuoto per il player)
+        yield return new WaitForSeconds(hideDuration);
+
+        // FASE 3: Respawn effettivo (ci riporta a Vector3.zero e riaccende tutto)
         Respawn();
 
         EnableAllControls();
-        isDead = false;
+        IsDead = false;
     }
 
     private void PlayHitSound()
@@ -607,6 +630,7 @@ public class Player : MonoBehaviour
     {
         ResetHealth();
 
+        // Riattiviamo la posizione al centro PRIMA di accendere il controller
         if (controller != null) controller.enabled = false;
         transform.position = Vector3.zero;
         transform.rotation = Quaternion.identity;
@@ -619,9 +643,8 @@ public class Player : MonoBehaviour
     private IEnumerator MultiRendererInvulnerabilityRoutine()
     {
         isInvulnerable = true;
-
         float timer = 0;
-        bool currentlyVisible = true;
+        bool currentlyVisible = false;
 
         while (timer < invulnerabilityDuration)
         {
@@ -855,7 +878,6 @@ public class Player : MonoBehaviour
 
     private void ApplyModifiers(ItemData itemData)
     {
-        // Applica i modificatori partendo dalle stat base potenziate dal level-up
         walkingSpeed = baseWalkingSpeed * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
         attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION / itemData.attackRateMultiplier;
@@ -912,7 +934,7 @@ public class Player : MonoBehaviour
     private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
     {
         float elapsedTime = 0f;
-        float initialAttackDamage = baseAttackDamage; // Usa il danno base attuale
+        float initialAttackDamage = baseAttackDamage;
 
         while (elapsedTime <= damageChangeTime)
         {

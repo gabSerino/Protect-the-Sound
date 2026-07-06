@@ -70212,6 +70212,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1815132738}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: hideDuration
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: respawnDelay
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: playerInputManager
       value: 
       objectReference: {fileID: 254813699}

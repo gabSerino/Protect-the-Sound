@@ -52,32 +52,46 @@ public class EnemyAI_Brain : MonoBehaviour
     {
         Collider[] hitPlayers = Physics.OverlapSphere(transform.position, stats.aggroRadius, playerLayer);
 
+        bool foundAlivePlayer = false;
+
         if (hitPlayers.Length > 0)
         {
             Transform player = hitPlayers[0].transform;
+            Player playerScript = player.GetComponentInParent<Player>();
 
-            if (currentTarget != player)
+            // CONTROLLO FONDAMENTALE: Il player esiste e NON è morto?
+            if (playerScript != null && !playerScript.IsDead)
             {
-                currentTarget = player;
+                foundAlivePlayer = true;
 
-                currentState = EnemyState.PreparingCharge;
-                windupTimer = 0f;
-
-                if (agent != null)
+                if (currentTarget != player)
                 {
-                    agent.isStopped = true;
+                    currentTarget = player;
+                    currentState = EnemyState.PreparingCharge;
+                    windupTimer = 0f;
+
+                    if (agent != null)
+                    {
+                        agent.isStopped = true;
+                    }
                 }
             }
         }
-        else if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer || currentState == EnemyState.PreparingCharge)
-        {
-            currentTarget = null;
-            currentState = EnemyState.Idle;
 
-            if (stats != null && agent != null)
+        // Se non ha trovato nessun player nel raggio, OPPURE se il player che ha trovato è MORTO
+        if (!foundAlivePlayer)
+        {
+            // Abbandona l'inseguimento e torna "Idle" (così andrà a cercare le Casse)
+            if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer || currentState == EnemyState.PreparingCharge)
             {
-                agent.isStopped = false;
-                agent.speed = stats.moveSpeed;
+                currentTarget = null;
+                currentState = EnemyState.Idle;
+
+                if (stats != null && agent != null)
+                {
+                    agent.isStopped = false; // Toglie il freno
+                    agent.speed = stats.moveSpeed; // Torna alla velocità normale
+                }
             }
         }
     }

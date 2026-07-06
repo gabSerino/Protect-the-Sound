@@ -23,7 +23,7 @@ public class EnemySpawner : MonoBehaviour
         // Se non hai trascinato il Player nell'Inspector, lo cerca da solo
         if (playerReference == null)
         {
-            playerReference = FindObjectOfType<Player>();
+            playerReference = Object.FindFirstObjectByType<Player>();
         }
 
         StartCoroutine(SpawnRoutine());
