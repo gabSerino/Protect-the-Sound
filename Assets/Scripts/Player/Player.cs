@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 1f;
     [SerializeField] private float dashInvincibilityTime = 0.3f;
+    [SerializeField] private float knockbackDecay = 10f;
+    private Vector3 knockbackVelocity = Vector3.zero;
 
     private bool isDashing = false;
     private bool canDash = true;
@@ -187,6 +189,14 @@ public class Player : MonoBehaviour
             HandleRotation();
         }
 
+        if (knockbackVelocity.sqrMagnitude > 0.1f)
+        {
+            characterController.Move(knockbackVelocity * Time.deltaTime);
+            knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
+        }
+
+        HandleAttack();
+        HandleInventory();
         HandleAttack();
         HandleInventory();
 
@@ -500,10 +510,23 @@ public class Player : MonoBehaviour
     // HEALTH, DAMAGE & DEATH
     // =========================
 
+    // Mantieni questo per compatibilità con trappole o danni ambientali (no knockback)
     public void TakeDamage(float amount)
     {
-        // Se il player è invulnerabile o è GIA' MORTO, ignora i danni
+        TakeDamage(amount, transform.position, 0f);
+    }
+
+    public void TakeDamage(float amount, Vector3 attackerPosition, float knockbackForce)
+    {
         if (isInvulnerable || isDead) return;
+
+        // --- CALCOLO KNOCKBACK ---
+        if (knockbackForce > 0f)
+        {
+            Vector3 direction = (transform.position - attackerPosition).normalized;
+            direction.y = 0f; 
+            knockbackVelocity = direction * knockbackForce;
+        }
 
         PlayHitSound();
         playerAnimator.SetTrigger("Hit");
@@ -514,7 +537,6 @@ public class Player : MonoBehaviour
 
         if (currentHealthPoints <= 0)
         {
-            // Avvia la routine di morte invece del respawn immediato
             StartCoroutine(DeathRoutine());
         }
     }

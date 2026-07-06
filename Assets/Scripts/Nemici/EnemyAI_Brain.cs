@@ -176,19 +176,16 @@ public class EnemyAI_Brain : MonoBehaviour
 
     private void PerformAttack()
     {
-        //Controlla se siamo arrivati al momento giusto per colpire
         if (Time.time >= nextAttackTime)
         {
-            // Resetta il timer per i COLPI SUCCESSIVI usando il Cooldown normale
             nextAttackTime = Time.time + stats.attackCooldown;
 
-            // CERCA LO SCRIPT SUL PADRE DEL BERSAGLIO
             Player playerScript = currentTarget.GetComponentInParent<Player>();
             Health healthScript = currentTarget.GetComponentInParent<Health>();
 
             if (playerScript != null)
             {
-                playerScript.TakeDamage(stats.damage);
+                playerScript.TakeDamage(stats.damage, transform.position, stats.knockbackForce);
             }
             else if (healthScript != null)
             {
