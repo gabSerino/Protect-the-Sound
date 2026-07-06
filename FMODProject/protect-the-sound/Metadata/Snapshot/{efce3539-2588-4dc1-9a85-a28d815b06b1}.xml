@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="Snapshot" id="{efce3539-2588-4dc1-9a85-a28d815b06b1}">
+		<property name="name">
+			<value>Bad Trip</value>
+		</property>
+		<relationship name="mixer">
+			<destination>{841c3532-0f32-4683-9073-c36158844343}</destination>
+		</relationship>
+		<relationship name="automatableProperties">
+			<destination>{33fab101-b274-4ff4-a585-c9be5f8a831e}</destination>
+		</relationship>
+		<relationship name="markerTracks">
+			<destination>{ceb96dd0-9b53-4ebd-a108-445594f23ded}</destination>
+		</relationship>
+		<relationship name="timeline">
+			<destination>{32586174-8dba-4de3-9f17-ab8afbac0cdd}</destination>
+		</relationship>
+		<relationship name="snapshotMasterTrack">
+			<destination>{9db9e112-17b8-4158-9c8e-7f00c72c6269}</destination>
+		</relationship>
+		<relationship name="snapshotProperties">
+			<destination>{eb0dfacd-b8ba-44be-a502-b924000f705f}</destination>
+			<destination>{4a052b2f-8f06-4259-8dcc-b80cb70c8c5a}</destination>
+			<destination>{c36e37f4-fb70-4c55-bf9c-8a0f327fbb40}</destination>
+			<destination>{58a42add-5a39-4f89-851e-2ea87b4bb452}</destination>
+		</relationship>
+		<relationship name="snapshotTracks">
+			<destination>{897f5033-9d0d-4354-ad3b-570ed95146e5}</destination>
+		</relationship>
+	</object>
+	<object class="EventAutomatableProperties" id="{33fab101-b274-4ff4-a585-c9be5f8a831e}">
+		<relationship name="modulators">
+			<destination>{e744c42f-fed1-42a2-aef0-c4ad8a7e2f37}</destination>
+		</relationship>
+	</object>
+	<object class="MarkerTrack" id="{ceb96dd0-9b53-4ebd-a108-445594f23ded}" />
+	<object class="Timeline" id="{32586174-8dba-4de3-9f17-ab8afbac0cdd}" />
+	<object class="SnapshotMasterTrack" id="{9db9e112-17b8-4158-9c8e-7f00c72c6269}" />
+	<object class="SnapshotProperty" id="{eb0dfacd-b8ba-44be-a502-b924000f705f}">
+		<property name="propertyName">
+			<value>wetMix</value>
+		</property>
+		<property name="value">
+			<value>100</value>
+		</property>
+		<relationship name="automatableObject">
+			<destination>{f916d54c-65cc-43e5-9040-9dee2c1c4407}</destination>
+		</relationship>
+	</object>
+	<object class="SnapshotProperty" id="{4a052b2f-8f06-4259-8dcc-b80cb70c8c5a}">
+		<property name="propertyName">
+			<value>wetMix</value>
+		</property>
+		<property name="value">
+			<value>100</value>
+		</property>
+		<relationship name="automatableObject">
+			<destination>{0b81c00a-ed86-4779-8ae9-c0869258ff01}</destination>
+		</relationship>
+	</object>
+	<object class="SnapshotProperty" id="{c36e37f4-fb70-4c55-bf9c-8a0f327fbb40}">
+		<property name="propertyName">
+			<value>wetMix</value>
+		</property>
+		<property name="value">
+			<value>100</value>
+		</property>
+		<relationship name="automatableObject">
+			<destination>{384443f9-b345-4c27-a6e0-691fac0ad558}</destination>
+		</relationship>
+	</object>
+	<object class="SnapshotProperty" id="{58a42add-5a39-4f89-851e-2ea87b4bb452}">
+		<property name="propertyName">
+			<value>wetMix</value>
+		</property>
+		<property name="value">
+			<value>100</value>
+		</property>
+		<relationship name="automatableObject">
+			<destination>{150721dc-488f-4c3d-8751-ec1dcc59eb8e}</destination>
+		</relationship>
+	</object>
+	<object class="SnapshotTrack" id="{897f5033-9d0d-4354-ad3b-570ed95146e5}">
+		<relationship name="mixerStrip">
+			<destination>{92b5c3ca-e856-4805-b765-8bc5a77d4240}</destination>
+		</relationship>
+	</object>
+	<object class="ADSRModulator" id="{e744c42f-fed1-42a2-aef0-c4ad8a7e2f37}">
+		<property name="nameOfPropertyBeingModulated">
+			<value>snapshotIntensity</value>
+		</property>
+		<property name="attackTime">
+			<value>420</value>
+		</property>
+		<property name="peakValue">
+			<value>100</value>
+		</property>
+		<property name="holdTime">
+			<value>0</value>
+		</property>
+		<property name="decayTime">
+			<value>0</value>
+		</property>
+		<property name="sustainValue">
+			<value>100</value>
+		</property>
+		<property name="releaseTime">
+			<value>420</value>
+		</property>
+	</object>
+</objects>

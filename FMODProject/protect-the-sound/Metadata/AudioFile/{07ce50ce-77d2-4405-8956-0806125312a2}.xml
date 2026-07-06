@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.03.00">
-	<object class="AudioFile" id="{96ebf47d-3b08-40db-aebb-f2accfd69d10}">
+	<object class="AudioFile" id="{07ce50ce-77d2-4405-8956-0806125312a2}">
 		<property name="assetPath">
-			<value>Music/mus_rave_dnb.ogg</value>
-		</property>
-		<property name="isStreaming">
-			<value>true</value>
+			<value>SFX/snd_coke_sniff.mp3</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>48</value>
@@ -14,7 +11,7 @@
 			<value>1</value>
 		</property>
 		<property name="length">
-			<value>11.908083333333334</value>
+			<value>5.2800000000000002</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{3c9ed914-268c-4cf5-967b-54870a2cfb75}</destination>

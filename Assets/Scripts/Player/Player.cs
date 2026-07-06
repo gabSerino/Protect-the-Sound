@@ -69,6 +69,7 @@ public class Player : MonoBehaviour
     [field: SerializeField] public bool IsDead { get; private set; } = false;
 
     [Header("Music Settings")]
+    [SerializeField] private float timePerMusicPointDecrease = 0.3f;
     private float maxMusicPoints = 100f;
     private float musicPtsThreshold = 75f;
 
@@ -94,6 +95,8 @@ public class Player : MonoBehaviour
     [SerializeField] private string attackSoundParameter = "Attack Type";
     [SerializeField] private FMODUnity.EventReference dashSoundEvent = new FMODUnity.EventReference();
     [SerializeField] private FMODUnity.EventReference hitSoundEvent = new FMODUnity.EventReference();
+    [SerializeField] private FMODUnity.EventReference badTripSoundEvent = new FMODUnity.EventReference(); // qui metti lo Snapshot
+    private FMOD.Studio.EventInstance badTripInstance;
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -250,6 +253,15 @@ public class Player : MonoBehaviour
     private void OnDisable()
     {
         EnemyBase.OnEnemyDied -= HandleEnemyKilled;
+    }
+
+    private void OnDestroy()
+    {
+        if (badTripInstance.isValid())
+        {
+            badTripInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            badTripInstance.release();
+        }
     }
 
     private void HandleEnemyKilled()
@@ -757,7 +769,7 @@ public class Player : MonoBehaviour
         {
             ConfirmMusicType();
             playerInputManager.ConsumeSongConfirmInput();
-            DecreaseMusicPointsOverTime(1f, 0.25f);
+            DecreaseMusicPointsOverTime(1f, timePerMusicPointDecrease);
         }
     }
 
@@ -879,11 +891,28 @@ public class Player : MonoBehaviour
             case ItemType.DRUG:
                 ApplyDrugStatus(itemData.drugType);
                 if (IsGettingBadTrip(itemData.badTripChance))
+                {
                     ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
+                    ApplyBadTrip();
+                    Debug.Log("BADTRIP");
+                }
                 else
                     ApplyMentalStatus(PlayerMentalStatus.STUNNED);
+                DrugCooldown(10f);
                 break;
         }
+    }
+
+    private void DrugCooldown(float drugCooldown)
+    {
+        StartCoroutine(DrugCooldownRoutine(drugCooldown));
+    }
+
+    private IEnumerator DrugCooldownRoutine(float drugCooldown)
+    {
+        yield return new WaitForSeconds(drugCooldown);
+        ResetDefaultModifiers();
+        StopBadTripSound();
     }
 
     private bool IsGettingBadTrip(float badTripChance)
@@ -900,6 +929,24 @@ public class Player : MonoBehaviour
     {
         this.consumedDrug = drugType;
     }
+
+    private void ResetDefaultModifiers()
+    {
+        walkingSpeed = baseWalkingSpeed;
+        attackTime = DEFAULT_ATTACK_TIME;
+        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+        attackDamage = baseAttackDamage;
+        ChangeAttackType(AttackType.DEFAULT);
+        float previousMaxHealth = this.maxHealthPoints;
+        maxHealthPoints = baseMaxHealth;
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
+        if (maxHealthPoints > previousMaxHealth)
+            currentHealthPoints += maxHealthPoints - previousMaxHealth;
+        UpdateUI();
+        ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
+        ApplyDrugStatus(DrugType.NONE);
+    }
+
 
     private void ApplyModifiers(ItemData itemData)
     {
@@ -923,6 +970,33 @@ public class Player : MonoBehaviour
             attackDamage = baseAttackDamage * itemData.damageMultiplier;
     }
 
+    private void ApplyBadTrip()
+    {
+        walkingSpeed = baseWalkingSpeed * 0.75f;
+        attackTime = DEFAULT_ATTACK_TIME * 2f;
+        PlayBadTripSound();
+    }
+
+    // =========================
+    // BAD TRIP SOUND (Evento sempre in play, controllato dal parametro)
+    // =========================
+
+    private void PlayBadTripSound()
+{
+    if (badTripSoundEvent.IsNull) return;
+
+    badTripInstance = FMODUnity.RuntimeManager.CreateInstance(badTripSoundEvent);
+    badTripInstance.start();
+    // Non rilasciamo subito: ci serve l'istanza per fermarla dopo
+}
+
+private void StopBadTripSound()
+{
+    if (!badTripInstance.isValid()) return;
+
+    badTripInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+    badTripInstance.release();
+}
     private void ChangeAttackType(AttackType attackType)
     {
         this.attackType = attackType;

@@ -31,5 +31,5 @@ MonoBehaviour:
   damageMultiplier: 2.5
   healthMultiplier: 0.75
   StaminaRecoverMultiplier: 1
-  speedMultiplier: 0.5
+  speedMultiplier: 0.65
   badTripChance: 0.25

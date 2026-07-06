@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.03.00">
+	<object class="ParameterPreset" id="{6ed1da91-2ced-4782-8da2-35dc1d56d74f}">
+		<property name="name">
+			<value>Bad Trip</value>
+		</property>
+		<relationship name="folder">
+			<destination>{755fec8c-6140-4d8f-ab28-c4470e34c8ac}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{0f81db89-136c-4ed9-b753-339d971daaeb}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{0f81db89-136c-4ed9-b753-339d971daaeb}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

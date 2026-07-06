@@ -27,6 +27,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &-8785753304741113454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/Bad Trip
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: snapshot:/Bad Trip
+  Guid:
+    Data1: -271698631
+    Data2: 1304503688
+    Data3: -1918728806
+    Data4: -1324983423
+  Banks:
+  - {fileID: -1025088851501490094}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
 --- !u!114 &-8276583537654689561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42,10 +69,10 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639189567262674193
+  lastModified: 639189830826257423
   FileSizes:
   - Name: 
-    Value: 2136
+    Value: 2274
   Exists: 1
 --- !u!114 &-7103547856774704966
 MonoBehaviour:
@@ -322,6 +349,24 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 209852
+--- !u!114 &-1740787911105640415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: bank:/Snapshots.bank
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorBankRef
+  Path: FMOD/Desktop/Snapshots.bank
+  Name: Snapshots
+  StudioPath: bank:/Snapshots
+  lastModified: 639189830826329521
+  FileSizes: []
+  Exists: 1
 --- !u!114 &-1025088851501490094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +382,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639189567262674193
+  lastModified: 639189830826242282
   FileSizes: []
   Exists: 1
 --- !u!114 &-59993336232135851
@@ -385,6 +430,7 @@ MonoBehaviour:
   - {fileID: 7556446021315637718}
   - {fileID: 8515227860900704440}
   - {fileID: 3799818825547264446}
+  - {fileID: -1740787911105640415}
   EditorEvents:
   - {fileID: -4536103575873536418}
   - {fileID: -3290249929266484277}
@@ -410,13 +456,14 @@ MonoBehaviour:
   - {fileID: 321605498127420868}
   - {fileID: -3383959163098668879}
   - {fileID: -59993336232135851}
+  - {fileID: -8785753304741113454}
   EditorParameters: []
   MasterBanks:
   - {fileID: -1025088851501490094}
   StringsBanks:
   - {fileID: -8276583537654689561}
   cacheVersion: 131858
-  cacheTime: 639189567262794419
+  cacheTime: 639189830826329521
   SerializableEventsDict:
   - key: event:/bonk
     index: 0
@@ -466,6 +513,8 @@ MonoBehaviour:
     index: 22
   - key: event:/Wizzy/wizzy_hit
     index: 23
+  - key: snapshot:/Bad Trip
+    index: 24
 --- !u!114 &321605498127420868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,7 +774,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639189567262784363
+  lastModified: 639189816463148273
   FileSizes: []
   Exists: 1
 --- !u!114 &4042786153890122081
@@ -853,7 +902,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/test.bank
   Name: test
   StudioPath: bank:/test
-  lastModified: 639189567262794419
+  lastModified: 639184432899952554
   FileSizes: []
   Exists: 1
 --- !u!114 &7998610026557335279
@@ -900,7 +949,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639189567262764211
+  lastModified: 639189816462284903
   FileSizes: []
   Exists: 1
 --- !u!114 &9100537751718654615

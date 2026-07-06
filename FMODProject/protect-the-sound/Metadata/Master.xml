@@ -17,6 +17,10 @@
 	<object class="MixerBusEffectChain" id="{03c45e1b-f359-49fc-907b-36301ed46423}">
 		<relationship name="effects">
 			<destination>{f36865ab-cf04-4f51-ae51-3faa2a61f6fb}</destination>
+			<destination>{f916d54c-65cc-43e5-9040-9dee2c1c4407}</destination>
+			<destination>{0b81c00a-ed86-4779-8ae9-c0869258ff01}</destination>
+			<destination>{384443f9-b345-4c27-a6e0-691fac0ad558}</destination>
+			<destination>{150721dc-488f-4c3d-8751-ec1dcc59eb8e}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{8547f473-9438-4c90-a761-a95e953e5fd6}">
@@ -25,4 +29,72 @@
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{f36865ab-cf04-4f51-ae51-3faa2a61f6fb}" />
+	<object class="PitchShifterEffect" id="{f916d54c-65cc-43e5-9040-9dee2c1c4407}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
+		</property>
+		<property name="fftSize">
+			<value>3180</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{0b81c00a-ed86-4779-8ae9-c0869258ff01}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
+		</property>
+		<property name="decayTime">
+			<value>19500</value>
+		</property>
+		<property name="lateDelay">
+			<value>59</value>
+		</property>
+		<property name="wetLevel">
+			<value>10</value>
+		</property>
+		<property name="dryLevel">
+			<value>-80</value>
+		</property>
+	</object>
+	<object class="TremoloEffect" id="{384443f9-b345-4c27-a6e0-691fac0ad558}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
+		</property>
+		<property name="frequency">
+			<value>6</value>
+		</property>
+		<property name="depth">
+			<value>0.289999992</value>
+		</property>
+		<property name="shape">
+			<value>0.444999993</value>
+		</property>
+		<property name="square">
+			<value>0.564999998</value>
+		</property>
+		<property name="spread">
+			<value>0.239999995</value>
+		</property>
+	</object>
+	<object class="CompressorEffect" id="{150721dc-488f-4c3d-8751-ec1dcc59eb8e}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
+		</property>
+		<property name="threshold">
+			<value>-22.5</value>
+		</property>
+		<property name="ratio">
+			<value>3.4000001</value>
+		</property>
+	</object>
 </objects>
