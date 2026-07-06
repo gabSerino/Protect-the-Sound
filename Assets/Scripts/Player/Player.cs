@@ -158,8 +158,31 @@ public class Player : MonoBehaviour
         hitboxCollider = attackHitbox.GetComponent<Collider>();
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
+        // 1. Prendiamo tutti i renderer presenti nel Player e nei figli
+        Renderer[] allRenderers = GetComponentsInChildren<Renderer>(true);
+        List<Renderer> validRenderers = new List<Renderer>();
+
+        // 2. Li controlliamo uno ad uno
+        foreach (Renderer r in allRenderers)
+        {
+            // Escludiamo esplicitamente gli oggetti di servizio in base al loro nome
+            if (r.gameObject.name == "Attack Hitbox" ||
+                r.gameObject.name == "Face" ||
+                r.gameObject.name == "Player Capsule"||
+                r.gameObject.name == "direzione attacco")
+            {
+                continue; // Salta questo oggetto e passa al prossimo
+            }
+
+            // Se non è uno degli oggetti vietati, aggiungilo alla lista di quelli che lampeggeranno
+            validRenderers.Add(r);
+        }
+
+        // 3. Salviamo la lista pulita nel nostro array
+        playerRenderers = validRenderers.ToArray();
+
         if (playerRenderers == null || playerRenderers.Length == 0)
-            Debug.LogWarning("Attenzione: Nessun Renderer trovato sul Player o nei suoi figli! Il lampeggio non funzionerà.");
+            Debug.LogWarning("Attenzione: Nessun Renderer valido trovato sul Player o nei suoi figli!");
     }
 
     void Start()
