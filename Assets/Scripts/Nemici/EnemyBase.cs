@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System; 
 
 public class EnemyBase : MonoBehaviour
 {
@@ -19,7 +20,10 @@ public class EnemyBase : MonoBehaviour
     public float CurrentHealth { get; private set; }
     public bool IsDead { get; private set; }
 
-    public System.Action<float> OnHealthChanged;
+    public Action<float> OnHealthChanged;
+
+    // EVENTO GLOBALE DI MORTE (usato dal Player per il Level Up)
+    public static event Action OnEnemyDied;
 
     private void Awake()
     {
@@ -47,6 +51,9 @@ public class EnemyBase : MonoBehaviour
         if (IsDead) return;
         IsDead = true;
 
+        // Avvisa tutti gli script in ascolto che un nemico è morto
+        OnEnemyDied?.Invoke();
+
         // Disabilita tutti i collider (sia sul padre che sulla Capsula figlia)
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider col in colliders)
@@ -66,21 +73,18 @@ public class EnemyBase : MonoBehaviour
 
     private void DropLoot()
     {
-        // 1. Controlli di sicurezza aggiornati (verifica che la Loot Table non sia vuota)
         if (stats == null || stats.lootTable == null || stats.lootTable.drops.Length == 0 || genericItemPrefab == null) return;
 
-        // 2. Lancio della moneta per decidere SE droppare qualcosa
-        if (Random.value <= stats.dropChance)
+        if (UnityEngine.Random.value <= stats.dropChance)
         {
             float totalWeight = 0f;
 
-            // 3. Legge i drop dalla Loot Table
             foreach (LootDrop drop in stats.lootTable.drops)
             {
                 totalWeight += drop.weight;
             }
 
-            float randomVal = Random.Range(0, totalWeight);
+            float randomVal = UnityEngine.Random.Range(0, totalWeight);
             ItemData itemToDrop = null;
 
             foreach (LootDrop drop in stats.lootTable.drops)
@@ -93,7 +97,6 @@ public class EnemyBase : MonoBehaviour
                 randomVal -= drop.weight;
             }
 
-            // 4. Istanzia l'oggetto
             if (itemToDrop != null)
             {
                 GameObject droppedItemObj = Instantiate(genericItemPrefab, transform.position, Quaternion.identity);

@@ -21,7 +21,6 @@ public class EnemyAI_Brain : MonoBehaviour
     private float nextAttackTime;
     private float windupTimer = 0f;
 
-
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -61,17 +60,15 @@ public class EnemyAI_Brain : MonoBehaviour
             {
                 currentTarget = player;
 
-                // NUOVO: Invece di correre subito, entra nello stato di preparazione
                 currentState = EnemyState.PreparingCharge;
                 windupTimer = 0f;
 
                 if (agent != null)
                 {
-                    agent.isStopped = true; // Tira il freno a mano: si ferma sul posto!
+                    agent.isStopped = true;
                 }
             }
         }
-        //  Aggiunto il controllo per interrompere la preparazione se il player scappa troppo in fretta
         else if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer || currentState == EnemyState.PreparingCharge)
         {
             currentTarget = null;
@@ -79,8 +76,8 @@ public class EnemyAI_Brain : MonoBehaviour
 
             if (stats != null && agent != null)
             {
-                agent.isStopped = false; // Toglie il freno a mano
-                agent.speed = stats.moveSpeed; // Torna calmo
+                agent.isStopped = false;
+                agent.speed = stats.moveSpeed;
             }
         }
     }
@@ -134,16 +131,15 @@ public class EnemyAI_Brain : MonoBehaviour
             case EnemyState.PreparingCharge:
                 if (currentTarget == null) { currentState = EnemyState.Idle; break; }
 
-                windupTimer += Time.deltaTime; // Il tempo scorre...
+                windupTimer += Time.deltaTime;
 
-                // È scaduto il tempo? Parte la vera carica!
                 if (windupTimer >= stats.chargeWindupTime)
                 {
                     currentState = EnemyState.ChasingPlayer;
                     if (agent != null && stats != null)
                     {
-                        agent.isStopped = false; // Toglie il freno a mano
-                        agent.speed = stats.chargeSpeed; // Inserisce la marcia alta!
+                        agent.isStopped = false;
+                        agent.speed = stats.chargeSpeed;
                     }
                 }
                 break;
@@ -165,7 +161,7 @@ public class EnemyAI_Brain : MonoBehaviour
                 if (dist < closestDistance)
                 {
                     closestDistance = dist;
-                    bestCassa= cassa.transform;
+                    bestCassa = cassa.transform;
                 }
             }
 
@@ -185,6 +181,7 @@ public class EnemyAI_Brain : MonoBehaviour
 
             if (playerScript != null)
             {
+                // INVIO DEL KNOCKBACK AL PLAYER
                 playerScript.TakeDamage(stats.damage, transform.position, stats.knockbackForce);
             }
             else if (healthScript != null)

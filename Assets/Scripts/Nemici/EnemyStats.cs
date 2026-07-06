@@ -17,9 +17,9 @@ public class EnemyStats : ScriptableObject
     public float damage = 10f;
     public float attackRange = 2.0f;
     public float attackCooldown = 1.0f;
-    public float firstAttackDelay = 0.4f; 
+    public float firstAttackDelay = 0.4f;
     public float aggroRadius = 10f;
-    public float knockbackForce = 15f;
+    public float knockbackForce = 15f; 
 
     [Header("Loot (Drop alla morte)")]
     [Range(0f, 1f)]

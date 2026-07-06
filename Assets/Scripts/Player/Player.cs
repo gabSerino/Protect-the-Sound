@@ -12,50 +12,60 @@ public class Player : MonoBehaviour
     // SERIALIZED FIELDS
     // =========================
 
-    [Header("Movement Settings")]
-    [SerializeField] private float walkingSpeed = 8f;
-    //[SerializeField] private float rotationSpeed = 10f;
+    [Header("Movement Settings (Base)")]
+    [SerializeField] private float baseWalkingSpeed = 8f;
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
+
+    [Header("Knockback Settings")]
+    [SerializeField] private float knockbackDecay = 10f;
+    private Vector3 knockbackVelocity = Vector3.zero;
 
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 25f;
     [SerializeField] private float dashDuration = 0.2f;
     [SerializeField] private float dashCooldown = 1f;
     [SerializeField] private float dashInvincibilityTime = 0.3f;
-    [SerializeField] private float knockbackDecay = 10f;
-    private Vector3 knockbackVelocity = Vector3.zero;
 
     private bool isDashing = false;
     private bool canDash = true;
-
     private Vector2 virtualAimPosition = Vector2.zero;
 
     [Header("Virtual Mouse Settings")]
     [SerializeField] private float mouseSensitivity = 1f;
-    [SerializeField] private float maxAimRadius = 200f; // Il raggio massimo (in pixel) della tua scatola invisibile
-    [SerializeField] private float minAimDeadzone = 20f;  // Per evitare micro-sfarfallii al centro
+    [SerializeField] private float maxAimRadius = 200f;
+    [SerializeField] private float minAimDeadzone = 20f;
 
-    [Header("Attack Settings")]
+    [Header("Attack Settings (Base)")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
+    [SerializeField] private float baseAttackDamage = 15f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackWidth = 2f;
-    [SerializeField] private float attackDamage = 15f;              // pausa prima del prossimo attacco
 
-    [SerializeField] private float attackBoxDuration = 0.2f;       // quanto dura il "commit" dell'attacco
-    [SerializeField] private float attackTime = 0.4f;              // pausa prima del prossimo attacco
-    [SerializeField] private float attackMoveSpeedMultiplier = 0f; // rallenta invece di bloccare
+    [SerializeField] private float attackBoxDuration = 0.2f;
+    [SerializeField] private float attackTime = 0.4f;
+    [SerializeField] private float attackMoveSpeedMultiplier = 0f;
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
-    [SerializeField] private bool useBpmCooldown = false;           // toggle dall'Inspector
+    [SerializeField] private bool useBpmCooldown = false;
 
-    [Header("Health Settings")]
-    private float maxHealthPoints = 100f;
+    [Header("Health Settings (Base)")]
+    [SerializeField] private float baseMaxHealth = 100f;
+    private float maxHealthPoints;
+
+    [Header("Leveling Settings")]
+    [SerializeField] private int killsToLevelUp = 5;
+    [SerializeField] private float healthIncreasePerLevel = 20f;
+    [SerializeField] private float damageIncreasePerLevel = 5f;
+    [SerializeField] private float speedIncreasePerLevel = 1.5f;
+
+    private int currentKills = 0;
+    [field: SerializeField] public int currentLevel { get; private set; } = 1;
 
     [Header("Death Settings")]
-    [SerializeField] private float respawnDelay = 2f; // Tempo di attesa prima del respawn
-    private bool isDead = false; // Impedisce di morire più volte durante l'attesa
+    [SerializeField] private float respawnDelay = 2f;
+    private bool isDead = false;
 
     [Header("Music Settings")]
     private float maxMusicPoints = 100f;
@@ -63,7 +73,7 @@ public class Player : MonoBehaviour
 
     [Header("Mental Status Settings")]
     public PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
-    public DrugType consumedDrug = DrugType.NONE; //<-- Aggiunto per tenere traccia della droga consumata
+    public DrugType consumedDrug = DrugType.NONE;
 
     [Header("Invulnerability Settings")]
     [SerializeField] private float invulnerabilityDuration = 2f;
@@ -77,7 +87,6 @@ public class Player : MonoBehaviour
     public Slider healthSlider;
     public UIJuice uiJuice;
     public InventoryUI inventoryUI;
-
 
     [Header("Audio")]
     [SerializeField] private FMODUnity.EventReference attackSoundEvent = new FMODUnity.EventReference();
@@ -96,58 +105,46 @@ public class Player : MonoBehaviour
     [Header("Grafica Player (Per il Lampeggio)")]
     [SerializeField] private Renderer[] playerRenderers;
 
-    // DEFAULT STATS
-    private const float DEFAULT_WALKING_SPEED = 8f;
-    private const float DEFAULT_ROTATION_SPEED = 10f;
-    private const float DEFAULT_ACCELERATION = 100f;
-    private const float DEFAULT_DECELERATION = 200f;
+    // ALTRE COSTANTI DI GIOCO
     private const float DEFAULT_ATTACK_RANGE = 2f;
     private const float DEFAULT_ATTACK_WIDTH = 2f;
-    private const float DEFAULT_ATTACK_DAMAGE = 15f;
     private const float DEFAULT_ATTACK_BOX_DURATION = 0.2f;
     private const float DEFAULT_ATTACK_TIME = 0.4f;
     private const float DEFAULT_ATTACK_MOVE_SPEED_MULTIPLIER = 0.5f;
     private const float DEFAULT_INVULNERABILITY_DURATION = 2f;
     private const float DEFAULT_FLICKER_INTERVAL = 0.1f;
-
-    private const float DEFAULT_MAX_HEALTH_POINTS = 100f;
     private const float DEFAULT_MAX_MUSIC_POINTS = 100f;
 
-
     // =========================
-    // PROPERTIES
+    // PROPERTIES & CURRENT STATS
     // =========================
     public float currentHealthPoints { get; private set; }
     public float currentMusicPoints { get; private set; }
     public MusicType selectedMusicType = MusicType.DEFAULT;
 
+    // Valori attuali che possono essere buffati dai modificatori
+    private float walkingSpeed;
+    private float attackDamage;
+
     // =========================
     // PRIVATE FIELDS
     // =========================
 
-    // Movement
     private Vector3 currentMovement;
     private Vector3 movementDirection;
-
-    // Attack / Hitbox
     private HitboxDamage hitboxDamage;
     private Renderer hitboxRenderer;
     private Collider hitboxCollider;
 
-    // Controller flags
     private bool canMove = true;
     private bool canAttack = true;
     private bool isAttacking = false;
     private bool canUseInventory = true;
 
-    // Health / Invulnerability
     private CharacterController controller;
     private bool isInvulnerable = false;
     private Coroutine activeInvincibilityCoroutine;
-
-    // Inventory
     private Inventory inventory;
-
 
     // =========================
     // UNITY CALLBACKS
@@ -166,6 +163,11 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        // Inizializza le statistiche attuali partendo da quelle "base"
+        walkingSpeed = baseWalkingSpeed;
+        attackDamage = baseAttackDamage;
+        maxHealthPoints = baseMaxHealth;
+
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
 
@@ -182,21 +184,19 @@ public class Player : MonoBehaviour
         HandleMusicChange();
         HandleDash();
 
-        // Se non sta schivando e non sta scattando, muoviti normalmente
         if (!isDashing)
         {
             HandleMovement();
             HandleRotation();
         }
 
+        // --- SISTEMA KNOCKBACK ---
         if (knockbackVelocity.sqrMagnitude > 0.1f)
         {
             characterController.Move(knockbackVelocity * Time.deltaTime);
             knockbackVelocity = Vector3.Lerp(knockbackVelocity, Vector3.zero, knockbackDecay * Time.deltaTime);
         }
 
-        HandleAttack();
-        HandleInventory();
         HandleAttack();
         HandleInventory();
 
@@ -206,9 +206,66 @@ public class Player : MonoBehaviour
         if (transform.position.y > 0.05f)
         {
             Vector3 bloccatoAlSuolo = transform.position;
-            bloccatoAlSuolo.y = 0f; // Lo inchioda a terra!
+            bloccatoAlSuolo.y = 0f;
             transform.position = bloccatoAlSuolo;
         }
+    }
+
+    // =========================
+    // LEVEL UP SYSTEM
+    // =========================
+
+    private void OnEnable()
+    {
+        EnemyBase.OnEnemyDied += HandleEnemyKilled;
+    }
+
+    private void OnDisable()
+    {
+        EnemyBase.OnEnemyDied -= HandleEnemyKilled;
+    }
+
+    private void HandleEnemyKilled()
+    {
+        currentKills++;
+
+        if (currentKills >= killsToLevelUp)
+        {
+            LevelUp();
+        }
+    }
+
+    private void LevelUp()
+    {
+        currentKills = 0;
+        currentLevel++;
+
+        if (uiJuice != null) uiJuice.Shake();
+
+        int randomStat = UnityEngine.Random.Range(0, 3);
+
+        switch (randomStat)
+        {
+            case 0: // POTENZIA SALUTE
+                baseMaxHealth += healthIncreasePerLevel;
+                maxHealthPoints += healthIncreasePerLevel;
+                Heal(healthIncreasePerLevel);
+                Debug.Log($"Level Up {currentLevel}! Max Health aumentata a {baseMaxHealth}");
+                break;
+
+            case 1: // POTENZIA DANNO
+                baseAttackDamage += damageIncreasePerLevel;
+                attackDamage += damageIncreasePerLevel;
+                Debug.Log($"Level Up {currentLevel}! Danno aumentato a {baseAttackDamage}");
+                break;
+
+            case 2: // POTENZIA VELOCITÀ
+                baseWalkingSpeed += speedIncreasePerLevel;
+                walkingSpeed += speedIncreasePerLevel;
+                Debug.Log($"Level Up {currentLevel}! Velocità aumentata a {baseWalkingSpeed}");
+                break;
+        }
+        UpdateUI();
     }
 
     // =========================
@@ -236,24 +293,19 @@ public class Player : MonoBehaviour
 
     public void GrantTemporaryInvincibility(float time)
     {
-        // Se c'è già un'altra invincibilità in corso (es. hai appena schivato e ora scatti), la fermiamo
         if (activeInvincibilityCoroutine != null)
         {
             StopCoroutine(activeInvincibilityCoroutine);
         }
-
-        // Avviamo la nuova coroutine e la salviamo nella variabile
         activeInvincibilityCoroutine = StartCoroutine(TemporaryInvincibilityRoutine(time));
     }
 
     private IEnumerator TemporaryInvincibilityRoutine(float time)
     {
         isInvulnerable = true;
-
         yield return new WaitForSeconds(time);
-
         isInvulnerable = false;
-        activeInvincibilityCoroutine = null; // Svuotiamo la variabile quando ha finito
+        activeInvincibilityCoroutine = null;
     }
 
     // =========================
@@ -264,13 +316,13 @@ public class Player : MonoBehaviour
     {
         Vector2 input = canMove ? playerInputManager.MoveInput : Vector2.zero;
 
-        // Direzione relativa alla camera
         Vector3 desiredDirection = gameCamera.transform.forward * input.y + gameCamera.transform.right * input.x;
         desiredDirection.y = 0;
         desiredDirection.Normalize();
 
         float targetSpeed = walkingSpeed * input.magnitude;
         Vector3 horizontalVelocity = new Vector3(currentMovement.x, 0, currentMovement.z);
+
         if (input.magnitude > 0.1f)
         {
             horizontalVelocity = Vector3.MoveTowards(
@@ -278,7 +330,6 @@ public class Player : MonoBehaviour
                 desiredDirection * targetSpeed,
                 acceleration * Time.deltaTime
             );
-            
         }
         else
         {
@@ -288,13 +339,11 @@ public class Player : MonoBehaviour
                 deceleration * Time.deltaTime
             );
         }
-        
 
         currentMovement.x = horizontalVelocity.x;
         currentMovement.z = horizontalVelocity.z;
         characterController.Move(currentMovement * Time.deltaTime);
 
-        //--animation 
         playerAnimator.SetFloat("X", horizontalVelocity.x);
         playerAnimator.SetFloat("Y", horizontalVelocity.z);
         playerAnimator.SetFloat("speed", input.magnitude);
@@ -332,14 +381,13 @@ public class Player : MonoBehaviour
 
         if (targetDirection.sqrMagnitude < 0.01f) return;
 
-        Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
+        //Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
+        Vector3 snappedDirection = targetDirection.normalized;
         playerAnimator.SetFloat("X_atk", snappedDirection.x);
         playerAnimator.SetFloat("Y_atk", snappedDirection.z);
         transform.rotation = Quaternion.LookRotation(snappedDirection);
-
-        //transform.rotation = Quaternion.LookRotation(targetDirection.normalized);
     }
-    
+
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
         float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -357,7 +405,6 @@ public class Player : MonoBehaviour
         if (!canAttack) return;
         if (!playerInputManager.AttackInput) return;
 
-        Debug.Log("Attacco eseguito!");
         StartCoroutine(AttackRoutine());
         playerInputManager.ConsumeAttackInput();
     }
@@ -398,11 +445,8 @@ public class Player : MonoBehaviour
     private void PlayAttackSound()
     {
         if (attackSoundEvent.IsNull) return;
-
         FMOD.Studio.EventInstance attackInstance = FMODUnity.RuntimeManager.CreateInstance(attackSoundEvent);
-
         attackInstance.setParameterByName(attackSoundParameter, GetAttackTypeParamValue(attackType));
-
         attackInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
         attackInstance.start();
         attackInstance.release();
@@ -431,7 +475,6 @@ public class Player : MonoBehaviour
 
         if (playerInputManager.DashInput)
         {
-            Debug.Log("Dash eseguito!");
             StartCoroutine(DashRoutine());
             playerInputManager.ConsumeDashInput();
         }
@@ -442,7 +485,6 @@ public class Player : MonoBehaviour
         canDash = false;
         isDashing = true;
 
-        // RICHIAMO LA NUOVA FUNZIONE!
         GrantTemporaryInvincibility(dashInvincibilityTime);
 
         Vector3 dashDirection = (currentMovement.sqrMagnitude > 0.1f) ? currentMovement.normalized : transform.forward;
@@ -467,7 +509,6 @@ public class Player : MonoBehaviour
     private void PlayDashSound()
     {
         if (dashSoundEvent.IsNull) return;
-
         FMOD.Studio.EventInstance dashInstance = FMODUnity.RuntimeManager.CreateInstance(dashSoundEvent);
         dashInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
         dashInstance.start();
@@ -505,26 +546,25 @@ public class Player : MonoBehaviour
         );
     }
 
-
     // =========================
     // HEALTH, DAMAGE & DEATH
     // =========================
 
-    // Mantieni questo per compatibilità con trappole o danni ambientali (no knockback)
+    // Overload normale (usato ad esempio per trappole o danni senza spinta)
     public void TakeDamage(float amount)
     {
         TakeDamage(amount, transform.position, 0f);
     }
 
+    // Overload completo con gestione Knockback
     public void TakeDamage(float amount, Vector3 attackerPosition, float knockbackForce)
     {
         if (isInvulnerable || isDead) return;
 
-        // --- CALCOLO KNOCKBACK ---
         if (knockbackForce > 0f)
         {
             Vector3 direction = (transform.position - attackerPosition).normalized;
-            direction.y = 0f; 
+            direction.y = 0f;
             knockbackVelocity = direction * knockbackForce;
         }
 
@@ -544,25 +584,19 @@ public class Player : MonoBehaviour
     private IEnumerator DeathRoutine()
     {
         isDead = true;
-        DisableAllControls(); // Impedisce al giocatore di muoversi o attaccare da morto
+        DisableAllControls();
 
-        // --- INSERISCI QUI LA GRAFICA DELLA MORTE ---
-        // Esempio: GetComponent<Animator>().SetTrigger("Death");
-
-        // Aspetta i secondi definiti nell'Inspector per far vedere l'animazione/sprite
         yield return new WaitForSeconds(respawnDelay);
 
-        // Ora esegue il respawn effettivo
         Respawn();
 
-        EnableAllControls(); // Restituisce i comandi al giocatore
-        isDead = false; // Il giocatore è tornato in vita
+        EnableAllControls();
+        isDead = false;
     }
 
     private void PlayHitSound()
     {
         if (hitSoundEvent.IsNull) return;
-
         FMOD.Studio.EventInstance hitInstance = FMODUnity.RuntimeManager.CreateInstance(hitSoundEvent);
         hitInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
         hitInstance.start();
@@ -657,16 +691,17 @@ public class Player : MonoBehaviour
     }
 
     private void ChangeSelectedMusicType(MusicType musicType) => selectedMusicType = musicType;
+
     private void ConfirmMusicType()
     {
         RhythmManager.Instance.SetMusicStyle(selectedMusicType);
     }
+
     private void HandleMusicChange()
     {
-        if(playerInputManager.SongSwitchInput)
+        if (playerInputManager.SongSwitchInput)
         {
-            ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1)% 5));
-            Debug.Log(selectedMusicType);
+            ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1) % 5));
             playerInputManager.ConsumeSongSwitchInput();
         }
         if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT || selectedMusicType == RhythmManager.Instance.musicType) return;
@@ -674,7 +709,7 @@ public class Player : MonoBehaviour
         {
             ConfirmMusicType();
             playerInputManager.ConsumeSongConfirmInput();
-            DecreaseMusicPointsOverTime(1f,0.25f);
+            DecreaseMusicPointsOverTime(1f, 0.25f);
         }
     }
 
@@ -820,13 +855,14 @@ public class Player : MonoBehaviour
 
     private void ApplyModifiers(ItemData itemData)
     {
-        walkingSpeed = DEFAULT_WALKING_SPEED * itemData.speedMultiplier;
+        // Applica i modificatori partendo dalle stat base potenziate dal level-up
+        walkingSpeed = baseWalkingSpeed * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
         attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION / itemData.attackRateMultiplier;
         ChangeAttackType(itemData.attackType);
 
         float previousMaxHealth = this.maxHealthPoints;
-        maxHealthPoints = DEFAULT_MAX_HEALTH_POINTS * itemData.healthMultiplier;
+        maxHealthPoints = baseMaxHealth * itemData.healthMultiplier;
 
         currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
         if (maxHealthPoints > previousMaxHealth)
@@ -837,7 +873,7 @@ public class Player : MonoBehaviour
         if (itemData.damageOverTime)
             ApplyDamageOverTime(itemData.damageChangeTime, itemData.damageCurve);
         else
-            attackDamage = DEFAULT_ATTACK_DAMAGE * itemData.damageMultiplier;
+            attackDamage = baseAttackDamage * itemData.damageMultiplier;
     }
 
     private void ChangeAttackType(AttackType attackType)
@@ -876,7 +912,7 @@ public class Player : MonoBehaviour
     private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
     {
         float elapsedTime = 0f;
-        float initialAttackDamage = DEFAULT_ATTACK_DAMAGE;
+        float initialAttackDamage = baseAttackDamage; // Usa il danno base attuale
 
         while (elapsedTime <= damageChangeTime)
         {
@@ -898,7 +934,6 @@ public class Player : MonoBehaviour
         {
             currentMusicPoints = Mathf.Clamp(currentMusicPoints - amount, 0, maxMusicPoints);
             yield return new WaitForSeconds(interval);
-            Debug.Log(currentMusicPoints);
         }
         RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
     }
