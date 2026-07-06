@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
 
     [Header("Mental Status Settings")]
     public PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
-    public DrugType consumedDrug = DrugType.NONE;
+    public DrugType consumedDrug = DrugType.NONE; //<-- Aggiunto per tenere traccia della droga consumata
 
     [Header("Invulnerability Settings")]
     [SerializeField] private float invulnerabilityDuration = 2f;
@@ -75,6 +75,7 @@ public class Player : MonoBehaviour
     public Slider healthSlider;
     public UIJuice uiJuice;
     public InventoryUI inventoryUI;
+
 
     [Header("Audio")]
     [SerializeField] private FMODUnity.EventReference attackSoundEvent = new FMODUnity.EventReference();
@@ -260,7 +261,6 @@ public class Player : MonoBehaviour
 
         float targetSpeed = walkingSpeed * input.magnitude;
         Vector3 horizontalVelocity = new Vector3(currentMovement.x, 0, currentMovement.z);
-
         if (input.magnitude > 0.1f)
         {
             horizontalVelocity = Vector3.MoveTowards(
@@ -268,6 +268,7 @@ public class Player : MonoBehaviour
                 desiredDirection * targetSpeed,
                 acceleration * Time.deltaTime
             );
+            
         }
         else
         {
@@ -277,10 +278,16 @@ public class Player : MonoBehaviour
                 deceleration * Time.deltaTime
             );
         }
+        
 
         currentMovement.x = horizontalVelocity.x;
         currentMovement.z = horizontalVelocity.z;
         characterController.Move(currentMovement * Time.deltaTime);
+
+        //--animation 
+        playerAnimator.SetFloat("X", horizontalVelocity.x);
+        playerAnimator.SetFloat("Y", horizontalVelocity.z);
+        playerAnimator.SetFloat("speed", input.magnitude);
     }
 
     private void HandleRotation()
@@ -316,9 +323,13 @@ public class Player : MonoBehaviour
         if (targetDirection.sqrMagnitude < 0.01f) return;
 
         Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
+        playerAnimator.SetFloat("X_atk", snappedDirection.x);
+        playerAnimator.SetFloat("Y_atk", snappedDirection.z);
         transform.rotation = Quaternion.LookRotation(snappedDirection);
-    }
 
+        //transform.rotation = Quaternion.LookRotation(targetDirection.normalized);
+    }
+    
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
         float angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
@@ -326,7 +337,6 @@ public class Player : MonoBehaviour
         float rad = snapped * Mathf.Deg2Rad;
         return new Vector3(Mathf.Sin(rad), 0f, Mathf.Cos(rad));
     }
-
 
     // =========================
     // ATTACK
@@ -496,7 +506,7 @@ public class Player : MonoBehaviour
         if (isInvulnerable || isDead) return;
 
         PlayHitSound();
-
+        playerAnimator.SetTrigger("Hit");
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
         UpdateUI();
 
