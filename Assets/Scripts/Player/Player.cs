@@ -511,6 +511,7 @@ public class Player : MonoBehaviour
     {
         canDash = false;
         isDashing = true;
+        playerAnimator.SetBool("isDashing", true);
 
         GrantTemporaryInvincibility(dashInvincibilityTime);
 
@@ -528,6 +529,7 @@ public class Player : MonoBehaviour
         }
 
         isDashing = false;
+        playerAnimator.SetBool("isDashing", false);
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
