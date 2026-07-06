@@ -84,6 +84,7 @@ public class Player : MonoBehaviour
     [Header("Inventory Settings")]
     [SerializeField] private int inventorySize = 3;
     [SerializeField] private float itemUseDelay = 0.5f;
+    private Coroutine activeDrugCoroutine;
 
     [Header("UI")]
     public Slider healthSlider;
@@ -807,11 +808,14 @@ public class Player : MonoBehaviour
             ItemData itemToUse = inventory.GetSelectedItem();
             if (itemToUse != null)
             {
-                UseItem(itemToUse);
-                RemoveItem(inventory.GetSelectedIndex());
-                inventory.SortItems();
-                UpdateInventoryUI();
-                DelayAfterItemUse(itemUseDelay);
+                // MODIFICA QUI: Rimuove l'oggetto solo se UseItem restituisce true
+                if (UseItem(itemToUse))
+                {
+                    RemoveItem(inventory.GetSelectedIndex());
+                    inventory.SortItems();
+                    UpdateInventoryUI();
+                    DelayAfterItemUse(itemUseDelay);
+                }
             }
             playerInputManager.ConsumeUseItemInput();
         }
@@ -827,16 +831,26 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(delayTime);
     }
 
-    public void AddItem(ItemData item)
+    // Ora restituisce il risultato (true/false) all'oggetto che tenta di farsi raccogliere
+    public bool AddItem(ItemData item)
     {
-        inventory.AddItemInHead(item);
-        UpdateInventoryUI();
+        // Prova ad aggiungere l'oggetto in testa all'inventario
+        if (inventory.AddItemInHead(item))
+        {
+            UpdateInventoryUI();
+            return true; // Preso!
+        }
+        return false; // Rifiutato!
     }
 
-    public void AddItem(ItemData item, int index)
+    public bool AddItem(ItemData item, int index)
     {
-        inventory.AddItem(item, index);
-        UpdateInventoryUI();
+        if (inventory.AddItem(item, index))
+        {
+            UpdateInventoryUI();
+            return true;
+        }
+        return false;
     }
 
     public void RemoveItem(ItemData item)
@@ -878,43 +892,127 @@ public class Player : MonoBehaviour
     // ITEMS
     // =========================
 
-    public void UseItem(ItemData itemData)
+
+        public bool UseItem(ItemData itemData)
     {
-        if (itemData == null) return;
+        if (itemData == null) return false;
+
+        // CONTROLLO DROGA: Se cerchi di usare una droga ma ne hai già una attiva, blocca tutto!
+        if (itemData.itemType == ItemType.DRUG && consumedDrug != DrugType.NONE)
+        {
+            Debug.Log("Sei già sotto l'effetto di una droga! Attendi che svanisca.");
+            // (Opzionale: qui potresti aggiungere un suono d'errore o un UIJuice shake)
+            return false;
+        }
+
         ApplyModifiers(itemData);
+
         switch (itemData.itemType)
         {
             case ItemType.WATER:
+                // L'acqua funge da "Cura": pulisce gli effetti delle droghe attive
+                if (activeDrugCoroutine != null)
+                {
+                    StopCoroutine(activeDrugCoroutine);
+                    activeDrugCoroutine = null;
+                }
                 ApplyDrugStatus(DrugType.NONE);
                 ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
-                break;
+                ResetModifiersToDefault();
+                return true; // Oggetto consumato con successo
+
             case ItemType.DRUG:
                 ApplyDrugStatus(itemData.drugType);
                 if (IsGettingBadTrip(itemData.badTripChance))
-                {
                     ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
-                    ApplyBadTrip();
-                    Debug.Log("BADTRIP");
-                }
                 else
                     ApplyMentalStatus(PlayerMentalStatus.STUNNED);
-                DrugCooldown(10f);
-                break;
+                
+                // Avvia il timer di scadenza della droga leggendo i secondi dall'oggetto
+                activeDrugCoroutine = StartCoroutine(DrugEffectRoutine(itemData.drugDuration));
+                return true; // Oggetto consumato con successo
         }
+
+        return false;
     }
 
-    private void DrugCooldown(float drugCooldown)
+    // ==========================================
+    // NUOVE FUNZIONI PER GESTIRE LA SCADENZA
+    // ==========================================
+
+    private IEnumerator DrugEffectRoutine(float duration)
     {
-        StartCoroutine(DrugCooldownRoutine(drugCooldown));
+        // Aspetta i secondi definiti nell'ItemData
+        yield return new WaitForSeconds(duration);
+
+        // Tempo scaduto: resetta gli stati
+        ApplyDrugStatus(DrugType.NONE);
+        ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
+        ResetModifiersToDefault();
+
+        activeDrugCoroutine = null;
+        Debug.Log("L'effetto della droga è svanito, torni normale.");
     }
 
-    private IEnumerator DrugCooldownRoutine(float drugCooldown)
+    private void ResetModifiersToDefault()
     {
-        yield return new WaitForSeconds(drugCooldown);
-        ResetDefaultModifiers();
-        StopBadTripSound();
+        // Riporta tutte le statistiche al loro valore base
+        walkingSpeed = baseWalkingSpeed;
+        attackTime = DEFAULT_ATTACK_TIME;
+        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+        ChangeAttackType(AttackType.DEFAULT);
+
+        float previousMaxHealth = this.maxHealthPoints;
+        maxHealthPoints = baseMaxHealth;
+
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
+
+        attackDamage = baseAttackDamage;
+
+        UpdateUI(); // Questo aggiorna solo la barra della vita
+
+        
+        UpdateInventoryUI(); // Forza la UI (e la faccia!) ad aggiornarsi
     }
 
+
+    /*
+        public void UseItem(ItemData itemData)
+        {
+            if (itemData == null) return;
+            ApplyModifiers(itemData);
+            switch (itemData.itemType)
+            {
+                case ItemType.WATER:
+                    ApplyDrugStatus(DrugType.NONE);
+                    ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
+                    break;
+                case ItemType.DRUG:
+                    ApplyDrugStatus(itemData.drugType);
+                    if (IsGettingBadTrip(itemData.badTripChance))
+                    {
+                        ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
+                        ApplyBadTrip();
+                        Debug.Log("BADTRIP");
+                    }
+                    else
+                        ApplyMentalStatus(PlayerMentalStatus.STUNNED);
+                    break;
+            }
+        }
+
+        private void DrugCooldown(float drugCooldown)
+        {
+            StartCoroutine(DrugCooldownRoutine(drugCooldown));
+        }
+
+        private IEnumerator DrugCooldownRoutine(float drugCooldown)
+        {
+            yield return new WaitForSeconds(drugCooldown);
+            ResetDefaultModifiers();
+            StopBadTripSound();
+        }
+    */
     private bool IsGettingBadTrip(float badTripChance)
     {
         return Convert.ToBoolean(Random.Range(0, 100) < badTripChance * 100);

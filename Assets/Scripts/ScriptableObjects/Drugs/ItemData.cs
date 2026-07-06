@@ -27,4 +27,6 @@ public class ItemData : ScriptableObject
     public float speedMultiplier;
     [ConditionalHide("itemType", (int)ItemType.DRUG)]
     public float badTripChance;
+    [ConditionalHide("itemType", (int)ItemType.DRUG)]
+    public float drugDuration = 10f;
 }

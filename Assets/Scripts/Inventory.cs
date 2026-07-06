@@ -13,30 +13,44 @@ public class Inventory
     }
 
 
-    public void AddItem(ItemData item)
+    // Ora restituisce true se ha aggiunto l'oggetto, false se è pieno
+    public bool AddItem(ItemData item)
     {
         for (int i = 0; i < items.Length; i++)
         {
             if (items[i] == null)
             {
                 items[i] = item;
-                break;
+                return true; // <--- Spazio trovato, oggetto aggiunto!
             }
         }
+        return false; // <--- Nessuno spazio trovato
     }
 
-    public void AddItem(ItemData item, int index)
+    // Anche qui restituisce true o false
+    public bool AddItemInHead(ItemData item)
     {
-        items[index] = item;
-    }
-    public void AddItemInHead(ItemData item)
-    {
-        // Adds item in first slot and shifts the other items to the right
+        // Se l'inventario è pieno, blocca subito tutto e restituisce false
+        if (IsInventoryFull()) return false;
+
+        // Se c'è spazio, sposta gli altri oggetti e mettilo in cima
         for (int i = inventorySize - 1; i > 0; i--)
         {
             items[i] = items[i - 1];
         }
         items[0] = item;
+        return true;
+    }
+
+    // Se per caso usi anche questo, facciamogli restituire un bool per coerenza
+    public bool AddItem(ItemData item, int index)
+    {
+        if (items[index] == null)
+        {
+            items[index] = item;
+            return true;
+        }
+        return false;
     }
 
     public ItemData GetItem(int index)
