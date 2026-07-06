@@ -380,3 +380,4 @@ MonoBehaviour:
   cassaLayer:
     serializedVersion: 2
     m_Bits: 64
+  animator: {fileID: 3399660248639158775}

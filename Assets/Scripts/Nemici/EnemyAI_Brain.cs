@@ -20,6 +20,7 @@ public class EnemyAI_Brain : MonoBehaviour
     private Transform currentTarget;
     private float nextAttackTime;
     private float windupTimer = 0f;
+    [SerializeField] private Animator animator;
 
     void Awake()
     {
@@ -117,6 +118,7 @@ public class EnemyAI_Brain : MonoBehaviour
 
             case EnemyState.AttackingCassa:
                 if (currentTarget == null) { currentState = EnemyState.Idle; break; }
+                animator.SetTrigger("cassa");
                 PerformAttack();
 
                 if (Vector3.Distance(transform.position, currentTarget.position) > stats.attackRange)
@@ -136,6 +138,7 @@ public class EnemyAI_Brain : MonoBehaviour
 
             case EnemyState.AttackingPlayer:
                 if (currentTarget == null) { currentState = EnemyState.Idle; break; }
+                animator.SetTrigger("attack");
                 PerformAttack();
 
                 if (Vector3.Distance(transform.position, currentTarget.position) > stats.attackRange)

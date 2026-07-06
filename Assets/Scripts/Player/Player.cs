@@ -598,7 +598,7 @@ public class Player : MonoBehaviour
         }
 
         PlayHitSound();
-        playerAnimator.SetTrigger("Hit");
+        //playerAnimator.SetTrigger("Hit");
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
         UpdateUI();
 
