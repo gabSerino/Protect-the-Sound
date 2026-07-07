@@ -800,7 +800,7 @@
 	</object>
 	<object class="SingleSound" id="{9ba99c61-c117-47f5-8cbf-9b4508f29dd4}">
 		<property name="start">
-			<value>138.72941666666668</value>
+			<value>140.10085416666666</value>
 		</property>
 		<property name="length">
 			<value>0.39999999999997726</value>
@@ -811,7 +811,7 @@
 	</object>
 	<object class="SingleSound" id="{2d0461b8-e771-4575-9a5c-1b5487fe7f2c}">
 		<property name="start">
-			<value>138.32941666666667</value>
+			<value>139.24370833333333</value>
 		</property>
 		<property name="length">
 			<value>0.40000000000000568</value>
@@ -822,7 +822,7 @@
 	</object>
 	<object class="SingleSound" id="{36e65b12-8993-4be0-a546-12e9ac79b92e}">
 		<property name="start">
-			<value>137.92941666666667</value>
+			<value>138.3865625</value>
 		</property>
 		<property name="length">
 			<value>0.40000000000000568</value>
@@ -1067,7 +1067,7 @@
 			<value>137.52941666666666</value>
 		</property>
 		<property name="tempo">
-			<value>150</value>
+			<value>70</value>
 		</property>
 		<relationship name="timeline">
 			<destination>{ee4ceeb3-bf23-40a7-99fa-5095f95c4deb}</destination>
@@ -1222,7 +1222,7 @@
 			<value>137.52941666666666</value>
 		</property>
 		<property name="length">
-			<value>1.5999999999999996</value>
+			<value>3.4285625000000035</value>
 		</property>
 		<relationship name="timeline">
 			<destination>{ee4ceeb3-bf23-40a7-99fa-5095f95c4deb}</destination>
@@ -1264,7 +1264,7 @@
 			<value>137.52941666666666</value>
 		</property>
 		<property name="length">
-			<value>1.6000000000000014</value>
+			<value>3.4285625000000053</value>
 		</property>
 		<relationship name="timeline">
 			<destination>{ee4ceeb3-bf23-40a7-99fa-5095f95c4deb}</destination>

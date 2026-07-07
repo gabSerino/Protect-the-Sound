@@ -101,6 +101,7 @@ public class Player : MonoBehaviour
     [SerializeField] private FMODUnity.EventReference hitSoundEvent = new FMODUnity.EventReference();
     [SerializeField] private FMODUnity.EventReference badTripSoundEvent = new FMODUnity.EventReference(); // qui metti lo Snapshot
     private FMOD.Studio.EventInstance badTripInstance;
+    [SerializeField] private FMODUnity.EventReference changeMusicSoundEvent = new FMODUnity.EventReference();
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -149,6 +150,7 @@ public class Player : MonoBehaviour
     private bool isAttacking = false;
     private bool canUseInventory = true;
     private bool musicDrugCombo = false;
+    public bool canChangeMusicType = false;
 
     private CharacterController controller;
     private bool isInvulnerable = false;
@@ -777,7 +779,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
 
     private void ResetMusicPoints()
     {
-        currentMusicPoints = 0f;
+        currentMusicPoints = 80f;
     }
 
     public void SetMusicPoints(float amount)
@@ -805,19 +807,36 @@ private bool IsLikelyGamepadInput(Vector2 input)
 
     private void HandleMusicChange()
     {
+        if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT)
+        {
+            canChangeMusicType = false;
+            return;
+        }
+        ;
+        canChangeMusicType = true;
         if (playerInputManager.SongSwitchInput)
         {
             ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1) % 5));
             playerInputManager.ConsumeSongSwitchInput();
+            PlayMusicChangeSound();
             Debug.Log($"Selected music type: {selectedMusicType}");
         }
-        if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT || selectedMusicType == RhythmManager.Instance.musicType) return;
+        if (selectedMusicType == RhythmManager.Instance.musicType) return;
         if (playerInputManager.SongConfirmInput)
         {
             ConfirmMusicType();
             playerInputManager.ConsumeSongConfirmInput();
             DecreaseMusicPointsOverTime(1f, timePerMusicPointDecrease);
         }
+    }
+
+    private void PlayMusicChangeSound()
+    {
+        if (changeMusicSoundEvent.IsNull) return;
+        FMOD.Studio.EventInstance musicChangeInstance = FMODUnity.RuntimeManager.CreateInstance(changeMusicSoundEvent);
+        musicChangeInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        musicChangeInstance.start();
+        musicChangeInstance.release();
     }
 
     private void UpdateUI()
@@ -1257,5 +1276,6 @@ private void StopBadTripSound()
             yield return new WaitForSeconds(interval);
         }
         RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
+        ChangeSelectedMusicType(MusicType.DEFAULT);
     }
 }

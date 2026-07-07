@@ -35,7 +35,7 @@
                 },
                 {
                     "name": "Go Left Inventory Slot",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "061fc70c-18a8-4d1f-8f9d-27c3def0d8dd",
                     "expectedControlType": "",
                     "processors": "",
@@ -44,7 +44,7 @@
                 },
                 {
                     "name": "Go Right Inventory Slot",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "139ec38c-3564-464d-823c-2f150c81aebe",
                     "expectedControlType": "",
                     "processors": "",
@@ -55,6 +55,15 @@
                     "name": "Use Item",
                     "type": "Button",
                     "id": "08af61bc-c3e4-42c2-a8af-436c3c9e746f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Delete Item",
+                    "type": "Button",
+                    "id": "a7506c49-f4f6-4c43-9a2e-0efbfb84ac62",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -82,15 +91,6 @@
                     "name": "Song Confirm",
                     "type": "Button",
                     "id": "15d8aa86-f557-4a41-9304-a2ca34f091d5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Delete Item",
-                    "type": "Button",
-                    "id": "a7506c49-f4f6-4c43-9a2e-0efbfb84ac62",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -200,7 +200,7 @@
                 {
                     "name": "",
                     "id": "65c6814f-f6c6-47b2-8aa3-391481ca62e9",
-                    "path": "<Gamepad>/dpad/left",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -222,7 +222,7 @@
                 {
                     "name": "",
                     "id": "367e2878-5cb0-4e17-a0e5-c9de62483b03",
-                    "path": "<Gamepad>/dpad/right",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -244,7 +244,7 @@
                 {
                     "name": "",
                     "id": "7a505ff2-887c-4836-b22d-16791d371b08",
-                    "path": "<Gamepad>/dpad/up",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -354,7 +354,7 @@
                 {
                     "name": "",
                     "id": "80585fca-084f-4f7d-93b9-51a638ae5240",
-                    "path": "<Gamepad>/dpad/down",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
