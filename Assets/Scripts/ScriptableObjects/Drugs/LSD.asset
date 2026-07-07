@@ -17,7 +17,7 @@ MonoBehaviour:
   displayName: LSD
   subtitle: Not a regular stamp...
   description: 
-  icon: {fileID: 21300000, guid: 1d6a3cc7a189caa4ea0c886eb57ba7ae, type: 3}
+  icon: {fileID: 21300000, guid: bdf090248e35bd346a0b8574cf98d11e, type: 3}
   attackType: 4
   attackRateMultiplier: 0.75
   damageOverTime: 0
@@ -33,3 +33,4 @@ MonoBehaviour:
   StaminaRecoverMultiplier: 1
   speedMultiplier: 0.65
   badTripChance: 0.25
+  drugDuration: 10

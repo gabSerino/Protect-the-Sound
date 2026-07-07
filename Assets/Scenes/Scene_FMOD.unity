@@ -9941,7 +9941,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a82710ae932d6214b8e34a837ec0345d, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -64509,6 +64509,7 @@ GameObject:
   - component: {fileID: 1968110280}
   - component: {fileID: 1968110279}
   - component: {fileID: 1968110278}
+  - component: {fileID: 1968110281}
   m_Layer: 5
   m_Name: Come sta il personaggio
   m_TagString: Untagged
@@ -64536,7 +64537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a82710ae932d6214b8e34a837ec0345d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e4abe9a2484bd4140999f130e7bfdca7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -64573,6 +64574,23 @@ RectTransform:
   m_AnchoredPosition: {x: 50, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1968110281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968110277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5ba17bbb95b9df44a811f0c9b6bd862, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFaceUI
+  player: {fileID: 1673458961}
+  faceImage: {fileID: 1968110278}
+  defaultFace: {fileID: 21300000, guid: e4abe9a2484bd4140999f130e7bfdca7, type: 3}
+  druggedFace: {fileID: 21300000, guid: 817490c514798f749bde2b70d172f696, type: 3}
+  badTripFace: {fileID: 21300000, guid: f0ad001e21e00a445b5aa72e325c9422, type: 3}
 --- !u!1 &1971592950
 GameObject:
   m_ObjectHideFlags: 0
