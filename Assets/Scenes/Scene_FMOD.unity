@@ -24055,7 +24055,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 19
+      value: 14.3
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.y
@@ -46222,7 +46222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WaterSpawner
   itemPrefab: {fileID: 3888335886803409878, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
   waterData: {fileID: 11400000, guid: 43e78cdf9017f8d4cbb5bb0d14fc670c, type: 2}
-  spawnInterval: 15
+  spawnInterval: 25
   spawnRadius: 2
 --- !u!1 &1352562242
 GameObject:
@@ -56249,7 +56249,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -19
+      value: -16
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.y
@@ -73783,7 +73783,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: baseMinSpawnDelay
-      value: 10
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
@@ -73909,6 +73909,10 @@ PrefabInstance:
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: killsToLevelUp
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: baseWalkingSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: playerInputManager
