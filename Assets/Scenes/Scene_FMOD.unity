@@ -9304,7 +9304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14215e23e0c27374e85d16bf562b4290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputManager
-  cursorVisible: 0
+  cursorVisible: 1
   inputActions: {fileID: -944628639613478452, guid: 0cd71678851554a4a9db8f5b7d307e1c, type: 3}
   actionMapName: Player
   move: Move

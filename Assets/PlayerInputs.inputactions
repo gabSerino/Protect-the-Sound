@@ -28,7 +28,7 @@
                     "name": "Attack Direction",
                     "type": "PassThrough",
                     "id": "8ea37c19-dbf4-4301-ad33-2205db67b5e8",
-                    "expectedControlType": "Delta",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -101,6 +101,17 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "",
+                    "id": "731f89f3-9b35-49b4-9f05-45bfee8abfe7",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "2D Vector",
                     "id": "97c895a2-66df-4a68-b0f1-6dee8713330b",
                     "path": "2DVector(mode=1)",
@@ -157,11 +168,33 @@
                 },
                 {
                     "name": "",
+                    "id": "c9e89b62-18f5-425e-a735-e5abe614410c",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "516ca096-483a-45a1-a1b1-2c91cc7fd99a",
                     "path": "<Mouse>/scroll/up",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard & Mouse",
+                    "action": "Go Left Inventory Slot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "65c6814f-f6c6-47b2-8aa3-391481ca62e9",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Go Left Inventory Slot",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -179,11 +212,33 @@
                 },
                 {
                     "name": "",
+                    "id": "367e2878-5cb0-4e17-a0e5-c9de62483b03",
+                    "path": "<Gamepad>/dpad/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Go Right Inventory Slot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "0d951168-cc74-4ffe-88de-ceda74ff6c76",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard & Mouse",
+                    "action": "Use Item",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7a505ff2-887c-4836-b22d-16791d371b08",
+                    "path": "<Gamepad>/dpad/up",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Use Item",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -201,11 +256,33 @@
                 },
                 {
                     "name": "",
+                    "id": "cf28de6c-2c88-4e4c-ae59-434984bf3bd0",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Attack Direction",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "09d3d205-2b11-4b2f-8e00-ab84402e7194",
                     "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard & Mouse",
+                    "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "732b8c72-d229-43f1-ae62-3b282b04ecd3",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -223,11 +300,33 @@
                 },
                 {
                     "name": "",
+                    "id": "c9d9c41b-64a2-4c49-9b29-030ab085a71d",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Song Switch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "57f8b991-4589-4a49-af5e-563bc3f6183c",
                     "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard & Mouse",
+                    "action": "Song Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2cee4891-854a-46be-a162-ed6787a0ffe7",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "Song Confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -247,6 +346,17 @@
                 },
                 {
                     "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<Gamepad>",
                     "isOptional": false,
                     "isOR": false
                 }

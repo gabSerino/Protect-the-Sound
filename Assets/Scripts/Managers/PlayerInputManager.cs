@@ -61,21 +61,27 @@ public class PlayerInputManager : MonoBehaviour
         songConfirmAction = actionMap.FindAction(songConfirm);
 
         BindActions();
+
+        // Assicuriamoci che l'asset sia attivo fin da subito.
+        inputActions.Enable();
+    }
+
+    private void Update()
+    {
+        // Move e AttackDirection sono valori Vector2 continui: li leggiamo
+        // ogni frame direttamente, invece di fidarci solo di performed/canceled,
+        // per evitare che un ricalcolo del composite WASD lasci il valore a zero.
+        if (moveAction != null)
+            MoveInput = moveAction.ReadValue<Vector2>();
+
+        if (attackDirectionAction != null)
+            AttackDirectionInput = attackDirectionAction.ReadValue<Vector2>();
     }
 
     private void BindActions()
     {
-        if (moveAction != null)
-        {
-            moveAction.performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
-            moveAction.canceled += ctx => MoveInput = Vector2.zero;
-        }
-
-        if (attackDirectionAction != null)
-        {
-            attackDirectionAction.performed += ctx => AttackDirectionInput = ctx.ReadValue<Vector2>();
-            attackDirectionAction.canceled += ctx => AttackDirectionInput = Vector2.zero;
-        }
+        // Move e AttackDirection non hanno più bisogno di performed/canceled:
+        // vengono letti ogni frame in Update().
 
         if (attackAction != null)
         {
@@ -127,4 +133,7 @@ public class PlayerInputManager : MonoBehaviour
     public void ConsumeDashInput() => DashInput = false;
     public void ConsumeSongSwitchInput() => SongSwitchInput = false;
     public void ConsumeSongConfirmInput() => SongConfirmInput = false;
+
+    public void DisableAllControls() => inputActions.Disable();
+    public void EnableAllControls() => inputActions.Enable();
 }

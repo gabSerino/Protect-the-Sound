@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [Header("Movement Settings (Base)")]
     [SerializeField] private float walkingSpeed;
     [SerializeField] private float baseWalkingSpeed = 8f;
+    [SerializeField] private float rotationSpeed = 720f; // gradi al secondo, regola a piacere
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
 
@@ -400,17 +401,39 @@ public class Player : MonoBehaviour
         playerAnimator.SetFloat("speed", input.magnitude);
     }
 
-    private void HandleRotation()
-    {
-        Vector3 targetDirection = Vector3.zero;
+   private void HandleRotation()
+{
+    Vector3 targetDirection = Vector3.zero;
+    Vector2 aimInput = playerInputManager.AttackDirectionInput;
+    bool isGamepadInput = aimInput.sqrMagnitude > 0f && IsLikelyGamepadInput(aimInput);
 
-        Vector2 mouseDelta = playerInputManager.AttackDirectionInput;
-        virtualAimPosition += mouseDelta * mouseSensitivity;
+    if (isGamepadInput)
+    {
+        // Lo stick è una posizione assoluta, non un delta: niente accumulo.
+        bool isAimingWithStick = aimInput.magnitude > 0.2f; // deadzone dedicata allo stick
+
+        if (isAimingWithStick)
+        {
+            targetDirection = gameCamera.transform.forward * aimInput.y + gameCamera.transform.right * aimInput.x;
+            targetDirection.y = 0f;
+        }
+        else if (!isAttacking)
+        {
+            targetDirection = movementDirection;
+            targetDirection.y = 0f;
+        }
+        else
+        {
+            return;
+        }
+    }
+    else
+    {
+        // Mouse: delta accumulato, come prima.
+        virtualAimPosition += aimInput * mouseSensitivity;
 
         if (virtualAimPosition.magnitude > maxAimRadius)
-        {
             virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
-        }
 
         bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
 
@@ -429,15 +452,26 @@ public class Player : MonoBehaviour
         {
             return;
         }
-
-        if (targetDirection.sqrMagnitude < 0.01f) return;
-
-        //Vector3 snappedDirection = SnapTo8Directions(targetDirection.normalized);
-        Vector3 snappedDirection = (targetDirection.normalized);
-        playerAnimator.SetFloat("X_atk", snappedDirection.x);
-        playerAnimator.SetFloat("Y_atk", snappedDirection.z);
-        transform.rotation = Quaternion.LookRotation(snappedDirection);
     }
+
+    if (targetDirection.sqrMagnitude < 0.01f) return;
+
+    Vector3 snappedDirection = targetDirection.normalized;
+    playerAnimator.SetFloat("X_atk", snappedDirection.x);
+    playerAnimator.SetFloat("Y_atk", snappedDirection.z);
+
+    // Smoothing sulla rotazione per eliminare lo "snap" del mouse.
+    Quaternion targetRotation = Quaternion.LookRotation(snappedDirection);
+    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+}
+
+private bool IsLikelyGamepadInput(Vector2 input)
+{
+    // Placeholder semplice: se il tuo PlayerInputManager sa già distinguere
+    // il dispositivo, sostituisci questo metodo con quel valore diretto.
+    return UnityEngine.InputSystem.Gamepad.current != null &&
+           UnityEngine.InputSystem.Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.01f;
+}
 
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
