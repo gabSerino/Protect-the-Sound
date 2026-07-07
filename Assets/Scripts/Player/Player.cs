@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     // =========================
 
     [Header("Movement Settings (Base)")]
+    [SerializeField] private float walkingSpeed;
     [SerializeField] private float baseWalkingSpeed = 8f;
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
@@ -38,6 +39,7 @@ public class Player : MonoBehaviour
 
     [Header("Attack Settings (Base)")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
+    [SerializeField] private float attackDamage;
     [SerializeField] private float baseAttackDamage = 15f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackWidth = 2f;
@@ -129,8 +131,7 @@ public class Player : MonoBehaviour
     public MusicType selectedMusicType = MusicType.DEFAULT;
 
     // Valori attuali che possono essere buffati dai modificatori
-    private float walkingSpeed;
-    private float attackDamage;
+    
 
     // =========================
     // PRIVATE FIELDS
@@ -146,6 +147,7 @@ public class Player : MonoBehaviour
     private bool canAttack = true;
     private bool isAttacking = false;
     private bool canUseInventory = true;
+    private bool musicDrugCombo = false;
 
     private CharacterController controller;
     private bool isInvulnerable = false;
@@ -215,6 +217,9 @@ public class Player : MonoBehaviour
     void Update()
     {
         HandleMusicChange();
+        VerifyMusicDrugCombo();
+        if (musicDrugCombo)
+            RemoveDebuffs();
 
         // --- RISOLUZIONE BUG "INACTIVE CONTROLLER" ---
         if (IsDead) return;
@@ -770,6 +775,7 @@ public class Player : MonoBehaviour
         {
             ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1) % 5));
             playerInputManager.ConsumeSongSwitchInput();
+            Debug.Log($"Selected music type: {selectedMusicType}");
         }
         if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT || selectedMusicType == RhythmManager.Instance.musicType) return;
         if (playerInputManager.SongConfirmInput)
@@ -1046,10 +1052,10 @@ public class Player : MonoBehaviour
 
     private void ApplyModifiers(ItemData itemData)
     {
+        ChangeAttackType(itemData.attackType);
         walkingSpeed = baseWalkingSpeed * itemData.speedMultiplier;
         attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
         attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION / itemData.attackRateMultiplier;
-        ChangeAttackType(itemData.attackType);
 
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints = baseMaxHealth * itemData.healthMultiplier;
@@ -1066,10 +1072,60 @@ public class Player : MonoBehaviour
             attackDamage = baseAttackDamage * itemData.damageMultiplier;
     }
 
+    private void VerifyMusicDrugCombo()
+    {
+        if (RhythmManager.Instance.musicType == MusicType.RAGGAE && consumedDrug == DrugType.MARIJUANA ||
+            RhythmManager.Instance.musicType == MusicType.DnB && consumedDrug == DrugType.COCAINE ||
+            RhythmManager.Instance.musicType == MusicType.SYNTHWAVE && consumedDrug == DrugType.LSD ||
+            RhythmManager.Instance.musicType == MusicType.BREAKCORE && consumedDrug == DrugType.MDMA)
+            musicDrugCombo = true;
+        else
+            musicDrugCombo = false;
+    }
+
+    private void RemoveDebuffs()
+    {
+        // Se la curva di danno sta abbassando l'attacco sotto il base, la fermiamo
+        // così non sovrascrive il fix subito dopo, nello stesso frame.
+        if (attackDamage < baseAttackDamage)
+        {
+            if (activeDamageOverTimeCoroutine != null)
+            {
+                StopCoroutine(activeDamageOverTimeCoroutine);
+                activeDamageOverTimeCoroutine = null;
+            }
+            attackDamage = baseAttackDamage;
+        }
+
+        if (walkingSpeed < baseWalkingSpeed)
+        {
+            walkingSpeed = baseWalkingSpeed;
+        }
+
+        if (attackTime > DEFAULT_ATTACK_TIME)
+        {
+            attackTime = DEFAULT_ATTACK_TIME;
+            attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+        }
+
+        float previousMaxHealth = this.maxHealthPoints;
+        maxHealthPoints = baseMaxHealth;
+
+        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
+        if (maxHealthPoints > previousMaxHealth)
+            currentHealthPoints += maxHealthPoints - previousMaxHealth;
+        UpdateUI();
+
+        // NOTA: mentalStatus, badTripVolume, badTripInstance, consumedDrug e attackType
+        // NON vengono toccati qui: il bad trip resta visivamente/audio attivo,
+        // e l'attackType continua a cambiare normalmente tramite ApplyModifiers/ChangeAttackType.
+    }
+
     private void ApplyBadTrip()
     {
         walkingSpeed = baseWalkingSpeed * 0.75f;
         attackTime = DEFAULT_ATTACK_TIME * 2f;
+        this.attackDamage = baseAttackDamage * 0.5f;
         PlayBadTripSound();
         badTripVolume.SetActive(true);
     }
@@ -1122,9 +1178,14 @@ private void StopBadTripSound()
         }
     }
 
+    private Coroutine activeDamageOverTimeCoroutine;
+
     private void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
     {
-        StartCoroutine(DamageOverTimeRoutine(damageChangeTime, damageCurve));
+        if (activeDamageOverTimeCoroutine != null)
+            StopCoroutine(activeDamageOverTimeCoroutine);
+
+        activeDamageOverTimeCoroutine = StartCoroutine(DamageOverTimeRoutine(damageChangeTime, damageCurve));
     }
 
     private IEnumerator DamageOverTimeRoutine(float damageChangeTime, AnimationCurve damageCurve)
@@ -1138,8 +1199,9 @@ private void StopBadTripSound()
             elapsedTime += Time.deltaTime;
             yield return null;
         }
-    }
 
+        activeDamageOverTimeCoroutine = null;
+    }
     private void DecreaseMusicPointsOverTime(float amount, float interval)
     {
         StartCoroutine(DecreaseMusicPointsRoutine(amount, interval));

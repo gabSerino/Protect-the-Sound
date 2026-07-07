@@ -50,4 +50,5 @@ MonoBehaviour:
   healthMultiplier: 1.25
   StaminaRecoverMultiplier: 1.5
   speedMultiplier: 1.5
-  badTripChance: 1
+  badTripChance: 0.1
+  drugDuration: 10
