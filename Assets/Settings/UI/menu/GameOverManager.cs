@@ -3,37 +3,62 @@ using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
 {
-    [Header("Interfaccia UI")]
-    public GameObject gameOverMenuUI;
+    public static bool GameOverAttivo { get; private set; } = false;
 
-    // Questa funzione verrà chiamata dallo script SharedHealth quando la vita arriva a 0
+    [Header("Interfaccia UI")]
+    [SerializeField] private GameObject gameOverMenuUI;
+
+    [Header("References")]
+    [SerializeField] private PlayerInputManager playerInputManager;
+
     public void AttivaGameOver()
     {
-        gameOverMenuUI.SetActive(true); // Mostra il pannello rosso/nero
-        Time.timeScale = 0f;            // Blocca il gioco
+        if (GameOverAttivo) return;
 
-        // Mette in pausa la musica di FMOD
+        GameOverAttivo = true;
+        PauseMenu.GiocoInPausa = false;
+
+        if (gameOverMenuUI != null)
+            gameOverMenuUI.SetActive(true);
+        else
+            Debug.LogError("GameOverMenuUI non assegnato nel GameOverManager.");
+
+        if (playerInputManager != null)
+            playerInputManager.DisableAllControls();
+
+        Time.timeScale = 0f;
+
         FMODUnity.RuntimeManager.GetBus("bus:/").setPaused(true);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
-    // Funzione per il tasto "Riprova"
     public void Riprova()
     {
         SbloccaGiocoEAudio();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // Funzione per il tasto "Menu Principale"
     public void TornaAlMenu()
     {
         SbloccaGiocoEAudio();
         SceneManager.LoadScene(0);
     }
 
-    // Una piccola funzione di supporto per non ripetere il codice
     private void SbloccaGiocoEAudio()
     {
-        Time.timeScale = 1f; // Rimette il tempo a velocità normale
-        FMODUnity.RuntimeManager.GetBus("bus:/").setPaused(false); // Sblocca l'audio
+        GameOverAttivo = false;
+        PauseMenu.GiocoInPausa = false;
+
+        Time.timeScale = 1f;
+
+        FMODUnity.RuntimeManager.GetBus("bus:/").setPaused(false);
+
+        if (playerInputManager != null)
+            playerInputManager.EnableAllControls();
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
