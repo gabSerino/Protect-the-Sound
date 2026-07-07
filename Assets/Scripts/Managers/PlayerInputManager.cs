@@ -46,6 +46,7 @@ public class PlayerInputManager : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = cursorVisible;
         InputActionMap actionMap = inputActions.FindActionMap(actionMapName);
 
