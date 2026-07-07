@@ -12,12 +12,15 @@ public class ComboMeterUI : MonoBehaviour
     public RectTransform oggettoDaTremare; // Trascina qui l'oggetto della Faccina
 
     [Header("Valori Combo")]
-    public float maxCombo = 100f;
-    private float currentCombo = 0f;
+    private float maxCombo;
+    private float currentCombo;
+    private float differenzaPuntiCombo = 0f;
 
     [Header("Effetto Tremolio")]
     public float durataTremolio = 0.15f;
     public float forzaTremolio = 5f;
+    [Header("Player")]
+    public Player player;
 
     private Vector2 posizioneOriginale;
 
@@ -28,12 +31,20 @@ public class ComboMeterUI : MonoBehaviour
 
     void Start()
     {
+        maxCombo = player.maxMusicPoints;
+        currentCombo = player.currentMusicPoints;
         if (anelloImage != null) anelloImage.fillAmount = 0f;
         if (oggettoDaTremare != null) posizioneOriginale = oggettoDaTremare.anchoredPosition;
     }
 
-    // Questa funzione verrà chiamata dalla Hitbox
-    public void AggiungiCombo(float quantita)
+    void Update()
+    {
+        VerificaCambioPuntiCombo();
+        AggiornaPuntiCombo();
+    }
+
+    // Questa funzione verrï¿½ chiamata dalla Hitbox
+    /*public void AggiungiCombo(float quantita)
     {
         // 1. Aumenta il valore della combo
         currentCombo += quantita;
@@ -56,6 +67,32 @@ public class ComboMeterUI : MonoBehaviour
         {
             StopAllCoroutines(); // Blocca tremolii precedenti se colpisci molto veloce
             StartCoroutine(TremolioRoutine());
+        }
+    }*/
+
+    private void AggiornaPuntiCombo()
+    {
+        if(differenzaPuntiCombo == 0) return;
+        if (anelloImage != null)
+            anelloImage.fillAmount = currentCombo / maxCombo;
+
+        if (oggettoDaTremare != null && differenzaPuntiCombo > 0)
+        {
+            StopAllCoroutines(); // Blocca tremolii precedenti se colpisci molto veloce
+            StartCoroutine(TremolioRoutine());
+        }
+    }
+
+    private void VerificaCambioPuntiCombo()
+    {
+        if(player.currentMusicPoints != currentCombo)
+        {
+            differenzaPuntiCombo = player.currentMusicPoints - currentCombo;
+            currentCombo = player.currentMusicPoints;
+        }
+        else
+        {
+            differenzaPuntiCombo = 0f;
         }
     }
 

@@ -69,39 +69,11 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639189837123224469
+  lastModified: 639190538370764820
   FileSizes:
   - Name: 
-    Value: 2274
+    Value: 2280
   Exists: 1
---- !u!114 &-7103547856774704966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/Item/item_use
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
-  Path: event:/Item/item_use
-  Guid:
-    Data1: -848302694
-    Data2: 1122304171
-    Data3: 200197518
-    Data4: 240511649
-  Banks:
-  - {fileID: 3799818825547264446}
-  IsStream: 0
-  Is3D: 0
-  IsOneShot: 1
-  Parameters:
-  - {fileID: 7998610026557335279}
-  MinDistance: 1
-  MaxDistance: 20
-  Length: 0
 --- !u!114 &-5833151222005265184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,6 +101,35 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &-5744821454467300925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/wizzy_use_item/Item
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorParamRef
+  Name: Item
+  StudioPath: 
+  Min: 0
+  Max: 4
+  Default: 4
+  ID:
+    data1: 3713531993
+    data2: 47711451
+  Type: 2
+  IsGlobal: 0
+  Labels:
+  - MARIJUANA
+  - COCAINE
+  - MDMA
+  - LSD
+  - WATER
+  Exists: 1
 --- !u!114 &-5464335531597879168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -364,7 +365,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Snapshots.bank
   Name: Snapshots
   StudioPath: bank:/Snapshots
-  lastModified: 639189837123487104
+  lastModified: 639189830826329521
   FileSizes: []
   Exists: 1
 --- !u!114 &-1025088851501490094
@@ -382,7 +383,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639189837123134016
+  lastModified: 639190538370749640
   FileSizes: []
   Exists: 1
 --- !u!114 &-59993336232135851
@@ -445,7 +446,6 @@ MonoBehaviour:
   - {fileID: -2828387801433267851}
   - {fileID: -5464335531597879168}
   - {fileID: 2171527965966495554}
-  - {fileID: -7103547856774704966}
   - {fileID: 3138686870101198889}
   - {fileID: 2151811063071898846}
   - {fileID: -4015189529240244982}
@@ -457,13 +457,14 @@ MonoBehaviour:
   - {fileID: -3383959163098668879}
   - {fileID: -59993336232135851}
   - {fileID: -8785753304741113454}
+  - {fileID: 6065776339252301901}
   EditorParameters: []
   MasterBanks:
   - {fileID: -1025088851501490094}
   StringsBanks:
   - {fileID: -8276583537654689561}
   cacheVersion: 131858
-  cacheTime: 639190519263000330
+  cacheTime: 639190538372686673
   SerializableEventsDict:
   - key: event:/bonk
     index: 0
@@ -491,29 +492,29 @@ MonoBehaviour:
     index: 11
   - key: event:/Misc/rave_start
     index: 12
-  - key: event:/Item/item_use
-    index: 13
   - key: event:/UI/ui_switch
-    index: 14
+    index: 13
   - key: event:/UI/ui_start
-    index: 15
+    index: 14
   - key: event:/Wizzy/wizzy_attack
-    index: 16
+    index: 15
   - key: event:/UI/ui_pause
-    index: 17
+    index: 16
   - key: event:/Item/item_pickup
-    index: 18
+    index: 17
   - key: event:/Item/item_switch
-    index: 19
+    index: 18
   - key: event:/Enemy/enemy_hit
-    index: 20
+    index: 19
   - key: event:/UI/ui_confirm
-    index: 21
+    index: 20
   - key: event:/Enemy/enemy_death
-    index: 22
+    index: 21
   - key: event:/Wizzy/wizzy_hit
-    index: 23
+    index: 22
   - key: snapshot:/Bad Trip
+    index: 23
+  - key: event:/Wizzy/wizzy_use_item
     index: 24
 --- !u!114 &321605498127420868
 MonoBehaviour:
@@ -774,7 +775,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639189837123404411
+  lastModified: 639190538372686673
   FileSizes: []
   Exists: 1
 --- !u!114 &4042786153890122081
@@ -806,6 +807,34 @@ MonoBehaviour:
   - Raggae
   - Breakcore
   Exists: 1
+--- !u!114 &6065776339252301901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Wizzy/wizzy_use_item
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Wizzy/wizzy_use_item
+  Guid:
+    Data1: -88154196
+    Data2: 1207712587
+    Data3: 630405254
+    Data4: -712762543
+  Banks:
+  - {fileID: 3799818825547264446}
+  IsStream: 1
+  Is3D: 1
+  IsOneShot: 1
+  Parameters:
+  - {fileID: -5744821454467300925}
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &6195921574266703190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -902,37 +931,8 @@ MonoBehaviour:
   Path: FMOD/Desktop/test.bank
   Name: test
   StudioPath: bank:/test
-  lastModified: 639189567262794419
+  lastModified: 639184432899952554
   FileSizes: []
-  Exists: 1
---- !u!114 &7998610026557335279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
-  m_Name: parameter:/item_use/Item
-  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorParamRef
-  Name: Item
-  StudioPath: 
-  Min: 0
-  Max: 4
-  Default: 4
-  ID:
-    data1: 3713531993
-    data2: 47711451
-  Type: 2
-  IsGlobal: 0
-  Labels:
-  - MARIJUANA
-  - COCAINE
-  - MDMA
-  - LSD
-  - WATER
   Exists: 1
 --- !u!114 &8515227860900704440
 MonoBehaviour:
@@ -949,7 +949,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639190519263000330
+  lastModified: 639190517776857488
   FileSizes: []
   Exists: 1
 --- !u!114 &9100537751718654615

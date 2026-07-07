@@ -14499,14 +14499,14 @@ RectTransform:
   m_GameObject: {fileID: 423010989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.41, y: 0.6, z: 0.41}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.49, y: 0.7170732, z: 0.49}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1489804990}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 19.39, y: 3.84}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &423010991
@@ -14529,7 +14529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1e470d93358b54944b38fcdb9a14063c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 64e9d7c3c4608fd40a1bcbef643710c9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17031,9 +17031,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ComboMeterUI
   anelloImage: {fileID: 492353895}
   oggettoDaTremare: {fileID: 492353893}
-  maxCombo: 300
   durataTremolio: 0.15
   forzaTremolio: 5
+  player: {fileID: 1673458961}
 --- !u!114 &492353895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17047,7 +17047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0.95273113, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -34637,8 +34637,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 137, y: -390}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 563.04987, y: -390}
+  m_SizeDelta: {x: 852.1003, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1071564424
 MonoBehaviour:
@@ -48219,7 +48219,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 28228e6959606724ab7b93279b89531d, type: 3}
   player: {fileID: 0}
   fadeSpeed: 5
-  dimmedBrightness: 0.7
+  dimmedBrightness: 0.5
 --- !u!1 &1452754065
 GameObject:
   m_ObjectHideFlags: 0
@@ -70775,8 +70775,44 @@ PrefabInstance:
       value: snapshot:/Bad Trip
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: hitSoundEvent.Guid.Data1
+      value: 301124300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: hitSoundEvent.Guid.Data2
+      value: 1312097434
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: hitSoundEvent.Guid.Data3
+      value: 379313575
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: hitSoundEvent.Guid.Data4
+      value: 831931589
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: changeMusicSoundEvent.Path
       value: event:/UI/ui_switch
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: consumeItemSoundEvent.Path
+      value: event:/Wizzy/wizzy_use_item
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: attackSoundEvent.Guid.Data1
+      value: 33502128
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: attackSoundEvent.Guid.Data2
+      value: 1163618718
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: attackSoundEvent.Guid.Data3
+      value: -1970343021
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: attackSoundEvent.Guid.Data4
+      value: 1571139758
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: badTripSoundEvent.Guid.Data1
@@ -70809,6 +70845,22 @@ PrefabInstance:
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: changeMusicSoundEvent.Guid.Data4
       value: 2137891361
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: consumeItemSoundEvent.Guid.Data1
+      value: -88154196
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: consumeItemSoundEvent.Guid.Data2
+      value: 1207712587
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: consumeItemSoundEvent.Guid.Data3
+      value: 630405254
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: consumeItemSoundEvent.Guid.Data4
+      value: -712762543
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

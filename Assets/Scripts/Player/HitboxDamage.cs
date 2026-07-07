@@ -47,7 +47,6 @@ public class HitboxDamage : MonoBehaviour
         if (attaccoATempo && ComboMeterUI.Instance != null && RhythmManager.Instance.musicType == MusicType.DEFAULT)
         {
             player.AddMusicPoints(10f);
-            ComboMeterUI.Instance.AggiungiCombo(10f); // Riempe la barra di 10 punti
         }
     }
 

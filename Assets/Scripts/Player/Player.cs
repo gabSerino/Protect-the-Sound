@@ -73,8 +73,8 @@ public class Player : MonoBehaviour
 
     [Header("Music Settings")]
     [SerializeField] private float timePerMusicPointDecrease = 0.3f;
-    private float maxMusicPoints = 100f;
-    private float musicPtsThreshold = 75f;
+    public float maxMusicPoints = 100f;
+    public float musicPtsThreshold = 75f;
 
     [Header("Mental Status Settings")]
     public PlayerMentalStatus mentalStatus = PlayerMentalStatus.DEFAULT;
@@ -102,6 +102,8 @@ public class Player : MonoBehaviour
     [SerializeField] private FMODUnity.EventReference badTripSoundEvent = new FMODUnity.EventReference(); // qui metti lo Snapshot
     private FMOD.Studio.EventInstance badTripInstance;
     [SerializeField] private FMODUnity.EventReference changeMusicSoundEvent = new FMODUnity.EventReference();
+    [SerializeField] private FMODUnity.EventReference consumeItemSoundEvent = new FMODUnity.EventReference();
+    [SerializeField] private string consumeItemSoundParameter = "Item";
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -779,7 +781,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
 
     private void ResetMusicPoints()
     {
-        currentMusicPoints = 80f;
+        currentMusicPoints = 0f;
     }
 
     public void SetMusicPoints(float amount)
@@ -978,6 +980,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
         }
 
         ApplyModifiers(itemData);
+        PlayConsumeItemSound(GetItemLabel(itemData));
 
         switch (itemData.itemType)
         {
@@ -1011,6 +1014,37 @@ private bool IsLikelyGamepadInput(Vector2 input)
         }
 
         return false;
+    }
+
+    private void PlayConsumeItemSound(string itemLabel)
+    {
+        if (consumeItemSoundEvent.IsNull) return;
+
+        FMOD.Studio.EventInstance consumeItemInstance =
+            FMODUnity.RuntimeManager.CreateInstance(consumeItemSoundEvent);
+
+        consumeItemInstance.setParameterByNameWithLabel(
+            consumeItemSoundParameter,
+            itemLabel);
+
+        consumeItemInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        consumeItemInstance.start();
+        consumeItemInstance.release();
+    }
+
+    private string GetItemLabel(ItemData itemData)
+    {
+        if (itemData.itemType == ItemType.WATER)
+            return "WATER";
+
+        switch (itemData.drugType)
+        {
+            case DrugType.MARIJUANA: return "MARIJUANA";
+            case DrugType.COCAINE:   return "COCAINE";
+            case DrugType.MDMA:      return "MDMA";
+            case DrugType.LSD:       return "LSD";
+            default:                 return "WATER";
+        }
     }
 
     // ==========================================
