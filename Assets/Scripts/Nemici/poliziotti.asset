@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb19a13769a88f4c92712dfc7ab830a, type: 3}
   m_Name: poliziotti
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
-  maxHealth: 30
+  maxHealth: 50
   moveSpeed: 3
   chargeSpeed: 5
   chargeWindupTime: 0.5
@@ -23,5 +23,6 @@ MonoBehaviour:
   attackCooldown: 1
   firstAttackDelay: 0.4
   aggroRadius: 7
-  dropChance: 0.5
+  knockbackForce: 15
+  dropChance: 0.25
   lootTable: {fileID: 11400000, guid: 8044bb0aef9b3774d94ac843dfa212e0, type: 2}

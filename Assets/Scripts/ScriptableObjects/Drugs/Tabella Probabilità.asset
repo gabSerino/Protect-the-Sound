@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LootTable
   drops:
   - item: {fileID: 11400000, guid: 7d3e589e44305144fae81b7917e1e033, type: 2}
-    weight: 50
+    weight: 10
   - item: {fileID: 11400000, guid: ed0b779f495dfee4393b0fd2f9905756, type: 2}
     weight: 30
   - item: {fileID: 11400000, guid: 6b0531630f7e0e842b47eab01636990e, type: 2}
-    weight: 15
+    weight: 50
   - item: {fileID: 11400000, guid: e5b15b4a2036bf4418d490a4689f6e67, type: 2}
-    weight: 5
+    weight: 20

@@ -93,6 +93,7 @@ public class Player : MonoBehaviour
     public Slider healthSlider;
     public UIJuice uiJuice;
     public InventoryUI inventoryUI;
+    public GameObject fuocoUI;
 
     [Header("Audio")]
     [SerializeField] private FMODUnity.EventReference attackSoundEvent = new FMODUnity.EventReference();
@@ -200,6 +201,8 @@ public class Player : MonoBehaviour
 
         if (playerRenderers == null || playerRenderers.Length == 0)
             Debug.LogWarning("Attenzione: Nessun Renderer valido trovato sul Player o nei suoi figli!");
+
+        fuocoUI.SetActive(false);
     }
 
     void Start()
@@ -812,10 +815,12 @@ private bool IsLikelyGamepadInput(Vector2 input)
         if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT)
         {
             canChangeMusicType = false;
+            fuocoUI.SetActive(false);
             return;
         }
         ;
         canChangeMusicType = true;
+        fuocoUI.SetActive(true);
         if (playerInputManager.SongSwitchInput)
         {
             ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1) % 5));
