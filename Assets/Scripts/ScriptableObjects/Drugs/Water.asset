@@ -17,7 +17,7 @@ MonoBehaviour:
   displayName: Water
   subtitle: Refreshing!
   description: 
-  icon: {fileID: 21300000, guid: e356582556c5dad43aa4f45ff89f0c5e, type: 3}
+  icon: {fileID: 21300000, guid: d18357a25802edd4baf162d746bf2476, type: 3}
   attackType: 0
   attackRateMultiplier: 1
   damageOverTime: 0
@@ -33,3 +33,4 @@ MonoBehaviour:
   StaminaRecoverMultiplier: 1
   speedMultiplier: 1
   badTripChance: 0
+  drugDuration: 10
