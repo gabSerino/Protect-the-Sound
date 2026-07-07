@@ -40310,6 +40310,55 @@ Transform:
   - {fileID: 356597491}
   m_Father: {fileID: 1593784474}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1257621229
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1257621231}
+  - component: {fileID: 1257621230}
+  m_Layer: 0
+  m_Name: Bad Trip
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1257621230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257621229}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: b9c6b28c6b716e64eac657c6c59e5fc5, type: 2}
+--- !u!4 &1257621231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257621229}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -16.82895, y: -74.75711, z: 48.451435}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1261688560
 GameObject:
   m_ObjectHideFlags: 0
@@ -70129,9 +70178,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1815132738}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripVolume
+      value: 
+      objectReference: {fileID: 1257621229}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: playerInputManager
       value: 
       objectReference: {fileID: 254813699}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripSoundEvent.Path
+      value: snapshot:/Bad Trip
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripSoundEvent.Guid.Data1
+      value: -271698631
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripSoundEvent.Guid.Data2
+      value: 1304503688
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripSoundEvent.Guid.Data3
+      value: -1918728806
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: badTripSoundEvent.Guid.Data4
+      value: -1324983423
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -70166,3 +70239,4 @@ SceneRoots:
   - {fileID: 1266501819}
   - {fileID: 101708193}
   - {fileID: 1352296901}
+  - {fileID: 1257621231}

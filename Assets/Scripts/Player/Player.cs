@@ -106,6 +106,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
     [SerializeField] private Animator playerAnimator;
+    [SerializeField] private GameObject badTripVolume; 
 
     [Header("Grafica Player (Per il Lampeggio)")]
     [SerializeField] private Renderer[] playerRenderers;
@@ -161,6 +162,11 @@ public class Player : MonoBehaviour
         hitboxDamage = attackHitbox.GetComponent<HitboxDamage>();
         hitboxCollider = attackHitbox.GetComponent<Collider>();
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
+
+        if(badTripVolume != null)
+        {
+            badTripVolume.SetActive(false);
+        }
 
         // 1. Prendiamo tutti i renderer presenti nel Player e nei figli
         Renderer[] allRenderers = GetComponentsInChildren<Renderer>(true);
@@ -916,6 +922,11 @@ public class Player : MonoBehaviour
                     StopCoroutine(activeDrugCoroutine);
                     activeDrugCoroutine = null;
                 }
+                if (mentalStatus == PlayerMentalStatus.BADTRIP)
+                {
+                    StopBadTripSound();
+                    badTripVolume.SetActive(false);
+                }
                 ApplyDrugStatus(DrugType.NONE);
                 ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
                 ResetModifiersToDefault();
@@ -942,13 +953,23 @@ public class Player : MonoBehaviour
 
     private IEnumerator DrugEffectRoutine(float duration)
     {
+        if(mentalStatus == PlayerMentalStatus.BADTRIP)
+        {
+            ApplyBadTrip();
+        }
         // Aspetta i secondi definiti nell'ItemData
         yield return new WaitForSeconds(duration);
 
         // Tempo scaduto: resetta gli stati
+        if (mentalStatus == PlayerMentalStatus.BADTRIP)
+        {
+            StopBadTripSound();
+            badTripVolume.SetActive(false);
+        }
         ApplyDrugStatus(DrugType.NONE);
         ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
         ResetModifiersToDefault();
+        
 
         activeDrugCoroutine = null;
         Debug.Log("L'effetto della droga è svanito, torni normale.");
@@ -956,22 +977,17 @@ public class Player : MonoBehaviour
 
     private void ResetModifiersToDefault()
     {
-        // Riporta tutte le statistiche al loro valore base
         walkingSpeed = baseWalkingSpeed;
         attackTime = DEFAULT_ATTACK_TIME;
         attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+        attackDamage = baseAttackDamage;
         ChangeAttackType(AttackType.DEFAULT);
-
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints = baseMaxHealth;
-
         currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
-
-        attackDamage = baseAttackDamage;
-
+        if (maxHealthPoints > previousMaxHealth)
+            currentHealthPoints += maxHealthPoints - previousMaxHealth;
         UpdateUI(); // Questo aggiorna solo la barra della vita
-
-        
         UpdateInventoryUI(); // Forza la UI (e la faccia!) ad aggiornarsi
     }
 
@@ -1028,24 +1044,6 @@ public class Player : MonoBehaviour
         this.consumedDrug = drugType;
     }
 
-    private void ResetDefaultModifiers()
-    {
-        walkingSpeed = baseWalkingSpeed;
-        attackTime = DEFAULT_ATTACK_TIME;
-        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
-        attackDamage = baseAttackDamage;
-        ChangeAttackType(AttackType.DEFAULT);
-        float previousMaxHealth = this.maxHealthPoints;
-        maxHealthPoints = baseMaxHealth;
-        currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
-        if (maxHealthPoints > previousMaxHealth)
-            currentHealthPoints += maxHealthPoints - previousMaxHealth;
-        UpdateUI();
-        ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
-        ApplyDrugStatus(DrugType.NONE);
-    }
-
-
     private void ApplyModifiers(ItemData itemData)
     {
         walkingSpeed = baseWalkingSpeed * itemData.speedMultiplier;
@@ -1073,6 +1071,7 @@ public class Player : MonoBehaviour
         walkingSpeed = baseWalkingSpeed * 0.75f;
         attackTime = DEFAULT_ATTACK_TIME * 2f;
         PlayBadTripSound();
+        badTripVolume.SetActive(true);
     }
 
     // =========================
