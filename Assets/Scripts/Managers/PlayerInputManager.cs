@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 
 public class PlayerInputManager : MonoBehaviour
 {
@@ -18,7 +19,8 @@ public class PlayerInputManager : MonoBehaviour
     [SerializeField] private string attack = "Attack";
     [SerializeField] private string goLeftInventorySlot = "Go Left Inventory Slot"; 
     [SerializeField] private string goRightInventorySlot = "Go Right Inventory Slot"; 
-    [SerializeField] private string useItem = "Use Item"; 
+    [SerializeField] private string useItem = "Use Item";
+    [SerializeField] private string deleteItem = "Delete Item";
     [SerializeField] private string dash = "Dash";
 
     [SerializeField] private string songSwitch = "Song Switch";
@@ -30,6 +32,7 @@ public class PlayerInputManager : MonoBehaviour
     private InputAction goLeftInventorySlotAction;
     private InputAction goRightInventorySlotAction;
     private InputAction useItemAction;
+    private InputAction deleteItemAction;
     private InputAction dashAction;
     private InputAction songSwitchAction;
     private InputAction songConfirmAction;
@@ -40,6 +43,7 @@ public class PlayerInputManager : MonoBehaviour
     public bool GoLeftInventorySlotInput { get; private set; }
     public bool GoRightInventorySlotInput { get; private set; }
     public bool UseItemInput { get; private set; }
+    public bool DeleteItemInput { get; private set; }
     public bool DashInput { get; private set; }
     public bool SongSwitchInput { get; private set; }
     public bool SongConfirmInput { get; private set; }
@@ -48,6 +52,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = cursorVisible;
+        
         InputActionMap actionMap = inputActions.FindActionMap(actionMapName);
 
         moveAction = actionMap.FindAction(move);
@@ -56,27 +61,77 @@ public class PlayerInputManager : MonoBehaviour
         goLeftInventorySlotAction = actionMap.FindAction(goLeftInventorySlot);
         goRightInventorySlotAction = actionMap.FindAction(goRightInventorySlot);
         useItemAction = actionMap.FindAction(useItem);
+        deleteItemAction = actionMap.FindAction(deleteItem);
         dashAction = actionMap.FindAction(dash);
         songSwitchAction = actionMap.FindAction(songSwitch);
         songConfirmAction = actionMap.FindAction(songConfirm);
 
         BindActions();
 
-        // Assicuriamoci che l'asset sia attivo fin da subito.
+        // Abilitiamo esplicitamente l'action map
+        if (actionMap != null)
+        {
+            actionMap.Enable();
+        }
+
+        // Assicuriamoci che l'asset sia attivo
         inputActions.Enable();
     }
 
-    private void Update()
+private void Update()
+{
+    // 1. Lettura standard dall'Action Asset
+    if (moveAction != null && moveAction.enabled)
     {
-        // Move e AttackDirection sono valori Vector2 continui: li leggiamo
-        // ogni frame direttamente, invece di fidarci solo di performed/canceled,
-        // per evitare che un ricalcolo del composite WASD lasci il valore a zero.
-        if (moveAction != null)
-            MoveInput = moveAction.ReadValue<Vector2>();
-
-        if (attackDirectionAction != null)
-            AttackDirectionInput = attackDirectionAction.ReadValue<Vector2>();
+        MoveInput = moveAction.ReadValue<Vector2>();
     }
+
+    // 2. FALLBACK DEFINTIVO: Se l'azione restituisce zero ma l'utente sta premendo la tastiera
+    if (MoveInput == Vector2.zero && Keyboard.current != null)
+    {
+        Vector2 keyboardFallback = Vector2.zero;
+
+        if (Keyboard.current.wKey.isPressed) keyboardFallback.y += 1f;
+        if (Keyboard.current.sKey.isPressed) keyboardFallback.y -= 1f;
+        if (Keyboard.current.dKey.isPressed) keyboardFallback.x += 1f;
+        if (Keyboard.current.aKey.isPressed) keyboardFallback.x -= 1f;
+
+        // Se abbiamo rilevato movimento da tastiera, usiamo questo valore!
+        if (keyboardFallback != Vector2.zero)
+        {
+            MoveInput = keyboardFallback.normalized;
+        }
+    }
+
+    // Lettura direzione attacco
+    if (attackDirectionAction != null && attackDirectionAction.enabled)
+    {
+        AttackDirectionInput = attackDirectionAction.ReadValue<Vector2>();
+        
+        // Applichiamo lo stesso fallback anche all'attacco se necessario (es. se usi le frecce direzionali)
+        if (AttackDirectionInput == Vector2.zero && Keyboard.current != null)
+        {
+            Vector2 attackFallback = Vector2.zero;
+            if (Keyboard.current.upArrowKey.isPressed) attackFallback.y += 1f;
+            if (Keyboard.current.downArrowKey.isPressed) attackFallback.y -= 1f;
+            if (Keyboard.current.rightArrowKey.isPressed) attackFallback.x += 1f;
+            if (Keyboard.current.leftArrowKey.isPressed) attackFallback.x -= 1f;
+            
+            if (attackFallback != Vector2.zero)
+            {
+                AttackDirectionInput = attackFallback.normalized;
+            }
+        }
+    }
+
+    // Controllo UI (lasciato intatto)
+    if (UnityEngine.EventSystems.EventSystem.current != null)
+    {
+        var selected = UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject;
+        if (selected != null)
+            Debug.Log($"UI Selected: {selected.name}");
+    }
+}
 
     private void BindActions()
     {
@@ -107,6 +162,12 @@ public class PlayerInputManager : MonoBehaviour
             useItemAction.canceled += ctx => UseItemInput = false;
         }
 
+        if (deleteItemAction != null)
+        {
+            deleteItemAction.performed += ctx => DeleteItemInput = true;
+            deleteItemAction.canceled += ctx => DeleteItemInput = false;
+        }
+
         if (dashAction != null)
         {
             dashAction.performed += ctx => DashInput = true;
@@ -130,10 +191,46 @@ public class PlayerInputManager : MonoBehaviour
     public void ConsumeGoRightInventorySlotInput() => GoRightInventorySlotInput = false;
     public void ConsumeAttackInput() => AttackInput = false;
     public void ConsumeUseItemInput() => UseItemInput = false;
+    public void ConsumeDeleteItemInput() => DeleteItemInput = false;
     public void ConsumeDashInput() => DashInput = false;
     public void ConsumeSongSwitchInput() => SongSwitchInput = false;
     public void ConsumeSongConfirmInput() => SongConfirmInput = false;
 
     public void DisableAllControls() => inputActions.Disable();
     public void EnableAllControls() => inputActions.Enable();
+
+
+    private void OnEnable()
+    {
+        InputSystem.onActionChange += OnActionChange;
+    }
+
+    private void OnDisable()
+    {
+        InputSystem.onActionChange -= OnActionChange;
+    }
+
+    private void OnActionChange(object obj, InputActionChange change)
+    {
+        // Controlliamo quando un'azione viene eseguita/effettuata
+        if (change == InputActionChange.ActionStarted || change == InputActionChange.ActionPerformed)
+        {
+            var action = (InputAction)obj;
+            if (action.activeControl != null)
+            {
+                var device = action.activeControl.device;
+
+                if (device is Gamepad)
+                {
+                    // Il giocatore sta usando il controller
+                    // Es: UIPlayModeManager.SetControllerMode(true);
+                }
+                else if (device is Keyboard || device is Mouse)
+                {
+                    // Il giocatore sta usando tastiera/mouse
+                    // Es: UIPlayModeManager.SetControllerMode(false);
+                }
+            }
+        }
+    }
 }

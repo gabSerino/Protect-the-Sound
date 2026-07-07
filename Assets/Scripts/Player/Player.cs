@@ -777,7 +777,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
 
     private void ResetMusicPoints()
     {
-        currentMusicPoints = 80f;
+        currentMusicPoints = 0f;
     }
 
     public void SetMusicPoints(float amount)
@@ -864,6 +864,13 @@ private bool IsLikelyGamepadInput(Vector2 input)
                 }
             }
             playerInputManager.ConsumeUseItemInput();
+        }
+        if (playerInputManager.DeleteItemInput)
+        {
+            RemoveItem(inventory.GetSelectedIndex());
+            inventory.SortItems();
+            UpdateInventoryUI();
+            playerInputManager.ConsumeDeleteItemInput();
         }
     }
 
