@@ -13,11 +13,11 @@ public class Player : MonoBehaviour
     // =========================
 
     [Header("Movement Settings (Base)")]
-    [SerializeField] private float walkingSpeed;
     [SerializeField] private float baseWalkingSpeed = 8f;
     [SerializeField] private float rotationSpeed = 720f; // gradi al secondo, regola a piacere
     [SerializeField] private float acceleration = 100f;
     [SerializeField] private float deceleration = 200f;
+    private float walkingSpeed;
 
     [Header("Knockback Settings")]
     [SerializeField] private float knockbackDecay = 10f;
@@ -40,14 +40,19 @@ public class Player : MonoBehaviour
 
     [Header("Attack Settings (Base)")]
     [SerializeField] private AttackType attackType = AttackType.DEFAULT;
-    [SerializeField] private float attackDamage;
     [SerializeField] private float baseAttackDamage = 15f;
-    [SerializeField] private float attackRange = 2f;
-    [SerializeField] private float attackWidth = 2f;
+    [SerializeField] private float baseAttackRange = 2f;
+    [SerializeField] private float baseAttackWidth = 2f;
+    [SerializeField] private float baseAttackBoxDuration = 0.2f;
+    [SerializeField] private float baseAttackTime = 0.4f;
+    [SerializeField] private float baseAttackMoveSpeedMultiplier = 0f;
 
-    [SerializeField] private float attackBoxDuration = 0.2f;
-    [SerializeField] private float attackTime = 0.4f;
-    [SerializeField] private float attackMoveSpeedMultiplier = 0f;
+    private float attackDamage;
+    private float attackRange;
+    private float attackWidth;
+    private float attackBoxDuration;
+    private float attackTime;
+    private float attackMoveSpeedMultiplier;
 
     [Header("Rhythm Settings")]
     [SerializeField] private float bpm = 120f;
@@ -73,7 +78,7 @@ public class Player : MonoBehaviour
 
     [Header("Music Settings")]
     [SerializeField] private float timePerMusicPointDecrease = 0.3f;
-    public float maxMusicPoints = 100f;
+    [SerializeField] private float baseMaxMusicPoints = 100f;
     public float musicPtsThreshold = 75f;
 
     [Header("Mental Status Settings")]
@@ -81,8 +86,10 @@ public class Player : MonoBehaviour
     public DrugType consumedDrug = DrugType.NONE;
 
     [Header("Invulnerability Settings")]
-    [SerializeField] private float invulnerabilityDuration = 2f;
-    [SerializeField] private float flickerInterval = 0.1f;
+    [SerializeField] private float baseInvulnerabilityDuration = 2f;
+    [SerializeField] private float baseFlickerInterval = 0.1f;
+    private float invulnerabilityDuration;
+    private float flickerInterval;
 
     [Header("Inventory Settings")]
     [SerializeField] private int inventorySize = 3;
@@ -113,30 +120,18 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject playerCapsule;
     [SerializeField] private GameObject attackHitbox;
     [SerializeField] private Animator playerAnimator;
-    [SerializeField] private GameObject badTripVolume; 
+    [SerializeField] private GameObject badTripVolume;
 
     [Header("Grafica Player (Per il Lampeggio)")]
     [SerializeField] private Renderer[] playerRenderers;
-
-    // ALTRE COSTANTI DI GIOCO
-    private const float DEFAULT_ATTACK_RANGE = 2f;
-    private const float DEFAULT_ATTACK_WIDTH = 2f;
-    private const float DEFAULT_ATTACK_BOX_DURATION = 0.2f;
-    private const float DEFAULT_ATTACK_TIME = 0.4f;
-    private const float DEFAULT_ATTACK_MOVE_SPEED_MULTIPLIER = 0.5f;
-    private const float DEFAULT_INVULNERABILITY_DURATION = 2f;
-    private const float DEFAULT_FLICKER_INTERVAL = 0.1f;
-    private const float DEFAULT_MAX_MUSIC_POINTS = 100f;
 
     // =========================
     // PROPERTIES & CURRENT STATS
     // =========================
     public float currentHealthPoints { get; private set; }
     public float currentMusicPoints { get; private set; }
+    public float maxMusicPoints { get; private set; }
     public MusicType selectedMusicType = MusicType.DEFAULT;
-
-    // Valori attuali che possono essere buffati dai modificatori
-    
 
     // =========================
     // PRIVATE FIELDS
@@ -158,6 +153,7 @@ public class Player : MonoBehaviour
     private CharacterController controller;
     private bool isInvulnerable = false;
     private Coroutine activeInvincibilityCoroutine;
+    private Coroutine activeDamageOverTimeCoroutine;
     private Inventory inventory;
 
     // =========================
@@ -171,7 +167,7 @@ public class Player : MonoBehaviour
         hitboxCollider = attackHitbox.GetComponent<Collider>();
         hitboxRenderer = attackHitbox.GetComponent<Renderer>();
 
-        if(badTripVolume != null)
+        if (badTripVolume != null)
         {
             badTripVolume.SetActive(false);
         }
@@ -186,7 +182,7 @@ public class Player : MonoBehaviour
             // Escludiamo esplicitamente gli oggetti di servizio in base al loro nome
             if (r.gameObject.name == "Attack Hitbox" ||
                 r.gameObject.name == "Face" ||
-                r.gameObject.name == "Player Capsule"||
+                r.gameObject.name == "Player Capsule" ||
                 r.gameObject.name == "direzione attacco")
             {
                 continue; // Salta questo oggetto e passa al prossimo
@@ -207,9 +203,18 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        // --- Inizializzazione stats correnti dalle stats base ---
         walkingSpeed = baseWalkingSpeed;
         attackDamage = baseAttackDamage;
+        attackRange = baseAttackRange;
+        attackWidth = baseAttackWidth;
+        attackBoxDuration = baseAttackBoxDuration;
+        attackTime = baseAttackTime;
+        attackMoveSpeedMultiplier = baseAttackMoveSpeedMultiplier;
         maxHealthPoints = baseMaxHealth;
+        invulnerabilityDuration = baseInvulnerabilityDuration;
+        flickerInterval = baseFlickerInterval;
+        maxMusicPoints = baseMaxMusicPoints;
 
         hitboxCollider.enabled = false;
         hitboxRenderer.enabled = false;
@@ -261,10 +266,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    // =========================
-    // LEVEL UP SYSTEM
-    // =========================
-
     private void OnEnable()
     {
         EnemyBase.OnEnemyDied += HandleEnemyKilled;
@@ -283,6 +284,10 @@ public class Player : MonoBehaviour
             badTripInstance.release();
         }
     }
+
+    // =========================
+    // LEVEL UP SYSTEM
+    // =========================
 
     private void HandleEnemyKilled()
     {
@@ -408,77 +413,77 @@ public class Player : MonoBehaviour
         playerAnimator.SetFloat("speed", input.magnitude);
     }
 
-   private void HandleRotation()
-{
-    Vector3 targetDirection = Vector3.zero;
-    Vector2 aimInput = playerInputManager.AttackDirectionInput;
-    bool isGamepadInput = aimInput.sqrMagnitude > 0f && IsLikelyGamepadInput(aimInput);
-
-    if (isGamepadInput)
+    private void HandleRotation()
     {
-        // Lo stick è una posizione assoluta, non un delta: niente accumulo.
-        bool isAimingWithStick = aimInput.magnitude > 0.2f; // deadzone dedicata allo stick
+        Vector3 targetDirection = Vector3.zero;
+        Vector2 aimInput = playerInputManager.AttackDirectionInput;
+        bool isGamepadInput = aimInput.sqrMagnitude > 0f && IsLikelyGamepadInput(aimInput);
 
-        if (isAimingWithStick)
+        if (isGamepadInput)
         {
-            targetDirection = gameCamera.transform.forward * aimInput.y + gameCamera.transform.right * aimInput.x;
-            targetDirection.y = 0f;
-        }
-        else if (!isAttacking)
-        {
-            targetDirection = movementDirection;
-            targetDirection.y = 0f;
+            // Lo stick è una posizione assoluta, non un delta: niente accumulo.
+            bool isAimingWithStick = aimInput.magnitude > 0.2f; // deadzone dedicata allo stick
+
+            if (isAimingWithStick)
+            {
+                targetDirection = gameCamera.transform.forward * aimInput.y + gameCamera.transform.right * aimInput.x;
+                targetDirection.y = 0f;
+            }
+            else if (!isAttacking)
+            {
+                targetDirection = movementDirection;
+                targetDirection.y = 0f;
+            }
+            else
+            {
+                return;
+            }
         }
         else
         {
-            return;
+            // Mouse: delta accumulato, come prima.
+            virtualAimPosition += aimInput * mouseSensitivity;
+
+            if (virtualAimPosition.magnitude > maxAimRadius)
+                virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
+
+            bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
+
+            if (isAimingWithMouse)
+            {
+                Vector3 mouseWorldDirection = new Vector3(virtualAimPosition.x, 0f, virtualAimPosition.y);
+                targetDirection = gameCamera.transform.forward * mouseWorldDirection.z + gameCamera.transform.right * mouseWorldDirection.x;
+                targetDirection.y = 0f;
+            }
+            else if (!isAttacking)
+            {
+                targetDirection = movementDirection;
+                targetDirection.y = 0f;
+            }
+            else
+            {
+                return;
+            }
         }
+
+        if (targetDirection.sqrMagnitude < 0.01f) return;
+
+        Vector3 snappedDirection = targetDirection.normalized;
+        playerAnimator.SetFloat("X_atk", snappedDirection.x);
+        playerAnimator.SetFloat("Y_atk", snappedDirection.z);
+
+        // Smoothing sulla rotazione per eliminare lo "snap" del mouse.
+        Quaternion targetRotation = Quaternion.LookRotation(snappedDirection);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
-    else
+
+    private bool IsLikelyGamepadInput(Vector2 input)
     {
-        // Mouse: delta accumulato, come prima.
-        virtualAimPosition += aimInput * mouseSensitivity;
-
-        if (virtualAimPosition.magnitude > maxAimRadius)
-            virtualAimPosition = virtualAimPosition.normalized * maxAimRadius;
-
-        bool isAimingWithMouse = virtualAimPosition.sqrMagnitude > (minAimDeadzone * minAimDeadzone);
-
-        if (isAimingWithMouse)
-        {
-            Vector3 mouseWorldDirection = new Vector3(virtualAimPosition.x, 0f, virtualAimPosition.y);
-            targetDirection = gameCamera.transform.forward * mouseWorldDirection.z + gameCamera.transform.right * mouseWorldDirection.x;
-            targetDirection.y = 0f;
-        }
-        else if (!isAttacking)
-        {
-            targetDirection = movementDirection;
-            targetDirection.y = 0f;
-        }
-        else
-        {
-            return;
-        }
+        // Placeholder semplice: se il tuo PlayerInputManager sa già distinguere
+        // il dispositivo, sostituisci questo metodo con quel valore diretto.
+        return UnityEngine.InputSystem.Gamepad.current != null &&
+               UnityEngine.InputSystem.Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.01f;
     }
-
-    if (targetDirection.sqrMagnitude < 0.01f) return;
-
-    Vector3 snappedDirection = targetDirection.normalized;
-    playerAnimator.SetFloat("X_atk", snappedDirection.x);
-    playerAnimator.SetFloat("Y_atk", snappedDirection.z);
-
-    // Smoothing sulla rotazione per eliminare lo "snap" del mouse.
-    Quaternion targetRotation = Quaternion.LookRotation(snappedDirection);
-    transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-}
-
-private bool IsLikelyGamepadInput(Vector2 input)
-{
-    // Placeholder semplice: se il tuo PlayerInputManager sa già distinguere
-    // il dispositivo, sostituisci questo metodo con quel valore diretto.
-    return UnityEngine.InputSystem.Gamepad.current != null &&
-           UnityEngine.InputSystem.Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.01f;
-}
 
     private Vector3 SnapTo8Directions(Vector3 direction)
     {
@@ -680,7 +685,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
         IsDead = true;
         DisableAllControls();
 
-        // NOVITÀ: Disattiviamo SUBITO il CharacterController. 
+        // NOVITÀ: Disattiviamo SUBITO il CharacterController.
         // Il corpo rimane visibile a terra per la "Fase 1", ma diventa intangibile.
         // I nemici e gli oggetti fisici ora gli passeranno attraverso come se fosse un fantasma!
         if (controller != null) controller.enabled = false;
@@ -694,7 +699,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
             if (r != null) r.enabled = false;
         }
 
-        // (Niente più teletrasporto a -1000! Il player resta esattamente dov'è, 
+        // (Niente più teletrasporto a -1000! Il player resta esattamente dov'è,
         // invisibile e intangibile. La telecamera resta tranquilla.)
 
         // Aspetta i secondi di assenza (schermo vuoto per il player)
@@ -782,6 +787,19 @@ private bool IsLikelyGamepadInput(Vector2 input)
         UpdateUI();
     }
 
+    private void UpdateUI()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealthPoints;
+            healthSlider.value = currentHealthPoints;
+        }
+    }
+
+    // =========================
+    // MUSIC POINTS
+    // =========================
+
     private void ResetMusicPoints()
     {
         currentMusicPoints = 0f;
@@ -818,7 +836,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
             fuocoUI.SetActive(false);
             return;
         }
-        ;
+
         canChangeMusicType = true;
         fuocoUI.SetActive(true);
         if (playerInputManager.SongSwitchInput)
@@ -846,13 +864,21 @@ private bool IsLikelyGamepadInput(Vector2 input)
         musicChangeInstance.release();
     }
 
-    private void UpdateUI()
+    private void DecreaseMusicPointsOverTime(float amount, float interval)
     {
-        if (healthSlider != null)
+        StartCoroutine(DecreaseMusicPointsRoutine(amount, interval));
+    }
+
+    private IEnumerator DecreaseMusicPointsRoutine(float amount, float interval)
+    {
+        yield return new WaitForSeconds(1.5f);
+        while (currentMusicPoints > 0)
         {
-            healthSlider.maxValue = maxHealthPoints;
-            healthSlider.value = currentHealthPoints;
+            currentMusicPoints = Mathf.Clamp(currentMusicPoints - amount, 0, maxMusicPoints);
+            yield return new WaitForSeconds(interval);
         }
+        RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
+        ChangeSelectedMusicType(MusicType.DEFAULT);
     }
 
     // =========================
@@ -880,7 +906,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
             ItemData itemToUse = inventory.GetSelectedItem();
             if (itemToUse != null)
             {
-                // MODIFICA QUI: Rimuove l'oggetto solo se UseItem restituisce true
+                // Rimuove l'oggetto solo se UseItem restituisce true
                 if (UseItem(itemToUse))
                 {
                     RemoveItem(inventory.GetSelectedIndex());
@@ -910,7 +936,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
         yield return new WaitForSeconds(delayTime);
     }
 
-    // Ora restituisce il risultato (true/false) all'oggetto che tenta di farsi raccogliere
+    // Restituisce il risultato (true/false) all'oggetto che tenta di farsi raccogliere
     public bool AddItem(ItemData item)
     {
         // Prova ad aggiungere l'oggetto in testa all'inventario
@@ -971,8 +997,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
     // ITEMS
     // =========================
 
-
-        public bool UseItem(ItemData itemData)
+    public bool UseItem(ItemData itemData)
     {
         if (itemData == null) return false;
 
@@ -1012,7 +1037,7 @@ private bool IsLikelyGamepadInput(Vector2 input)
                     ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
                 else
                     ApplyMentalStatus(PlayerMentalStatus.STUNNED);
-                
+
                 // Avvia il timer di scadenza della droga leggendo i secondi dall'oggetto
                 activeDrugCoroutine = StartCoroutine(DrugEffectRoutine(itemData.drugDuration));
                 return true; // Oggetto consumato con successo
@@ -1045,20 +1070,20 @@ private bool IsLikelyGamepadInput(Vector2 input)
         switch (itemData.drugType)
         {
             case DrugType.MARIJUANA: return "MARIJUANA";
-            case DrugType.COCAINE:   return "COCAINE";
-            case DrugType.MDMA:      return "MDMA";
-            case DrugType.LSD:       return "LSD";
-            default:                 return "WATER";
+            case DrugType.COCAINE: return "COCAINE";
+            case DrugType.MDMA: return "MDMA";
+            case DrugType.LSD: return "LSD";
+            default: return "WATER";
         }
     }
 
-    // ==========================================
-    // NUOVE FUNZIONI PER GESTIRE LA SCADENZA
-    // ==========================================
+    // =========================
+    // MODIFIERS & DRUG EFFECTS
+    // =========================
 
     private IEnumerator DrugEffectRoutine(float duration)
     {
-        if(mentalStatus == PlayerMentalStatus.BADTRIP)
+        if (mentalStatus == PlayerMentalStatus.BADTRIP)
         {
             ApplyBadTrip();
         }
@@ -1074,7 +1099,6 @@ private bool IsLikelyGamepadInput(Vector2 input)
         ApplyDrugStatus(DrugType.NONE);
         ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
         ResetModifiersToDefault();
-        
 
         activeDrugCoroutine = null;
         Debug.Log("L'effetto della droga è svanito, torni normale.");
@@ -1083,57 +1107,21 @@ private bool IsLikelyGamepadInput(Vector2 input)
     private void ResetModifiersToDefault()
     {
         walkingSpeed = baseWalkingSpeed;
-        attackTime = DEFAULT_ATTACK_TIME;
-        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+        attackTime = baseAttackTime;
+        attackBoxDuration = baseAttackBoxDuration;
         attackDamage = baseAttackDamage;
         ChangeAttackType(AttackType.DEFAULT);
+
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints = baseMaxHealth;
         currentHealthPoints = Mathf.Clamp(currentHealthPoints, 0, maxHealthPoints);
         if (maxHealthPoints > previousMaxHealth)
             currentHealthPoints += maxHealthPoints - previousMaxHealth;
+
         UpdateUI(); // Questo aggiorna solo la barra della vita
         UpdateInventoryUI(); // Forza la UI (e la faccia!) ad aggiornarsi
     }
 
-
-    /*
-        public void UseItem(ItemData itemData)
-        {
-            if (itemData == null) return;
-            ApplyModifiers(itemData);
-            switch (itemData.itemType)
-            {
-                case ItemType.WATER:
-                    ApplyDrugStatus(DrugType.NONE);
-                    ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
-                    break;
-                case ItemType.DRUG:
-                    ApplyDrugStatus(itemData.drugType);
-                    if (IsGettingBadTrip(itemData.badTripChance))
-                    {
-                        ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
-                        ApplyBadTrip();
-                        Debug.Log("BADTRIP");
-                    }
-                    else
-                        ApplyMentalStatus(PlayerMentalStatus.STUNNED);
-                    break;
-            }
-        }
-
-        private void DrugCooldown(float drugCooldown)
-        {
-            StartCoroutine(DrugCooldownRoutine(drugCooldown));
-        }
-
-        private IEnumerator DrugCooldownRoutine(float drugCooldown)
-        {
-            yield return new WaitForSeconds(drugCooldown);
-            ResetDefaultModifiers();
-            StopBadTripSound();
-        }
-    */
     private bool IsGettingBadTrip(float badTripChance)
     {
         return Convert.ToBoolean(Random.Range(0, 100) < badTripChance * 100);
@@ -1153,8 +1141,8 @@ private bool IsLikelyGamepadInput(Vector2 input)
     {
         ChangeAttackType(itemData.attackType);
         walkingSpeed = baseWalkingSpeed * itemData.speedMultiplier;
-        attackTime = DEFAULT_ATTACK_TIME / itemData.attackRateMultiplier;
-        attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION / itemData.attackRateMultiplier;
+        attackTime = baseAttackTime / itemData.attackRateMultiplier;
+        attackBoxDuration = baseAttackBoxDuration / itemData.attackRateMultiplier;
 
         float previousMaxHealth = this.maxHealthPoints;
         maxHealthPoints = baseMaxHealth * itemData.healthMultiplier;
@@ -1173,13 +1161,11 @@ private bool IsLikelyGamepadInput(Vector2 input)
 
     private void VerifyMusicDrugCombo()
     {
-        if (RhythmManager.Instance.musicType == MusicType.RAGGAE && consumedDrug == DrugType.MARIJUANA ||
-            RhythmManager.Instance.musicType == MusicType.DnB && consumedDrug == DrugType.COCAINE ||
-            RhythmManager.Instance.musicType == MusicType.SYNTHWAVE && consumedDrug == DrugType.LSD ||
-            RhythmManager.Instance.musicType == MusicType.BREAKCORE && consumedDrug == DrugType.MDMA)
-            musicDrugCombo = true;
-        else
-            musicDrugCombo = false;
+        musicDrugCombo =
+            (RhythmManager.Instance.musicType == MusicType.RAGGAE && consumedDrug == DrugType.MARIJUANA) ||
+            (RhythmManager.Instance.musicType == MusicType.DnB && consumedDrug == DrugType.COCAINE) ||
+            (RhythmManager.Instance.musicType == MusicType.SYNTHWAVE && consumedDrug == DrugType.LSD) ||
+            (RhythmManager.Instance.musicType == MusicType.BREAKCORE && consumedDrug == DrugType.MDMA);
     }
 
     private void RemoveDebuffs()
@@ -1201,10 +1187,10 @@ private bool IsLikelyGamepadInput(Vector2 input)
             walkingSpeed = baseWalkingSpeed;
         }
 
-        if (attackTime > DEFAULT_ATTACK_TIME)
+        if (attackTime > baseAttackTime)
         {
-            attackTime = DEFAULT_ATTACK_TIME;
-            attackBoxDuration = DEFAULT_ATTACK_BOX_DURATION;
+            attackTime = baseAttackTime;
+            attackBoxDuration = baseAttackBoxDuration;
         }
 
         float previousMaxHealth = this.maxHealthPoints;
@@ -1223,8 +1209,8 @@ private bool IsLikelyGamepadInput(Vector2 input)
     private void ApplyBadTrip()
     {
         walkingSpeed = baseWalkingSpeed * 0.75f;
-        attackTime = DEFAULT_ATTACK_TIME * 2f;
-        this.attackDamage = baseAttackDamage * 0.5f;
+        attackTime = baseAttackTime * 2f;
+        attackDamage = baseAttackDamage * 0.5f;
         PlayBadTripSound();
         badTripVolume.SetActive(true);
     }
@@ -1234,50 +1220,49 @@ private bool IsLikelyGamepadInput(Vector2 input)
     // =========================
 
     private void PlayBadTripSound()
-{
-    if (badTripSoundEvent.IsNull) return;
+    {
+        if (badTripSoundEvent.IsNull) return;
 
-    badTripInstance = FMODUnity.RuntimeManager.CreateInstance(badTripSoundEvent);
-    badTripInstance.start();
-    // Non rilasciamo subito: ci serve l'istanza per fermarla dopo
-}
+        badTripInstance = FMODUnity.RuntimeManager.CreateInstance(badTripSoundEvent);
+        badTripInstance.start();
+        // Non rilasciamo subito: ci serve l'istanza per fermarla dopo
+    }
 
-private void StopBadTripSound()
-{
-    if (!badTripInstance.isValid()) return;
+    private void StopBadTripSound()
+    {
+        if (!badTripInstance.isValid()) return;
 
-    badTripInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-    badTripInstance.release();
-}
+        badTripInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        badTripInstance.release();
+    }
+
     private void ChangeAttackType(AttackType attackType)
     {
         this.attackType = attackType;
         switch (attackType)
         {
             case AttackType.DEFAULT:
-                attackRange = DEFAULT_ATTACK_RANGE;
-                attackWidth = DEFAULT_ATTACK_WIDTH;
+                attackRange = baseAttackRange;
+                attackWidth = baseAttackWidth;
                 break;
             case AttackType.CLAYMORE:
-                attackRange = 1.5f * DEFAULT_ATTACK_RANGE;
-                attackWidth = 1.25f * DEFAULT_ATTACK_WIDTH;
+                attackRange = 1.5f * baseAttackRange;
+                attackWidth = 1.25f * baseAttackWidth;
                 break;
             case AttackType.DAGGERS:
-                attackRange = 0.5f * DEFAULT_ATTACK_RANGE;
-                attackWidth = 2f * DEFAULT_ATTACK_WIDTH;
+                attackRange = 0.5f * baseAttackRange;
+                attackWidth = 2f * baseAttackWidth;
                 break;
             case AttackType.LONGSWORD:
-                attackRange = 2f * DEFAULT_ATTACK_RANGE;
-                attackWidth = 0.75f * DEFAULT_ATTACK_WIDTH;
+                attackRange = 2f * baseAttackRange;
+                attackWidth = 0.75f * baseAttackWidth;
                 break;
             case AttackType.WHIP:
-                attackRange = 2.5f * DEFAULT_ATTACK_RANGE;
-                attackWidth = 0.25f * DEFAULT_ATTACK_WIDTH;
+                attackRange = 2.5f * baseAttackRange;
+                attackWidth = 0.25f * baseAttackWidth;
                 break;
         }
     }
-
-    private Coroutine activeDamageOverTimeCoroutine;
 
     private void ApplyDamageOverTime(float damageChangeTime, AnimationCurve damageCurve)
     {
@@ -1300,21 +1285,5 @@ private void StopBadTripSound()
         }
 
         activeDamageOverTimeCoroutine = null;
-    }
-    private void DecreaseMusicPointsOverTime(float amount, float interval)
-    {
-        StartCoroutine(DecreaseMusicPointsRoutine(amount, interval));
-    }
-
-    private IEnumerator DecreaseMusicPointsRoutine(float amount, float interval)
-    {
-        yield return new WaitForSeconds(1.5f);
-        while (currentMusicPoints > 0)
-        {
-            currentMusicPoints = Mathf.Clamp(currentMusicPoints - amount, 0, maxMusicPoints);
-            yield return new WaitForSeconds(interval);
-        }
-        RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
-        ChangeSelectedMusicType(MusicType.DEFAULT);
     }
 }

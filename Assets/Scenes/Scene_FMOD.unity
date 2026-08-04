@@ -73907,6 +73907,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1257621229}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: baseAttackTime
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: killsToLevelUp
       value: 15
       objectReference: {fileID: 0}
@@ -73918,6 +73922,10 @@ PrefabInstance:
       propertyPath: playerInputManager
       value: 
       objectReference: {fileID: 254813699}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: baseAttackBoxDuration
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: badTripSoundEvent.Path
       value: snapshot:/Bad Trip
