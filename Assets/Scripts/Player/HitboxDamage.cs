@@ -10,6 +10,9 @@ public class HitboxDamage : MonoBehaviour
     [SerializeField] private float knockbackForce = 20f;
     private Player player;
 
+    [Header("VFX")]
+[   SerializeField] private HitStarsVFX starsVFX;
+
     private List<EnemyBase> hitEnemies = new List<EnemyBase>();
     private Color[] hitboxColors;
     private Renderer myRenderer;
@@ -31,19 +34,18 @@ public class HitboxDamage : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Trova il nemico (leggendo lo script sul Padre)
         EnemyBase enemy = other.GetComponentInParent<EnemyBase>();
         if (enemy == null) return;
         if (hitEnemies.Contains(enemy)) return;
 
-        // Infligge danno e spinge indietro
         enemy.TakeDamage(damage);
         KnockbackEnemy(enemy, knockbackForce);
         hitEnemies.Add(enemy);
 
-        PlayHitSound(other.ClosestPoint(transform.position));
+        Vector3 hitPoint = other.ClosestPoint(transform.position);
+        PlayHitSound(hitPoint);
+        starsVFX?.PlayHitEffect(timingIndex, hitPoint);   // <-- nuova riga
 
-        // Se hai colpito a tempo, invia il segnale all'interfaccia UI!
         if (attaccoATempo && ComboMeterUI.Instance != null && RhythmManager.Instance.musicType == MusicType.DEFAULT)
         {
             player.AddMusicPoints(10f);
