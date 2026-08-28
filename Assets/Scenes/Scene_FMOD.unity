@@ -11824,7 +11824,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &324588690
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20348,7 +20348,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8a0a0b0e72332a54b923e0117be9a428, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ad156e9158a3ca84a88850554be6f607, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -30956,6 +30956,8 @@ MonoBehaviour:
   gameOverManager: {fileID: 1441539825}
   casseDaDistruggerePrimaDiApparire: []
   colliderDaAbilitare: []
+  iconaCassa: {fileID: 886272012}
+  spriteCassaSpaccata: {fileID: 21300000, guid: 3f5790cd1a9be1b4f8274137c3a3968f, type: 3}
 --- !u!1 &741550059
 GameObject:
   m_ObjectHideFlags: 0
@@ -41388,6 +41390,8 @@ MonoBehaviour:
   - {fileID: 739963633}
   colliderDaAbilitare:
   - {fileID: 1058306893}
+  iconaCassa: {fileID: 548345806}
+  spriteCassaSpaccata: {fileID: 21300000, guid: 714ae7ef054741e498950c07631bc999, type: 3}
 --- !u!1 &1058341043
 GameObject:
   m_ObjectHideFlags: 0
@@ -43826,7 +43830,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 33.379997, y: 28.881525}
+  m_Size: {x: 4.768571, y: 4.1259317}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -72098,6 +72102,8 @@ MonoBehaviour:
   gameOverManager: {fileID: 1441539825}
   casseDaDistruggerePrimaDiApparire: []
   colliderDaAbilitare: []
+  iconaCassa: {fileID: 348753239}
+  spriteCassaSpaccata: {fileID: 21300000, guid: aeedbf749fe89484eb1948c8388b95ab, type: 3}
 --- !u!114 &1946381182
 MonoBehaviour:
   m_ObjectHideFlags: 0

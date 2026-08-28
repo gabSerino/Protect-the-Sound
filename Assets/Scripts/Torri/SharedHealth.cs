@@ -14,13 +14,18 @@ public class SharedHealth : MonoBehaviour
     public float shakeIntensity = 5f;
 
     [Header("Gestore Game Over")]
-    public GameOverManager gameOverManager; // Assegnalo su OGNI cassa: il Game Over scatta quando anche l'ultima cassa rimasta viene distrutta
+    public GameOverManager gameOverManager;
 
-    [Header("Rivelazione Ritardata (solo per casse che partono nascoste)")]
+    [Header("Rivelazione Ritardata")]
     [Tooltip("Lascia vuoto se questa cassa è visibile e attaccabile fin dall'inizio")]
     public SharedHealth[] casseDaDistruggerePrimaDiApparire;
     [Tooltip("Collider da abilitare alla rivelazione, così i nemici non rilevano questa cassa prima del tempo")]
     public Collider[] colliderDaAbilitare;
+
+    [Header("Gestione Sprite Danno")]
+    public Image iconaCassa; // Trascina qui l'oggetto "Image" che fa da icona
+    public Sprite spriteCassaSpaccata; // Trascina qui la grafica della cassa rotta
+    private bool spriteCambiato = false;
 
     private RectTransform sliderRectTransform;
     private Vector2 originalPosition;
@@ -29,7 +34,6 @@ public class SharedHealth : MonoBehaviour
 
     public bool IsDestroyed => isDestroyed;
 
-    // Conta quante casse sono ancora vive in tutta la scena (condiviso fra tutte le istanze di questo script)
     private static int activeCasseCount = 0;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -70,7 +74,7 @@ public class SharedHealth : MonoBehaviour
     {
         foreach (SharedHealth cassa in casseDaDistruggerePrimaDiApparire)
         {
-            if (cassa != null && !cassa.IsDestroyed) return; // almeno una cassa "prerequisito" è ancora viva
+            if (cassa != null && !cassa.IsDestroyed) return;
         }
 
         isRivelata = true;
@@ -124,26 +128,34 @@ public class SharedHealth : MonoBehaviour
             healthSlider.value = currentPoints;
         }
 
+        // --- CONTROLLO CAMBIO SPRITE ---
+        if (!spriteCambiato && currentPoints <= (maxPoints / 2f))
+        {
+            if (iconaCassa != null && spriteCassaSpaccata != null)
+            {
+                iconaCassa.sprite = spriteCassaSpaccata;
+                spriteCambiato = true;
+            }
+        }
+
         if (currentPoints <= 0)
         {
             isDestroyed = true;
             activeCasseCount--;
 
-            SetElementiVisibili(false); // nasconde lo slider e disabilita il collider della cassa distrutta
+            SetElementiVisibili(false);
 
             if (activeCasseCount <= 0 && gameOverManager != null)
             {
                 gameOverManager.AttivaGameOver();
             }
 
-            gameObject.SetActive(false); // disattiva del tutto la cassa distrutta (modello, script, tutto)
+            gameObject.SetActive(false);
         }
     }
 
     void OnDestroy()
     {
-        // Rete di sicurezza: se l'oggetto viene distrutto senza passare da TakeDamage
-        // (scena che si ricarica, distruzione manuale, ecc.) il conteggio resta corretto
         if (!isDestroyed)
         {
             isDestroyed = true;
