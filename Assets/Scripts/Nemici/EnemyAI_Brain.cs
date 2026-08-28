@@ -106,7 +106,12 @@ public class EnemyAI_Brain : MonoBehaviour
                 break;
 
             case EnemyState.MovingToCassa:
-                if (currentTarget == null) { currentState = EnemyState.Idle; break; }
+                if (!IsCassaTargetValida())
+                {
+                    currentTarget = null;
+                    currentState = EnemyState.Idle;
+                    break;
+                }
                 agent.SetDestination(currentTarget.position);
 
                 if (Vector3.Distance(transform.position, currentTarget.position) <= stats.attackRange)
@@ -117,7 +122,12 @@ public class EnemyAI_Brain : MonoBehaviour
                 break;
 
             case EnemyState.AttackingCassa:
-                if (currentTarget == null) { currentState = EnemyState.Idle; break; }
+                if (!IsCassaTargetValida())
+                {
+                    currentTarget = null;
+                    currentState = EnemyState.Idle;
+                    break;
+                }
                 animator.SetTrigger("cassa");
                 PerformAttack();
 
@@ -161,6 +171,12 @@ public class EnemyAI_Brain : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    // Una cassa "target" è valida solo se esiste ancora ed è attiva (non distrutta)
+    private bool IsCassaTargetValida()
+    {
+        return currentTarget != null && currentTarget.gameObject.activeInHierarchy;
     }
 
     private void FindNearestCassa()
