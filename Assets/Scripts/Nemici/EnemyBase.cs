@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using System; 
+using System;
 
 public class EnemyBase : MonoBehaviour
 {
@@ -50,6 +50,9 @@ public class EnemyBase : MonoBehaviour
     {
         if (IsDead) return;
         IsDead = true;
+
+        // INCREMENTA LO SCORE
+        GameOverManager.AggiungiUccisione();
 
         // Avvisa tutti gli script in ascolto che un nemico è morto
         OnEnemyDied?.Invoke();
