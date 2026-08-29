@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Assicurati che ci sia per l'Image
+using UnityEngine.UI;
 
 public class SharedHealth : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class SharedHealth : MonoBehaviour
     [Tooltip("Trascina qui il GameObject 'Fill' (quello con Image Type: Filled)")]
     public Image barraVitaFill;
 
-    [Tooltip("Trascina qui il GameObject padre della barra (es. 'Slider torre 1') per lo shake e la visibilità")]
+    [Tooltip("Trascina qui il GameObject padre della barra per lo shake e la visibilità")]
     public RectTransform healthBarContainer;
 
     [Header("Settings Shaking")]
@@ -45,18 +45,16 @@ public class SharedHealth : MonoBehaviour
         activeCasseCount = 0;
     }
 
-    void Start()
+    void Awake()
     {
+        // Inizializza i punti vita in Awake così sono pronti prima di qualsiasi raggio/collisione
         if (maxPoints < 100f) maxPoints = 100f;
         currentPoints = maxPoints;
+    }
 
+    void Start()
+    {
         activeCasseCount++;
-
-        // --- MODIFICA INIZIALIZZAZIONE UI ---
-        if (barraVitaFill != null)
-        {
-            barraVitaFill.fillAmount = 1f; // 1f equivale a 100% (pieno)
-        }
 
         if (healthBarContainer != null)
         {
@@ -67,6 +65,10 @@ public class SharedHealth : MonoBehaviour
         {
             isRivelata = false;
             SetElementiVisibili(false);
+        }
+        else
+        {
+            AggiornaGraficaUI();
         }
     }
 
@@ -89,7 +91,6 @@ public class SharedHealth : MonoBehaviour
 
     private void SetElementiVisibili(bool visibile)
     {
-        // Usa il container invece dello slider
         if (healthBarContainer != null)
         {
             healthBarContainer.gameObject.SetActive(visibile);
@@ -102,11 +103,24 @@ public class SharedHealth : MonoBehaviour
                 if (col != null) col.enabled = visibile;
             }
         }
+
+        // Quando l'oggetto diventa visibile, forza il ripristino della barra piena
+        if (visibile)
+        {
+            AggiornaGraficaUI();
+        }
+    }
+
+    private void AggiornaGraficaUI()
+    {
+        if (barraVitaFill != null && maxPoints > 0)
+        {
+            barraVitaFill.fillAmount = currentPoints / maxPoints;
+        }
     }
 
     private void HandleShake()
     {
-        // Se non abbiamo il container, non possiamo fare lo shake
         if (healthBarContainer == null || isDestroyed || !isRivelata) return;
 
         if (currentPoints <= shakeThreshold && currentPoints > 0)
@@ -131,14 +145,8 @@ public class SharedHealth : MonoBehaviour
         currentPoints -= amount;
         currentPoints = Mathf.Max(currentPoints, 0);
 
-        // --- MODIFICA AGGIORNAMENTO UI ---
-        if (barraVitaFill != null)
-        {
-            // Il fillAmount va da 0 a 1. Calcoliamo la percentuale.
-            barraVitaFill.fillAmount = currentPoints / maxPoints;
-        }
+        AggiornaGraficaUI();
 
-        // Controllo Cambio Sprite
         if (!spriteCambiato && currentPoints <= (maxPoints / 2f))
         {
             if (iconaCassa != null && spriteCassaSpaccata != null)
