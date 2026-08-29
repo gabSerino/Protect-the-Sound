@@ -1,28 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class ComboMeterUI : MonoBehaviour
 {
-    // Singleton: ci permette di chiamare questo script facilmente da qualsiasi altra parte del gioco
     public static ComboMeterUI Instance;
 
     [Header("Grafica")]
-    public Image anelloImage; // Trascina qui l'AnelloCombo
-    public RectTransform oggettoDaTremare; // Trascina qui l'oggetto della Faccina
+    public Image anelloImage;
 
-    [Header("Valori Combo")]
-    private float maxCombo;
-    private float currentCombo;
-    private float differenzaPuntiCombo = 0f;
+    [Header("Elementi a Barra Carica")]
+    [Tooltip("Trascina qui il GameObject (o il contenitore) delle scritte che devono apparire solo a barra piena")]
+    public GameObject testoComboCarica;
 
-    [Header("Effetto Tremolio")]
-    public float durataTremolio = 0.15f;
-    public float forzaTremolio = 5f;
     [Header("Player")]
     public Player player;
-
-    private Vector2 posizioneOriginale;
 
     void Awake()
     {
@@ -31,88 +22,38 @@ public class ComboMeterUI : MonoBehaviour
 
     void Start()
     {
-        maxCombo = player.maxMusicPoints;
-        currentCombo = player.currentMusicPoints;
         if (anelloImage != null) anelloImage.fillAmount = 0f;
-        if (oggettoDaTremare != null) posizioneOriginale = oggettoDaTremare.anchoredPosition;
+
+        // Assicuriamoci che all'inizio del gioco la scritta sia nascosta
+        if (testoComboCarica != null) testoComboCarica.SetActive(false);
     }
 
     void Update()
     {
-        VerificaCambioPuntiCombo();
-        AggiornaPuntiCombo();
-    }
+        // Controllo di sicurezza: interrompe se il player non c'è o i punti massimi non sono impostati
+        if (player == null || player.maxMusicPoints <= 0) return;
 
-    // Questa funzione verr� chiamata dalla Hitbox
-    /*public void AggiungiCombo(float quantita)
-    {
-        // 1. Aumenta il valore della combo
-        currentCombo += quantita;
+        // 1. Calcola la percentuale di carica (valore da 0 a 1)
+        float percentuale = player.currentMusicPoints / player.maxMusicPoints;
 
-        // 2. Controllo: se raggiunge o supera il massimo, azzera tutto
-        if (currentCombo >= maxCombo)
-        {
-            currentCombo = 0f;
-
-            // Qui puoi chiamare un'altra funzione quando la barra si riempie!
-            // es AttivaPowerUp(); oppure RiproduciSuonoMaxCombo();
-        }
-
-        // 3. Aggiorna l'interfaccia grafica
+        // 2. Aggiorna il riempimento dell'anello
         if (anelloImage != null)
-            anelloImage.fillAmount = currentCombo / maxCombo;
-
-        // 4. Fa partire l'animazione di tremolio
-        if (oggettoDaTremare != null)
         {
-            StopAllCoroutines(); // Blocca tremolii precedenti se colpisci molto veloce
-            StartCoroutine(TremolioRoutine());
+            anelloImage.fillAmount = percentuale;
         }
-    }*/
 
-    private void AggiornaPuntiCombo()
-    {
-        if(differenzaPuntiCombo == 0) return;
-        if (anelloImage != null)
-            anelloImage.fillAmount = currentCombo / maxCombo;
+        // 3. Controlla se la barra è carica al 100%
+        bool isCarica = percentuale >= 1f;
 
-        if (oggettoDaTremare != null && differenzaPuntiCombo > 0)
+        // 4. Attiva o disattiva il testo di conseguenza
+        if (testoComboCarica != null)
         {
-            StopAllCoroutines(); // Blocca tremolii precedenti se colpisci molto veloce
-            StartCoroutine(TremolioRoutine());
+            testoComboCarica.SetActive(isCarica);
         }
     }
 
-    private void VerificaCambioPuntiCombo()
+    // Mantenuta vuota per sicurezza nel caso la Hitbox la stia ancora chiamando
+    public void AggiungiCombo(float quantita)
     {
-        if(player.currentMusicPoints != currentCombo)
-        {
-            differenzaPuntiCombo = player.currentMusicPoints - currentCombo;
-            currentCombo = player.currentMusicPoints;
-        }
-        else
-        {
-            differenzaPuntiCombo = 0f;
-        }
-    }
-
-    private IEnumerator TremolioRoutine()
-    {
-        float tempoTrascorso = 0f;
-
-        while (tempoTrascorso < durataTremolio)
-        {
-            // Crea una posizione tremolante casuale
-            float xOffset = Random.Range(-1f, 1f) * forzaTremolio;
-            float yOffset = Random.Range(-1f, 1f) * forzaTremolio;
-
-            oggettoDaTremare.anchoredPosition = new Vector2(posizioneOriginale.x + xOffset, posizioneOriginale.y + yOffset);
-
-            tempoTrascorso += Time.deltaTime;
-            yield return null;
-        }
-
-        // Rimette la faccina esattamente al suo posto alla fine
-        oggettoDaTremare.anchoredPosition = posizioneOriginale;
     }
 }
