@@ -849,6 +849,8 @@ public class Player : MonoBehaviour
         if (selectedMusicType == RhythmManager.Instance.musicType) return;
         if (playerInputManager.SongConfirmInput)
         {
+            currentMusicPoints = maxMusicPoints;
+
             ConfirmMusicType();
             playerInputManager.ConsumeSongConfirmInput();
             DecreaseMusicPointsOverTime(1f, timePerMusicPointDecrease);
