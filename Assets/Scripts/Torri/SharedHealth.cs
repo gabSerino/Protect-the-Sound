@@ -1,13 +1,17 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // Assicurati che ci sia per l'Image
 
 public class SharedHealth : MonoBehaviour
 {
     public float maxPoints = 100f;
     private float currentPoints;
 
-    [Header("UI")]
-    public Slider healthSlider;
+    [Header("UI Barra della Vita")]
+    [Tooltip("Trascina qui il GameObject 'Fill' (quello con Image Type: Filled)")]
+    public Image barraVitaFill;
+
+    [Tooltip("Trascina qui il GameObject padre della barra (es. 'Slider torre 1') per lo shake e la visibilità")]
+    public RectTransform healthBarContainer;
 
     [Header("Settings Shaking")]
     public float shakeThreshold = 20f;
@@ -23,11 +27,10 @@ public class SharedHealth : MonoBehaviour
     public Collider[] colliderDaAbilitare;
 
     [Header("Gestione Sprite Danno")]
-    public Image iconaCassa; // Trascina qui l'oggetto "Image" che fa da icona
-    public Sprite spriteCassaSpaccata; // Trascina qui la grafica della cassa rotta
+    public Image iconaCassa;
+    public Sprite spriteCassaSpaccata;
     private bool spriteCambiato = false;
 
-    private RectTransform sliderRectTransform;
     private Vector2 originalPosition;
     private bool isDestroyed = false;
     private bool isRivelata = true;
@@ -49,12 +52,15 @@ public class SharedHealth : MonoBehaviour
 
         activeCasseCount++;
 
-        if (healthSlider != null)
+        // --- MODIFICA INIZIALIZZAZIONE UI ---
+        if (barraVitaFill != null)
         {
-            healthSlider.maxValue = maxPoints;
-            healthSlider.value = maxPoints;
-            sliderRectTransform = healthSlider.GetComponent<RectTransform>();
-            originalPosition = sliderRectTransform.anchoredPosition;
+            barraVitaFill.fillAmount = 1f; // 1f equivale a 100% (pieno)
+        }
+
+        if (healthBarContainer != null)
+        {
+            originalPosition = healthBarContainer.anchoredPosition;
         }
 
         if (casseDaDistruggerePrimaDiApparire != null && casseDaDistruggerePrimaDiApparire.Length > 0)
@@ -83,9 +89,10 @@ public class SharedHealth : MonoBehaviour
 
     private void SetElementiVisibili(bool visibile)
     {
-        if (healthSlider != null)
+        // Usa il container invece dello slider
+        if (healthBarContainer != null)
         {
-            healthSlider.gameObject.SetActive(visibile);
+            healthBarContainer.gameObject.SetActive(visibile);
         }
 
         if (colliderDaAbilitare != null)
@@ -99,19 +106,20 @@ public class SharedHealth : MonoBehaviour
 
     private void HandleShake()
     {
-        if (healthSlider == null || isDestroyed || !isRivelata) return;
+        // Se non abbiamo il container, non possiamo fare lo shake
+        if (healthBarContainer == null || isDestroyed || !isRivelata) return;
 
         if (currentPoints <= shakeThreshold && currentPoints > 0)
         {
             float offsetX = Random.Range(-1f, 1f) * shakeIntensity;
             float offsetY = Random.Range(-1f, 1f) * shakeIntensity;
-            sliderRectTransform.anchoredPosition = originalPosition + new Vector2(offsetX, offsetY);
+            healthBarContainer.anchoredPosition = originalPosition + new Vector2(offsetX, offsetY);
         }
         else
         {
-            if (sliderRectTransform.anchoredPosition != originalPosition)
+            if (healthBarContainer.anchoredPosition != originalPosition)
             {
-                sliderRectTransform.anchoredPosition = originalPosition;
+                healthBarContainer.anchoredPosition = originalPosition;
             }
         }
     }
@@ -123,12 +131,14 @@ public class SharedHealth : MonoBehaviour
         currentPoints -= amount;
         currentPoints = Mathf.Max(currentPoints, 0);
 
-        if (healthSlider != null)
+        // --- MODIFICA AGGIORNAMENTO UI ---
+        if (barraVitaFill != null)
         {
-            healthSlider.value = currentPoints;
+            // Il fillAmount va da 0 a 1. Calcoliamo la percentuale.
+            barraVitaFill.fillAmount = currentPoints / maxPoints;
         }
 
-        // --- CONTROLLO CAMBIO SPRITE ---
+        // Controllo Cambio Sprite
         if (!spriteCambiato && currentPoints <= (maxPoints / 2f))
         {
             if (iconaCassa != null && spriteCassaSpaccata != null)
