@@ -14,6 +14,9 @@ public class ComboMeterUI : MonoBehaviour
     [Header("Player")]
     public Player player;
 
+    // NUOVA VARIABILE: Memorizza se siamo nella fase in cui la barra si sta esaurendo
+    private bool isDrainingPhase = false;
+
     void Awake()
     {
         Instance = this;
@@ -25,7 +28,6 @@ public class ComboMeterUI : MonoBehaviour
         if (testoComboCarica != null) testoComboCarica.SetActive(false);
     }
 
-    // Usiamo LateUpdate per assicurarci che il Player abbia già azzerato i punti in questo frame
     void LateUpdate()
     {
         if (player == null || player.maxMusicPoints <= 0) return;
@@ -33,19 +35,31 @@ public class ComboMeterUI : MonoBehaviour
         // FASE DI SCELTA VINILE:
         if (player.canChangeMusicType)
         {
+            // Registriamo che abbiamo attivato l'abilità. 
+            // Da questo momento in poi (finché non si azzera), siamo in fase di svuotamento.
+            isDrainingPhase = true;
+
             if (anelloImage != null)
             {
                 anelloImage.enabled = false;
-                anelloImage.fillAmount = 0f; // Assicura che sia già a zero per quando riapparirà
+                anelloImage.fillAmount = 0f;
             }
 
             if (testoComboCarica != null)
                 testoComboCarica.SetActive(true);
 
-            return; // Usciamo subito: la scelta è in corso
+            return;
         }
 
         // FASE DI GIOCO NORMALE:
+
+        // Quando la barra si svuota del tutto (o quasi, per sicurezza coi float), usciamo dalla fase di svuotamento.
+        // A questo punto il giocatore potrà ricominciare a caricare la combo.
+        if (player.currentMusicPoints <= 0.1f)
+        {
+            isDrainingPhase = false;
+        }
+
         float percentuale = player.currentMusicPoints / player.maxMusicPoints;
 
         if (anelloImage != null)
@@ -54,7 +68,10 @@ public class ComboMeterUI : MonoBehaviour
             anelloImage.fillAmount = percentuale;
         }
 
-        bool isCarica = player.currentMusicPoints >= player.musicPtsThreshold;
+        // --- LA MAGIA AVVIENE QUI ---
+        // Il testo appare SOLO se hai superato la soglia E NON sei nella fase di svuotamento
+        bool isCarica = (player.currentMusicPoints >= player.musicPtsThreshold) && !isDrainingPhase;
+
         if (testoComboCarica != null)
         {
             testoComboCarica.SetActive(isCarica);
