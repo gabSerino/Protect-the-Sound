@@ -40,6 +40,25 @@ public class EnemyAI_Brain : MonoBehaviour
         agent.updateRotation = false;
     }
 
+    // --- AGGIUNTO PER IL POOLING: Resetta l'intelligenza artificiale ---
+    private void OnEnable()
+    {
+        currentState = EnemyState.Idle; // Torna allo stato di ricerca iniziale
+        currentTarget = null;
+        windupTimer = 0f;
+
+        // Se era morto mentre caricava, gli resettiamo la velocità base
+        if (agent != null && stats != null)
+        {
+            agent.speed = stats.moveSpeed;
+
+            // CONTROLLO SALVAVITA: Togliamo il freno solo se ha "toccato terra" sulla NavMesh
+            if (agent.isOnNavMesh)
+            {
+                agent.isStopped = false;
+            }
+        }
+    }
     void Update()
     {
         if (enemyBase.IsDead) return;

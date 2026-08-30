@@ -1,63 +1,90 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 
 public class EnemySpawner : MonoBehaviour
 {
     [Header("Configurazione Spawn Base")]
     public GameObject enemyPrefab;
-    public float baseMinSpawnDelay = 0.5f;
+    public float baseMinSpawnDelay = 1.0f;
     public float baseMaxSpawnDelay = 3.0f;
 
     [Header("Scaling Difficoltà")]
-    [Tooltip("Lascia vuoto per trovare il player in automatico all'avvio")]
     public Player playerReference;
-
-    [Tooltip("Di quanti secondi si riduce l'attesa per ogni livello del player?")]
-    public float reductionPerLevel = 0.15f;
-
-    [Tooltip("Il tempo minimo assoluto di spawn (per non far spawnare mille nemici al secondo)")]
+    public float timeMultiplierPerLevel = 0.85f;
     public float absoluteMinSpawnDelay = 0.2f;
+
+    [Header("Object Pooling")]
+    [Tooltip("Quanti nemici preparare all'avvio del gioco")]
+    public int poolSize = 30;
+
+    // La lista che conterrà i nostri nemici pre-caricati
+    private List<GameObject> enemyPool;
 
     void Start()
     {
-        // Se non hai trascinato il Player nell'Inspector, lo cerca da solo
         if (playerReference == null)
         {
             playerReference = Object.FindFirstObjectByType<Player>();
         }
 
+        InitializePool();
         StartCoroutine(SpawnRoutine());
+    }
+
+    // Crea i nemici all'avvio e li disattiva
+    void InitializePool()
+    {
+        enemyPool = new List<GameObject>();
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject enemy = Instantiate(enemyPrefab);
+            enemy.SetActive(false); // Lo nasconde
+            enemyPool.Add(enemy);
+        }
     }
 
     private IEnumerator SpawnRoutine()
     {
         while (true)
         {
-            // Legge il livello attuale del giocatore (se non lo trova, usa 1 di default)
             int currentLevel = (playerReference != null) ? playerReference.currentLevel : 1;
+            float scaleFactor = Mathf.Pow(timeMultiplierPerLevel, currentLevel - 1);
 
-            // Calcola la riduzione totale (al livello 1 la riduzione è 0)
-            float totalReduction = (currentLevel - 1) * reductionPerLevel;
+            float currentMinDelay = Mathf.Max(absoluteMinSpawnDelay, baseMinSpawnDelay * scaleFactor);
+            float currentMaxDelay = Mathf.Max(absoluteMinSpawnDelay, baseMaxSpawnDelay * scaleFactor);
 
-            // Calcola i nuovi tempi di attesa. 
-            // Mathf.Max prende il numero più grande tra i due, impedendo ai delay di scendere sotto il limite assoluto.
-            float currentMinDelay = Mathf.Max(absoluteMinSpawnDelay, baseMinSpawnDelay - totalReduction);
-            float currentMaxDelay = Mathf.Max(absoluteMinSpawnDelay, baseMaxSpawnDelay - totalReduction);
-
-            // Estrae un tempo casuale con i nuovi parametri calcolati
             float randomDelay = Random.Range(currentMinDelay, currentMaxDelay);
-
             yield return new WaitForSeconds(randomDelay);
 
-            SpawnEnemy();
+            SpawnEnemyFromPool();
         }
     }
 
-    void SpawnEnemy()
+    void SpawnEnemyFromPool()
     {
-        if (enemyPrefab != null)
+        for (int i = 0; i < enemyPool.Count; i++)
         {
-            Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+            if (!enemyPool[i].activeInHierarchy)
+            {
+                // Teletrasporto sicuro per la NavMesh
+                UnityEngine.AI.NavMeshAgent agent = enemyPool[i].GetComponent<UnityEngine.AI.NavMeshAgent>();
+                if (agent != null)
+                {
+                    agent.Warp(transform.position);
+                }
+                else
+                {
+                    enemyPool[i].transform.position = transform.position;
+                }
+
+                enemyPool[i].transform.rotation = Quaternion.identity;
+                enemyPool[i].SetActive(true);
+                return;
+            }
         }
+
+        GameObject newEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        enemyPool.Add(newEnemy);
     }
 }

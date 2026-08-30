@@ -29377,6 +29377,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: spawnRadius
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 1673458961}
@@ -29387,6 +29391,22 @@ PrefabInstance:
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: baseMinSpawnDelay
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: reductionPerLevel
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: extraEnemiesPerLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: absoluteMinSpawnDelay
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: timeMultiplierPerLevel
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
@@ -62007,6 +62027,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: spawnRadius
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 1673458961}
@@ -62017,6 +62041,22 @@ PrefabInstance:
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: baseMinSpawnDelay
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: reductionPerLevel
+      value: 1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: extraEnemiesPerLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: absoluteMinSpawnDelay
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: timeMultiplierPerLevel
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
@@ -79654,6 +79694,22 @@ PrefabInstance:
     - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: baseMinSpawnDelay
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: reductionPerLevel
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: extraEnemiesPerLevel
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: absoluteMinSpawnDelay
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011137286696485143, guid: 7c636cafe804b634ba86535566249129, type: 3}
+      propertyPath: timeMultiplierPerLevel
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 6809992798895490586, guid: 7c636cafe804b634ba86535566249129, type: 3}
       propertyPath: m_LocalPosition.x
