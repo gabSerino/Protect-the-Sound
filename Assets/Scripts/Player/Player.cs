@@ -1011,6 +1011,11 @@ public class Player : MonoBehaviour
             return false;
         }
 
+        // Calcoliamo le variazioni di stat da mostrare a schermo PRIMA di applicarle:
+        // si basano sulle stat base, quindi il risultato non cambia se lo facciamo
+        // prima o dopo ApplyModifiers.
+        List<StatChangeEntry> statChanges = ComputeStatChangeDisplay(itemData);
+
         ApplyModifiers(itemData);
         PlayConsumeItemSound(GetItemLabel(itemData));
 
@@ -1018,6 +1023,8 @@ public class Player : MonoBehaviour
         {
             case ItemType.WATER:
                 // L'acqua funge da "Cura": pulisce gli effetti delle droghe attive
+                // (niente popup qui: ResetModifiersToDefault() sotto annulla subito
+                // le variazioni appena calcolate, quindi mostrarle non avrebbe senso)
                 if (activeDrugCoroutine != null)
                 {
                     StopCoroutine(activeDrugCoroutine);
@@ -1034,6 +1041,9 @@ public class Player : MonoBehaviour
                 return true; // Oggetto consumato con successo
 
             case ItemType.DRUG:
+                if (PowerUpPopupUI.Instance != null)
+                    PowerUpPopupUI.Instance.ShowStatChanges(statChanges);
+
                 ApplyDrugStatus(itemData.drugType);
                 if (IsGettingBadTrip(itemData.badTripChance))
                     ApplyMentalStatus(PlayerMentalStatus.BADTRIP);
@@ -1046,6 +1056,38 @@ public class Player : MonoBehaviour
         }
 
         return false;
+    }
+
+    // Calcola le variazioni da mostrare a schermo (es. "+5 ATK -3 SPD"), confrontando
+    // i moltiplicatori dell'item con le stat BASE del player (non quelle correnti,
+    // che potrebbero già essere alterate da un effetto precedente).
+    private List<StatChangeEntry> ComputeStatChangeDisplay(ItemData itemData)
+    {
+        var changes = new List<StatChangeEntry>();
+
+        float speedDelta = baseWalkingSpeed * (itemData.speedMultiplier - 1f);
+        if (!Mathf.Approximately(speedDelta, 0f))
+            changes.Add(new StatChangeEntry("SPD", speedDelta));
+
+        float healthDelta = baseMaxHealth * (itemData.healthMultiplier - 1f);
+        if (!Mathf.Approximately(healthDelta, 0f))
+            changes.Add(new StatChangeEntry("HP", healthDelta));
+
+        // Se il danno è "nel tempo" (curva), un delta secco non lo rappresenta bene: lo saltiamo.
+        if (!itemData.damageOverTime)
+        {
+            float damageDelta = baseAttackDamage * (itemData.damageMultiplier - 1f);
+            if (!Mathf.Approximately(damageDelta, 0f))
+                changes.Add(new StatChangeEntry("ATK", damageDelta));
+        }
+
+        if (!Mathf.Approximately(itemData.attackRateMultiplier, 1f))
+        {
+            float ratePercent = (itemData.attackRateMultiplier - 1f) * 100f;
+            changes.Add(new StatChangeEntry("ATK SPD", ratePercent, isPercent: true));
+        }
+
+        return changes;
     }
 
     private void PlayConsumeItemSound(string itemLabel)
