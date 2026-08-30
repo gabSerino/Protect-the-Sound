@@ -4,50 +4,73 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
     [Header("UI References")]
-    public Image[] itemIcons;
-    public Image[] slotBackgrounds;
+    // Invece di un array generico, colleghiamo i 3 slot fissi sullo schermo: [0] = Sinistra, [1] = Centro (Selezionato), [2] = Destra
+    public Image[] slotIcons;          // Icone degli oggetti nei 3 quadratini
+    public Image[] slotBackgrounds;    // Sfondi dei 3 quadratini (per gestire il colore selezionato/non selezionato)
 
     [Header("Face UI")]
-    public Image faceDisplay;      // Trascina qui l'oggetto "PlayerFace"
-    public Sprite happySprite;     // Trascina qui lo sprite Felice
-    public Sprite sadSprite;       // Trascina qui lo sprite Triste
+    public Image faceDisplay;
+    public Sprite happySprite;
+    public Sprite sadSprite;
 
     [Header("Colors")]
     public Color selectedColor = Color.yellow;
     public Color unselectedColor = Color.white;
 
-    // Aggiungiamo un parametro per ricevere l'attackType dal Player
     public void RefreshUI(Inventory inventory, AttackType currentAttackType)
     {
         if (inventory == null) return;
 
-        // 1. Logica Inventario (quella che abbiamo già)
         ItemData[] items = inventory.GetItems();
         int selectedIndex = inventory.GetSelectedIndex();
+        int size = inventory.GetInventorySize();
 
-        for (int i = 0; i < itemIcons.Length; i++)
+        // Gestiamo i 3 slot fissi della UI: 
+        // i = 0 -> Sinistra (precedente)
+        // i = 1 -> Centro (selezionato)
+        // i = 2 -> Destra (successivo)
+        for (int i = 0; i < 3; i++)
         {
-            if (i < items.Length && items[i] != null)
+            int targetIndex = 0;
+
+            if (i == 0)
             {
-                itemIcons[i].sprite = items[i].icon;
-                itemIcons[i].enabled = true;
+                // Slot di sinistra: elemento precedente
+                targetIndex = (selectedIndex - 1 + size) % size;
+            }
+            else if (i == 1)
+            {
+                // Slot centrale: elemento attualmente selezionato
+                targetIndex = selectedIndex;
+            }
+            else if (i == 2)
+            {
+                // Slot di destra: elemento successivo
+                targetIndex = (selectedIndex + 1) % size;
+            }
+
+            // Assegnazione dell'icona se l'oggetto esiste ed è valido
+            if (targetIndex < items.Length && items[targetIndex] != null)
+            {
+                slotIcons[i].sprite = items[targetIndex].icon;
+                slotIcons[i].enabled = true;
             }
             else
             {
-                itemIcons[i].sprite = null;
-                itemIcons[i].enabled = false;
+                slotIcons[i].sprite = null;
+                slotIcons[i].enabled = false;
             }
 
+            // Gestione dei colori/sfondi: Evidenziamo solo il blocco centrale (indice 1)
             if (i < slotBackgrounds.Length && slotBackgrounds[i] != null)
             {
-                slotBackgrounds[i].color = (i == selectedIndex) ? selectedColor : unselectedColor;
+                slotBackgrounds[i].color = (i == 1) ? selectedColor : unselectedColor;
             }
         }
 
-        // 2. NUOVA LOGICA DELLA FACCINA
+        // 2. Logica della Faccina (inalterata)
         if (faceDisplay != null && happySprite != null && sadSprite != null)
         {
-            // Se l'attacco è DEFAULT, faccina felice. Altrimenti, triste.
             if (currentAttackType == AttackType.DEFAULT)
             {
                 faceDisplay.sprite = happySprite;
