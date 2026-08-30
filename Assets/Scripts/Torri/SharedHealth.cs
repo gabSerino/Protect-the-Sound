@@ -31,6 +31,18 @@ public class SharedHealth : MonoBehaviour
     public Sprite spriteCassaSpaccata;
     private bool spriteCambiato = false;
 
+    [Header("Gestione Modello 3D")]
+    [Tooltip("Il modello 3D visibile finché la cassa è integra (trascina qui il child, es. 'Modello_Integro')")]
+    public GameObject modelloIntegro;
+    [Tooltip("Il modello 3D da mostrare al posto di quello integro (trascina qui il child, es. 'Modello_Danneggiato')")]
+    public GameObject modelloDanneggiato;
+    [Tooltip("Vita residua alla quale scatta il cambio modello. Metti 0 per farlo scattare solo alla distruzione completa (currentPoints <= 0), oppure es. maxPoints/2 per farlo scattare a metà vita, come per lo sprite dell'icona.")]
+    public float sogliaCambioModello = 0f;
+    private bool modelloCambiato = false;
+
+    [Tooltip("Se true (comportamento attuale), l'intera cassa scompare quando la vita arriva a 0. Disattiva se vuoi che resti visibile il modello danneggiato invece di far sparire la cassa.")]
+    public bool nascondiOggettoAllaDistruzione = true;
+
     private Vector2 originalPosition;
     private bool isDestroyed = false;
     private bool isRivelata = true;
@@ -60,6 +72,10 @@ public class SharedHealth : MonoBehaviour
         {
             originalPosition = healthBarContainer.anchoredPosition;
         }
+
+        // Assicura che all'avvio sia attivo solo il modello integro
+        if (modelloIntegro != null) modelloIntegro.SetActive(true);
+        if (modelloDanneggiato != null) modelloDanneggiato.SetActive(false);
 
         if (casseDaDistruggerePrimaDiApparire != null && casseDaDistruggerePrimaDiApparire.Length > 0)
         {
@@ -156,6 +172,12 @@ public class SharedHealth : MonoBehaviour
             }
         }
 
+        if (!modelloCambiato && currentPoints <= sogliaCambioModello)
+        {
+            SostituisciModello3D();
+            modelloCambiato = true;
+        }
+
         if (currentPoints <= 0)
         {
             isDestroyed = true;
@@ -168,8 +190,17 @@ public class SharedHealth : MonoBehaviour
                 gameOverManager.AttivaGameOver();
             }
 
-            gameObject.SetActive(false);
+            if (nascondiOggettoAllaDistruzione)
+            {
+                gameObject.SetActive(false);
+            }
         }
+    }
+
+    private void SostituisciModello3D()
+    {
+        if (modelloIntegro != null) modelloIntegro.SetActive(false);
+        if (modelloDanneggiato != null) modelloDanneggiato.SetActive(true);
     }
 
     void OnDestroy()
