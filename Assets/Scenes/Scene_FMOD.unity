@@ -24048,8 +24048,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitStarsVFX
   starsParticles: {fileID: 676605813}
-  goodColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  perfectColor: {r: 0, g: 1, b: 0, a: 1}
+  goodColor: {r: 0.654902, g: 0.8980393, b: 0.9215687, a: 1}
+  perfectColor: {r: 1, g: 0, b: 1, a: 1}
   normalStarCount: 0
   goodStarCount: 6
   perfectStarCount: 20
