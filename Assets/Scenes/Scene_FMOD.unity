@@ -49512,6 +49512,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6271709529158947409, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: -2764389942301581316, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a874f1d5de9389b43a5788a677a74625, type: 2}
     - target: {fileID: 919132149155446097, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
       propertyPath: m_Name
       value: assetts.fbx_Scene_001
@@ -62110,6 +62118,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.63
       objectReference: {fileID: 0}
+    - target: {fileID: -4683669308469848369, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a874f1d5de9389b43a5788a677a74625, type: 2}
+    - target: {fileID: -1461304994638716399, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a874f1d5de9389b43a5788a677a74625, type: 2}
     - target: {fileID: -1018664272722485354, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
       propertyPath: m_Name
       value: DISCODX
@@ -62126,6 +62142,34 @@ PrefabInstance:
       propertyPath: m_Name
       value: DISCOSX
       objectReference: {fileID: 0}
+    - target: {fileID: 6317578925029434746, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6317578925029434746, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: 6317578925029434746, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: 8100320773420232829, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8100320773420232829, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: 8100320773420232829, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: 8100320773420232829, guid: e73018fc0fef7f041a7bdbd2a845979a, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -66362,6 +66406,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6271709529158947409, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b687b88419a1904a91129187937c782, type: 2}
+    - target: {fileID: -2764389942301581316, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a874f1d5de9389b43a5788a677a74625, type: 2}
     - target: {fileID: 919132149155446097, guid: dc32d71cee9318b4783b88afec42e0bd, type: 3}
       propertyPath: m_Name
       value: assetts.fbx_Scene_001
