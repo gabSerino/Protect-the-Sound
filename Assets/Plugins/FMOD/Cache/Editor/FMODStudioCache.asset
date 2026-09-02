@@ -69,10 +69,10 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639190551348019475
+  lastModified: 639239015459322304
   FileSizes:
   - Name: 
-    Value: 2280
+    Value: 2330
   Exists: 1
 --- !u!114 &-5833151222005265184
 MonoBehaviour:
@@ -365,7 +365,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Snapshots.bank
   Name: Snapshots
   StudioPath: bank:/Snapshots
-  lastModified: 639189837123487104
+  lastModified: 639189830826329521
   FileSizes: []
   Exists: 1
 --- !u!114 &-1025088851501490094
@@ -383,9 +383,36 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639189837123134016
+  lastModified: 639239015459312306
   FileSizes: []
   Exists: 1
+--- !u!114 &-803317859548288404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Music/TUTORIAL
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Music/TUTORIAL
+  Guid:
+    Data1: -2059859828
+    Data2: 1196734618
+    Data3: -1542843727
+    Data4: 2096118750
+  Banks:
+  - {fileID: 8515227860900704440}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 78010
 --- !u!114 &-59993336232135851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -458,13 +485,14 @@ MonoBehaviour:
   - {fileID: -59993336232135851}
   - {fileID: -8785753304741113454}
   - {fileID: 6065776339252301901}
+  - {fileID: -803317859548288404}
   EditorParameters: []
   MasterBanks:
   - {fileID: -1025088851501490094}
   StringsBanks:
   - {fileID: -8276583537654689561}
   cacheVersion: 131858
-  cacheTime: 639190620141077505
+  cacheTime: 639239016364672172
   SerializableEventsDict:
   - key: event:/bonk
     index: 0
@@ -516,6 +544,8 @@ MonoBehaviour:
     index: 23
   - key: event:/Wizzy/wizzy_use_item
     index: 24
+  - key: event:/Music/TUTORIAL
+    index: 25
 --- !u!114 &321605498127420868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -775,7 +805,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639190620141077505
+  lastModified: 639190618764886273
   FileSizes: []
   Exists: 1
 --- !u!114 &4042786153890122081
@@ -931,7 +961,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/test.bank
   Name: test
   StudioPath: bank:/test
-  lastModified: 639189567262794419
+  lastModified: 639184432899952554
   FileSizes: []
   Exists: 1
 --- !u!114 &8515227860900704440
@@ -949,7 +979,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639190519263000330
+  lastModified: 639239016364672172
   FileSizes: []
   Exists: 1
 --- !u!114 &9100537751718654615

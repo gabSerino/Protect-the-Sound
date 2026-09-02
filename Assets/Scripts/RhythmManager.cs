@@ -31,7 +31,21 @@ public class RhythmManager : MonoBehaviour
     public float goodMultiplier = 1f;
     public float perfectMultiplier = 1.5f;
 
+    // Evento discreto per beat, sicuro da consumare lato gameplay (VFX, spawn note, ecc.)
+    // Viene generato in Update() confrontando il beat corrente, NON nel callback nativo,
+    // per evitare di essere invocato più volte durante le transition region.
+    public event Action<int> OnBeatEvent;
+    private int lastDispatchedBeat = -1;
+
     private bool musicStarted = false;
+
+    // Distanza minima (in secondi) tra due callback TIMELINE_BEAT perché vengano
+    // considerati beat distinti. Nelle transition region FMOD può inviare due
+    // callback quasi simultanei (fine segmento sorgente + inizio destinazione,
+    // o loop-back interno alla transition timeline): questi arrivano a distanza
+    // di pochi millisecondi, molto meno di qualsiasi intervallo di beat reale,
+    // quindi vengono scartati come duplicati.
+    private const double MinBeatDeltaSeconds = 0.02;
 
     // Struct condivisa in modo thread-safe col callback nativo di FMOD.
     // Deve essere una classe (reference type) perché il GCHandle punta
@@ -71,6 +85,19 @@ public class RhythmManager : MonoBehaviour
 
         // Applica il valore iniziale scelto nell'Inspector
         ApplyMusicStyle();
+    }
+
+    void Update()
+    {
+        // Dispatch dell'evento OnBeat lato managed, un solo trigger per beat.
+        // Non dipende dall'ordine/frequenza dei callback nativi del thread audio,
+        // quindi non risente dei doppi segnali nelle transition region.
+        int beat = GetCurrentBeat();
+        if (beat != lastDispatchedBeat)
+        {
+            lastDispatchedBeat = beat;
+            OnBeatEvent?.Invoke(beat);
+        }
     }
 
     private void ApplyMusicStyle()
@@ -123,12 +150,24 @@ public class RhythmManager : MonoBehaviour
         if (type == EVENT_CALLBACK_TYPE.TIMELINE_BEAT)
         {
             var props = (TIMELINE_BEAT_PROPERTIES)Marshal.PtrToStructure(parameterPtr, typeof(TIMELINE_BEAT_PROPERTIES));
+            double positionSec = props.position / 1000.0; // ms -> secondi
+
+            // 🔒 Filtro anti-duplicato: nelle transition region FMOD può inviare
+            // due callback per lo stesso "istante" (fine segmento sorgente + inizio
+            // destinazione, o loop-back interno). Se il delta rispetto all'ultimo
+            // beat confermato è trascurabile, è un duplicato spurio: lo scartiamo
+            // senza aggiornare lo stato condiviso.
+            if (System.Math.Abs(positionSec - info.lastBeatSongPosition) < MinBeatDeltaSeconds)
+            {
+                return FMOD.RESULT.OK;
+            }
+
             info.currentBeat = props.beat;
             info.currentBar = props.bar;
             info.currentTempo = props.tempo; // 🔥 tempo aggiornato in base al marker attivo
             info.timeSigUpper = props.timesignatureupper;
             info.timeSigLower = props.timesignaturelower;
-            info.lastBeatSongPosition = props.position / 1000.0; // ms -> secondi
+            info.lastBeatSongPosition = positionSec;
         }
 
         return FMOD.RESULT.OK;

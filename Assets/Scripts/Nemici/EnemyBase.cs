@@ -83,6 +83,8 @@ public class EnemyBase : MonoBehaviour
         if (IsDead) return;
         IsDead = true;
 
+        if(TutorialManager.Instance != null) TutorialManager.Instance.RegisterEnemyKilled();
+
         GameOverManager.AggiungiUccisione();
         OnEnemyDied?.Invoke();
 
@@ -103,8 +105,9 @@ public class EnemyBase : MonoBehaviour
     private void DropLoot()
     {
         if (stats == null || stats.lootTable == null || stats.lootTable.drops.Length == 0 || genericItemPrefab == null) return;
-
-        if (UnityEngine.Random.value <= stats.dropChance)
+        float value = UnityEngine.Random.value;
+        if(TutorialManager.Instance != null) value = stats.dropChance;
+        if (value <= stats.dropChance)
         {
             float totalWeight = 0f;
             foreach (LootDrop drop in stats.lootTable.drops) totalWeight += drop.weight;

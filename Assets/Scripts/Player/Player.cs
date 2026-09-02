@@ -8,6 +8,8 @@ using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
+    public bool tutorialMode = false;
+
     // =========================
     // SERIALIZED FIELDS
     // =========================
@@ -340,16 +342,26 @@ public class Player : MonoBehaviour
     {
         canMove = true;
         canAttack = true;
+        canDash = true;
+        canUseInventory = true;
     }
 
     public void DisableAllControls()
     {
         canMove = false;
         canAttack = false;
+        canDash = false;
+        canUseInventory = false;
     }
 
-    public void EnableMovement(bool value) => canMove = value;
-    public void EnableAttack(bool value) => canAttack = value;
+    public void EnableMovement() => canMove = true;
+    public void DisableMovement() => canMove = false;
+    public void EnableAttack() => canAttack = true;
+    public void DisableAttack() => canAttack = false;
+    public void EnableDash() => canDash = true;
+    public void DisableDash() => canDash = false;
+    public void EnableInventory() => canUseInventory = true;
+    public void DisableInventory() => canUseInventory = false;
 
     // =========================
     // TEMPORARY INVINCIBILITY
@@ -572,6 +584,10 @@ public class Player : MonoBehaviour
 
         if (playerInputManager.DashInput)
         {
+            if(tutorialMode)
+            {
+                TutorialManager.Instance.RegisterDash();
+            }
             StartCoroutine(DashRoutine());
             playerInputManager.ConsumeDashInput();
         }
@@ -836,6 +852,8 @@ public class Player : MonoBehaviour
             fuocoUI.SetActive(false);
             return;
         }
+        
+        if(tutorialMode) TutorialManager.Instance.RegisterBarCharged();
 
         canChangeMusicType = true;
         fuocoUI.SetActive(true);
@@ -879,6 +897,7 @@ public class Player : MonoBehaviour
             currentMusicPoints = Mathf.Clamp(currentMusicPoints - amount, 0, maxMusicPoints);
             yield return new WaitForSeconds(interval);
         }
+        if(tutorialMode) TutorialManager.Instance.RegisterBarEmpty();
         RhythmManager.Instance.SetMusicStyle(MusicType.DEFAULT);
         ChangeSelectedMusicType(MusicType.DEFAULT);
     }
@@ -1002,6 +1021,10 @@ public class Player : MonoBehaviour
     public bool UseItem(ItemData itemData)
     {
         if (itemData == null) return false;
+        if(tutorialMode)
+        {
+            TutorialManager.Instance.RegisterItemUsed();
+        }
 
         // CONTROLLO DROGA: Se cerchi di usare una droga ma ne hai già una attiva, blocca tutto!
         if (itemData.itemType == ItemType.DRUG && consumedDrug != DrugType.NONE)
@@ -1038,6 +1061,7 @@ public class Player : MonoBehaviour
                 ApplyDrugStatus(DrugType.NONE);
                 ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
                 ResetModifiersToDefault();
+                if(tutorialMode) TutorialManager.Instance.RegisterWaterDrank();
                 return true; // Oggetto consumato con successo
 
             case ItemType.DRUG:

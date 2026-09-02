@@ -9,7 +9,7 @@ public class EnemySpawner : MonoBehaviour
     public float baseMinSpawnDelay = 1.0f;
     public float baseMaxSpawnDelay = 3.0f;
 
-    [Header("Scaling Difficoltà")]
+    [Header("Scaling Difficoltï¿½")]
     public Player playerReference;
     public float timeMultiplierPerLevel = 0.85f;
     public float absoluteMinSpawnDelay = 0.2f;
@@ -18,10 +18,10 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Quanti nemici preparare all'avvio del gioco")]
     public int poolSize = 30;
 
-    // La lista che conterrà i nostri nemici pre-caricati
+    // La lista che conterrï¿½ i nostri nemici pre-caricati
     private List<GameObject> enemyPool;
 
-    void Start()
+    void OnEnable()
     {
         if (playerReference == null)
         {
