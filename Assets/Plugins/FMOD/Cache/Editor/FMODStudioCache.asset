@@ -69,10 +69,10 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639239015459322304
+  lastModified: 639242384689971629
   FileSizes:
   - Name: 
-    Value: 2330
+    Value: 2574
   Exists: 1
 --- !u!114 &-5833151222005265184
 MonoBehaviour:
@@ -238,7 +238,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 0
+  Length: 1007
 --- !u!114 &-3290249929266484277
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,11 +317,11 @@ MonoBehaviour:
   - {fileID: 3799818825547264446}
   IsStream: 0
   Is3D: 0
-  IsOneShot: 1
+  IsOneShot: 0
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 0
+  Length: 7687
 --- !u!114 &-2173663961193377543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -368,6 +368,60 @@ MonoBehaviour:
   lastModified: 639189830826329521
   FileSizes: []
   Exists: 1
+--- !u!114 &-1739359103976492228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Misc/speaker_break
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Misc/speaker_break
+  Guid:
+    Data1: -826763102
+    Data2: 1106297134
+    Data3: -1175680588
+    Data4: -642883549
+  Banks:
+  - {fileID: 3799818825547264446}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
+--- !u!114 &-1141624896661455742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Misc/bar_charged
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Misc/bar_charged
+  Guid:
+    Data1: -1171700417
+    Data2: 1260693602
+    Data3: -1832409179
+    Data4: 1364227342
+  Banks:
+  - {fileID: 3799818825547264446}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 2397
 --- !u!114 &-1025088851501490094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +437,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639239015459312306
+  lastModified: 639242384689956593
   FileSizes: []
   Exists: 1
 --- !u!114 &-803317859548288404
@@ -486,13 +540,18 @@ MonoBehaviour:
   - {fileID: -8785753304741113454}
   - {fileID: 6065776339252301901}
   - {fileID: -803317859548288404}
+  - {fileID: 4763756879500769831}
+  - {fileID: 5847508292842871956}
+  - {fileID: 3235522397000264136}
+  - {fileID: -1739359103976492228}
+  - {fileID: -1141624896661455742}
   EditorParameters: []
   MasterBanks:
   - {fileID: -1025088851501490094}
   StringsBanks:
   - {fileID: -8276583537654689561}
   cacheVersion: 131858
-  cacheTime: 639239016364672172
+  cacheTime: 639242384690906127
   SerializableEventsDict:
   - key: event:/bonk
     index: 0
@@ -546,6 +605,16 @@ MonoBehaviour:
     index: 24
   - key: event:/Music/TUTORIAL
     index: 25
+  - key: snapshot:/Left Speaker
+    index: 26
+  - key: snapshot:/Left Speaker 2
+    index: 27
+  - key: event:/Misc/speaker_hit
+    index: 28
+  - key: event:/Misc/speaker_break
+    index: 29
+  - key: event:/Misc/bar_charged
+    index: 30
 --- !u!114 &321605498127420868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -763,6 +832,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &3235522397000264136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Misc/speaker_hit
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Misc/speaker_hit
+  Guid:
+    Data1: 1072880907
+    Data2: 1144684469
+    Data3: -1420029533
+    Data4: 1016501798
+  Banks:
+  - {fileID: 3799818825547264446}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &3283055760253504386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -805,7 +901,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639190618764886273
+  lastModified: 639242384690906127
   FileSizes: []
   Exists: 1
 --- !u!114 &4042786153890122081
@@ -837,6 +933,60 @@ MonoBehaviour:
   - Raggae
   - Breakcore
   Exists: 1
+--- !u!114 &4763756879500769831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/Left Speaker
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: snapshot:/Left Speaker
+  Guid:
+    Data1: 1782822500
+    Data2: 1283734604
+    Data3: 892152720
+    Data4: 398557618
+  Banks:
+  - {fileID: -1025088851501490094}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
+--- !u!114 &5847508292842871956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/Left Speaker 2
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: snapshot:/Left Speaker 2
+  Guid:
+    Data1: -1973585012
+    Data2: 1148664608
+    Data3: 312495247
+    Data4: -855821937
+  Banks:
+  - {fileID: -1025088851501490094}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
 --- !u!114 &6065776339252301901
 MonoBehaviour:
   m_ObjectHideFlags: 0

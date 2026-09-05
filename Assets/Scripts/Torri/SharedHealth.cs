@@ -10,20 +10,24 @@ public class SharedHealth : MonoBehaviour
     [Tooltip("Trascina qui il GameObject 'Fill' (quello con Image Type: Filled)")]
     public Image barraVitaFill;
 
-    [Tooltip("Trascina qui il GameObject padre della barra per lo shake e la visibilità")]
+    [Tooltip("Trascina qui il GameObject padre della barra per lo shake e la visibilitï¿½")]
     public RectTransform healthBarContainer;
 
     [Header("Settings Shaking")]
     public float shakeThreshold = 20f;
     public float shakeIntensity = 5f;
+    [Tooltip("Durata dello shake breve attivato da ogni colpo ricevuto.")]
+    public float hitShakeDuration = 0.1f;
+    [Tooltip("Intensitï¿½ dello shake breve attivato da ogni colpo ricevuto.")]
+    public float hitShakeIntensity = 4f;
 
     [Header("Gestore Game Over")]
     public GameOverManager gameOverManager;
 
     [Header("Rivelazione Ritardata")]
-    [Tooltip("Lascia vuoto se questa cassa è visibile e attaccabile fin dall'inizio")]
+    [Tooltip("Lascia vuoto se questa cassa ï¿½ visibile e attaccabile fin dall'inizio")]
     public SharedHealth[] casseDaDistruggerePrimaDiApparire;
-    [Tooltip("Collider da abilitare alla rivelazione, così i nemici non rilevano questa cassa prima del tempo")]
+    [Tooltip("Collider da abilitare alla rivelazione, cosï¿½ i nemici non rilevano questa cassa prima del tempo")]
     public Collider[] colliderDaAbilitare;
 
     [Header("Gestione Sprite Danno")]
@@ -31,12 +35,15 @@ public class SharedHealth : MonoBehaviour
     public Sprite spriteCassaSpaccata;
     private bool spriteCambiato = false;
 
+    [Header("Suono distruzione cassa")]
+    [SerializeField] private FMODUnity.EventReference breakSoundEvent = new FMODUnity.EventReference();
+
     [Header("Gestione Modello 3D")]
-    [Tooltip("Il modello 3D visibile finché la cassa è integra (trascina qui il child, es. 'Modello_Integro')")]
+    [Tooltip("Il modello 3D visibile finchï¿½ la cassa ï¿½ integra (trascina qui il child, es. 'Modello_Integro')")]
     public GameObject modelloIntegro;
     [Tooltip("Il modello 3D da mostrare al posto di quello integro (trascina qui il child, es. 'Modello_Danneggiato')")]
     public GameObject modelloDanneggiato;
-    [Tooltip("Vita residua alla quale scatta il cambio modello. Metti 0 per farlo scattare solo alla distruzione completa (currentPoints <= 0), oppure es. maxPoints/2 per farlo scattare a metà vita, come per lo sprite dell'icona.")]
+    [Tooltip("Vita residua alla quale scatta il cambio modello. Metti 0 per farlo scattare solo alla distruzione completa (currentPoints <= 0), oppure es. maxPoints/2 per farlo scattare a metï¿½ vita, come per lo sprite dell'icona.")]
     public float sogliaCambioModello = 0f;
     private bool modelloCambiato = false;
 
@@ -44,6 +51,7 @@ public class SharedHealth : MonoBehaviour
     public bool nascondiOggettoAllaDistruzione = true;
 
     private Vector2 originalPosition;
+    private float hitShakeTimer = 0f;
     private bool isDestroyed = false;
     private bool isRivelata = true;
 
@@ -59,7 +67,7 @@ public class SharedHealth : MonoBehaviour
 
     void Awake()
     {
-        // Inizializza i punti vita in Awake così sono pronti prima di qualsiasi raggio/collisione
+        // Inizializza i punti vita in Awake cosï¿½ sono pronti prima di qualsiasi raggio/collisione
         if (maxPoints < 100f) maxPoints = 100f;
         currentPoints = maxPoints;
     }
@@ -139,25 +147,38 @@ public class SharedHealth : MonoBehaviour
     {
         if (healthBarContainer == null || isDestroyed || !isRivelata) return;
 
-        if (currentPoints <= shakeThreshold && currentPoints > 0)
+        Vector2 targetPosition = originalPosition;
+
+        if (hitShakeTimer > 0f)
+        {
+            hitShakeTimer -= Time.deltaTime;
+            float remainingRatio = Mathf.Clamp01(hitShakeTimer / hitShakeDuration);
+            float currentMagnitude = hitShakeIntensity * remainingRatio;
+            float offsetX = Random.Range(-1f, 1f) * currentMagnitude;
+            float offsetY = Random.Range(-1f, 1f) * currentMagnitude;
+            targetPosition += new Vector2(offsetX, offsetY);
+        }
+        else if (currentPoints <= shakeThreshold && currentPoints > 0)
         {
             float offsetX = Random.Range(-1f, 1f) * shakeIntensity;
             float offsetY = Random.Range(-1f, 1f) * shakeIntensity;
-            healthBarContainer.anchoredPosition = originalPosition + new Vector2(offsetX, offsetY);
+            targetPosition += new Vector2(offsetX, offsetY);
         }
-        else
-        {
-            if (healthBarContainer.anchoredPosition != originalPosition)
-            {
-                healthBarContainer.anchoredPosition = originalPosition;
-            }
-        }
+
+        healthBarContainer.anchoredPosition = targetPosition;
+    }
+
+    private void TriggerHitShake()
+    {
+        if (healthBarContainer == null) return;
+        hitShakeTimer = hitShakeDuration;
     }
 
     public void TakeDamage(float amount)
     {
         if (isDestroyed || !isRivelata) return;
 
+        TriggerHitShake();
         currentPoints -= amount;
         currentPoints = Mathf.Max(currentPoints, 0);
 
@@ -182,6 +203,7 @@ public class SharedHealth : MonoBehaviour
         {
             isDestroyed = true;
             activeCasseCount--;
+            FMODUnity.RuntimeManager.PlayOneShot(breakSoundEvent);
 
             SetElementiVisibili(false);
 

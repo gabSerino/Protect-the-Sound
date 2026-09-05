@@ -31078,6 +31078,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageReceiver
   sharedHealthManager: {fileID: 739963633}
+  hitSoundEvent:
+    Guid:
+      Data1: 1072880907
+      Data2: 1144684469
+      Data3: -1420029533
+      Data4: 1016501798
+    Path: event:/Misc/speaker_hit
 --- !u!114 &739963633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31095,11 +31102,20 @@ MonoBehaviour:
   healthBarContainer: {fileID: 1889909827}
   shakeThreshold: 100
   shakeIntensity: 5
+  hitShakeDuration: 0.1
+  hitShakeIntensity: 20
   gameOverManager: {fileID: 1441539825}
   casseDaDistruggerePrimaDiApparire: []
   colliderDaAbilitare: []
   iconaCassa: {fileID: 886272012}
   spriteCassaSpaccata: {fileID: 21300000, guid: 3f5790cd1a9be1b4f8274137c3a3968f, type: 3}
+  breakSoundEvent:
+    Guid:
+      Data1: -826763102
+      Data2: 1106297134
+      Data3: -1175680588
+      Data4: -642883549
+    Path: event:/Misc/speaker_break
   modelloIntegro: {fileID: 765797537}
   modelloDanneggiato: {fileID: 2137628013}
   sogliaCambioModello: 0
@@ -41750,6 +41766,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageReceiver
   sharedHealthManager: {fileID: 1058306897}
+  hitSoundEvent:
+    Guid:
+      Data1: 1072880907
+      Data2: 1144684469
+      Data3: -1420029533
+      Data4: 1016501798
+    Path: event:/Misc/speaker_hit
 --- !u!114 &1058306897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41767,6 +41790,8 @@ MonoBehaviour:
   healthBarContainer: {fileID: 412880340}
   shakeThreshold: 100
   shakeIntensity: 5
+  hitShakeDuration: 0.1
+  hitShakeIntensity: 8
   gameOverManager: {fileID: 1441539825}
   casseDaDistruggerePrimaDiApparire:
   - {fileID: 1946381181}
@@ -41775,6 +41800,13 @@ MonoBehaviour:
   - {fileID: 1058306893}
   iconaCassa: {fileID: 0}
   spriteCassaSpaccata: {fileID: 21300000, guid: 714ae7ef054741e498950c07631bc999, type: 3}
+  breakSoundEvent:
+    Guid:
+      Data1: -826763102
+      Data2: 1106297134
+      Data3: -1175680588
+      Data4: -642883549
+    Path: event:/Misc/speaker_break
   modelloIntegro: {fileID: 1201077299}
   modelloDanneggiato: {fileID: 0}
   sogliaCambioModello: 0
@@ -72854,11 +72886,20 @@ MonoBehaviour:
   healthBarContainer: {fileID: 213262243}
   shakeThreshold: 100
   shakeIntensity: 5
+  hitShakeDuration: 0.1
+  hitShakeIntensity: 20
   gameOverManager: {fileID: 1441539825}
   casseDaDistruggerePrimaDiApparire: []
   colliderDaAbilitare: []
   iconaCassa: {fileID: 348753239}
   spriteCassaSpaccata: {fileID: 21300000, guid: aeedbf749fe89484eb1948c8388b95ab, type: 3}
+  breakSoundEvent:
+    Guid:
+      Data1: -826763102
+      Data2: 1106297134
+      Data3: -1175680588
+      Data4: -642883549
+    Path: event:/Misc/speaker_break
   modelloIntegro: {fileID: 839269803}
   modelloDanneggiato: {fileID: 2056412180}
   sogliaCambioModello: 0
@@ -72876,6 +72917,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageReceiver
   sharedHealthManager: {fileID: 1946381181}
+  hitSoundEvent:
+    Guid:
+      Data1: 1072880907
+      Data2: 1144684469
+      Data3: -1420029533
+      Data4: 1016501798
+    Path: event:/Misc/speaker_hit
 --- !u!1 &1947378174
 GameObject:
   m_ObjectHideFlags: 0
@@ -80443,6 +80491,10 @@ PrefabInstance:
       value: 831931589
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: barChargedSoundEvent.Path
+      value: event:/Misc/bar_charged
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: changeMusicSoundEvent.Path
       value: event:/UI/ui_switch
       objectReference: {fileID: 0}
@@ -80481,6 +80533,22 @@ PrefabInstance:
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: badTripSoundEvent.Guid.Data4
       value: -1324983423
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: barChargedSoundEvent.Guid.Data1
+      value: -1171700417
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: barChargedSoundEvent.Guid.Data2
+      value: 1260693602
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: barChargedSoundEvent.Guid.Data3
+      value: -1832409179
+      objectReference: {fileID: 0}
+    - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
+      propertyPath: barChargedSoundEvent.Guid.Data4
+      value: 1364227342
       objectReference: {fileID: 0}
     - target: {fileID: 8250142717216852404, guid: 5cc786c8972df504c830c24a00054616, type: 3}
       propertyPath: changeMusicSoundEvent.Guid.Data1

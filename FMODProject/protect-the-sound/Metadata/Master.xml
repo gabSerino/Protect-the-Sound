@@ -20,6 +20,7 @@
 			<destination>{f916d54c-65cc-43e5-9040-9dee2c1c4407}</destination>
 			<destination>{0b81c00a-ed86-4779-8ae9-c0869258ff01}</destination>
 			<destination>{384443f9-b345-4c27-a6e0-691fac0ad558}</destination>
+			<destination>{888c7e8c-c2fc-4cd9-9be0-a2340b83b5ee}</destination>
 			<destination>{150721dc-488f-4c3d-8751-ec1dcc59eb8e}</destination>
 		</relationship>
 	</object>
@@ -81,6 +82,14 @@
 		</property>
 		<property name="spread">
 			<value>0.239999995</value>
+		</property>
+	</object>
+	<object class="FlangerEffect" id="{888c7e8c-c2fc-4cd9-9be0-a2340b83b5ee}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
 		</property>
 	</object>
 	<object class="CompressorEffect" id="{150721dc-488f-4c3d-8751-ec1dcc59eb8e}">

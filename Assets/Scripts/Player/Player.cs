@@ -114,6 +114,7 @@ public class Player : MonoBehaviour
     [SerializeField] private FMODUnity.EventReference changeMusicSoundEvent = new FMODUnity.EventReference();
     [SerializeField] private FMODUnity.EventReference consumeItemSoundEvent = new FMODUnity.EventReference();
     [SerializeField] private string consumeItemSoundParameter = "Item";
+    [SerializeField] private FMODUnity.EventReference barChargedSoundEvent = new FMODUnity.EventReference();
 
     [Header("References")]
     [SerializeField] private PlayerInputManager playerInputManager;
@@ -150,6 +151,7 @@ public class Player : MonoBehaviour
     private bool isAttacking = false;
     private bool canUseInventory = true;
     private bool musicDrugCombo = false;
+    private bool chargeSoundPlayedThisCycle = false;
     public bool canChangeMusicType = false;
 
     private CharacterController controller;
@@ -846,17 +848,30 @@ public class Player : MonoBehaviour
 
     private void HandleMusicChange()
     {
-        if (currentMusicPoints < musicPtsThreshold || RhythmManager.Instance.musicType != MusicType.DEFAULT)
+        bool isCharged = currentMusicPoints >= musicPtsThreshold && RhythmManager.Instance.musicType == MusicType.DEFAULT;
+
+        if (!isCharged)
         {
             canChangeMusicType = false;
             fuocoUI.SetActive(false);
+            chargeSoundPlayedThisCycle = false;
             return;
         }
-        
-        if(tutorialMode) TutorialManager.Instance.RegisterBarCharged();
+
+        if (tutorialMode) TutorialManager.Instance.RegisterBarCharged();
 
         canChangeMusicType = true;
         fuocoUI.SetActive(true);
+
+        if (!chargeSoundPlayedThisCycle)
+        {
+            if (!barChargedSoundEvent.IsNull)
+            {
+                FMODUnity.RuntimeManager.PlayOneShot(barChargedSoundEvent);
+            }
+            chargeSoundPlayedThisCycle = true;
+        }
+
         if (playerInputManager.SongSwitchInput)
         {
             ChangeSelectedMusicType((MusicType)(((int)selectedMusicType + 1) % 5));
@@ -868,6 +883,7 @@ public class Player : MonoBehaviour
         if (playerInputManager.SongConfirmInput)
         {
             currentMusicPoints = maxMusicPoints;
+            chargeSoundPlayedThisCycle = false;
 
             ConfirmMusicType();
             playerInputManager.ConsumeSongConfirmInput();

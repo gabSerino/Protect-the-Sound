@@ -1,11 +1,14 @@
 using UnityEngine;
+using FMODUnity;
 
 [RequireComponent(typeof(SharedHealth))]
 public class DamageReceiver : MonoBehaviour
 {
     // Ora ogni cassa ha la propria vita. Se lasci il campo vuoto in Inspector,
-    // verrà usato automaticamente il componente SharedHealth presente su questo stesso oggetto.
+    // verrï¿½ usato automaticamente il componente SharedHealth presente su questo stesso oggetto.
     public SharedHealth sharedHealthManager;
+
+    [SerializeField] private FMODUnity.EventReference hitSoundEvent = new FMODUnity.EventReference();
 
     void Awake()
     {
@@ -19,6 +22,7 @@ public class DamageReceiver : MonoBehaviour
     {
         if (sharedHealthManager != null)
         {
+            RuntimeManager.PlayOneShot(hitSoundEvent);
             sharedHealthManager.TakeDamage(amount);
         }
         else
