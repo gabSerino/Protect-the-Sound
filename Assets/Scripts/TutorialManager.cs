@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections;
 
@@ -149,11 +150,20 @@ public class TutorialManager : MonoBehaviour
 
     void Update()
     {
+        if (tutorialActive && Keyboard.current != null && Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            CompleteTutorial();
+            return;
+        }
+
         // L'avanzamento è sempre guidato dal left click, ma solo quando c'è
         // effettivamente una riga a schermo da "chiudere". Se siamo in attesa
         // di una condizione (box nascosto) il click non ha effetto: si aspetta
         // che l'azione di gameplay richiesta venga compiuta.
-        if (tutorialActive && lineVisible && Input.GetMouseButtonDown(0))
+        bool advancePressed = Input.GetMouseButtonDown(0) ||
+                              (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame);
+
+        if (tutorialActive && lineVisible && advancePressed)
         {
             AdvanceFromClick();
         }

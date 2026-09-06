@@ -1383,7 +1383,10 @@ MonoBehaviour:
   player: {fileID: 1001216166}
   faceImage: {fileID: 23187825}
   defaultFace: {fileID: 21300000, guid: e4abe9a2484bd4140999f130e7bfdca7, type: 3}
-  druggedFace: {fileID: 21300000, guid: 817490c514798f749bde2b70d172f696, type: 3}
+  cocaFace: {fileID: 21300000, guid: 27bcac05259cfeb4c89ea2349b79206f, type: 3}
+  marjuanaFace: {fileID: 21300000, guid: 80db9d16302d7c54591dc346b890f351, type: 3}
+  lsdFace: {fileID: 21300000, guid: 9881075eee6c9fe4d825546023d7f217, type: 3}
+  mdmaFace: {fileID: 21300000, guid: 4956a4c1d8c066742afe0ccccd1931d3, type: 3}
   badTripFace: {fileID: 21300000, guid: f0ad001e21e00a445b5aa72e325c9422, type: 3}
 --- !u!114 &23187825
 MonoBehaviour:
@@ -26190,9 +26193,17 @@ MonoBehaviour:
     waterItem: {fileID: 0}
   - text: 'Do you see the inventory in the lower right corner?
 
-      You can scroll
-      through the items using the MOUSEWHEEL (Left & Right Triggers) and use them
-      by pushing RMOUSE (South Button).'
+'
+    conditionType: 0
+    requiredAmount: 0
+    controlsWhileWaiting: 0
+    spawnEnemiesWhileWaiting: 0
+    enemySpawner: {fileID: 0}
+    activateWater: 0
+    waterSpawner: {fileID: 0}
+    waterItem: {fileID: 0}
+  - text: You can scroll through the items using the MOUSEWHEEL (Left & Right Triggers)
+      and use them by pushing RMOUSE (South Button).
     conditionType: 0
     requiredAmount: 0
     controlsWhileWaiting: 0
@@ -26231,6 +26242,15 @@ MonoBehaviour:
     controlsWhileWaiting: -1
     spawnEnemiesWhileWaiting: 1
     enemySpawner: {fileID: 94986723}
+    activateWater: 0
+    waterSpawner: {fileID: 0}
+    waterItem: {fileID: 0}
+  - text: Remember to make space in your inventory with X (East Button).
+    conditionType: 0
+    requiredAmount: 0
+    controlsWhileWaiting: 0
+    spawnEnemiesWhileWaiting: 0
+    enemySpawner: {fileID: 0}
     activateWater: 0
     waterSpawner: {fileID: 0}
     waterItem: {fileID: 0}
