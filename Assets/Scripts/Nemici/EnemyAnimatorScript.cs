@@ -37,7 +37,7 @@ public class EnemyAnimatorScript : MonoBehaviour
         Vector3 direction = GetDirection();
         direction.y=0f;
         Debug.DrawRay( enemy.transform.position, direction*2f ,Color.red);
-        animator.SetFloat("X", direction.x);
-        animator.SetFloat("Y", direction.z);
+        animator.SetFloat("X", direction.normalized.x);
+        animator.SetFloat("Y", direction.normalized.z);
     }
 }

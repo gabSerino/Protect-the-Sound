@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using FMODUnity;
 
 public class EnemyBase : MonoBehaviour
 {
@@ -25,8 +26,15 @@ public class EnemyBase : MonoBehaviour
     // EVENTO GLOBALE DI MORTE (usato dal Player per il Level Up)
     public static event Action OnEnemyDied;
 
+    // Suoni
+    public FMODUnity.EventReference deathSound;
+    public FMODUnity.EventReference defaultSound;
+
     // Variabile per ricordare com'era il nemico da vivo
     private Sprite originalSprite;
+    private FMOD.Studio.EventInstance defaultSoundInstance;
+    private bool defaultSoundPlaying;
+    private Animator anim;
 
     private void Awake()
     {
@@ -38,11 +46,14 @@ public class EnemyBase : MonoBehaviour
         {
             originalSprite = spriteRenderer.sprite; // Salviamo lo sprite originale
         }
+        anim = GetComponentInChildren<Animator>();
+
     }
 
     // --- AGGIUNTO PER IL POOLING: Si avvia ogni volta che il nemico "rinasce" ---
     private void OnEnable()
     {
+        StopDefaultSound();
         IsDead = false;
         if (stats != null) CurrentHealth = stats.maxHealth;
         OnHealthChanged?.Invoke(CurrentHealth); // Aggiorna eventuale barra della vita
@@ -63,6 +74,43 @@ public class EnemyBase : MonoBehaviour
         {
             spriteRenderer.sprite = originalSprite;
         }
+        PlayDefaultSound();
+    }
+
+    private void OnDisable()
+    {
+        StopDefaultSound();
+    }
+
+    private void PlayDefaultSound()
+    {
+        if (defaultSound.IsNull || defaultSoundPlaying) return;
+
+        defaultSoundInstance = FMODUnity.RuntimeManager.CreateInstance(defaultSound);
+        if (!defaultSoundInstance.isValid()) return;
+
+        defaultSoundInstance.set3DAttributes(FMODUnity.RuntimeUtils.To3DAttributes(transform));
+        defaultSoundInstance.start();
+        defaultSoundPlaying = true;
+    }
+
+    private void StopDefaultSound()
+    {
+        if (!defaultSoundInstance.isValid())
+        {
+            defaultSoundPlaying = false;
+            return;
+        }
+
+        defaultSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        defaultSoundInstance.release();
+        defaultSoundInstance = default;
+        defaultSoundPlaying = false;
+    }
+
+    private void PlayDeathSound()
+    {
+        FMODUnity.RuntimeManager.PlayOneShot(deathSound);
     }
 
     public void TakeDamage(float amount)
@@ -72,16 +120,21 @@ public class EnemyBase : MonoBehaviour
         CurrentHealth -= amount;
         OnHealthChanged?.Invoke(CurrentHealth);
 
+
         if (CurrentHealth <= 0)
         {
             Die();
         }
+        else anim.SetTrigger("damage");
+
     }
 
     private void Die()
     {
         if (IsDead) return;
         IsDead = true;
+        StopDefaultSound();
+        PlayDeathSound();
 
         if(TutorialManager.Instance != null) TutorialManager.Instance.RegisterEnemyKilled();
 
@@ -100,6 +153,11 @@ public class EnemyBase : MonoBehaviour
 
         DropLoot();
         StartCoroutine(DeathSequence());
+    }
+
+    private void OnDestroy()
+    {
+        StopDefaultSound();
     }
 
     private void DropLoot()
@@ -140,6 +198,7 @@ public class EnemyBase : MonoBehaviour
         if (spriteRenderer != null && deadSprite != null)
             spriteRenderer.sprite = deadSprite;
 
+        anim.SetTrigger("death");
         yield return new WaitForSeconds(deathDelay);
 
         // --- MODIFICATO PER IL POOLING: Non lo distruggiamo, lo spegniamo! ---

@@ -56,7 +56,11 @@
 			<destination>{8a132f2e-9791-4381-850d-f1eb2b924b55}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{ac104880-07ec-4cc4-935f-36df75122a25}" />
+	<object class="EventAutomatableProperties" id="{ac104880-07ec-4cc4-935f-36df75122a25}">
+		<property name="maxVoices">
+			<value>1</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{4bd59532-d5b9-45aa-b67e-8d17221cdc7a}" />
 	<object class="GroupTrack" id="{7f89df7f-0197-4368-9ff5-48c9bc9f076d}">
 		<relationship name="modules">
@@ -72,6 +76,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{33da8be1-fb85-4a00-a107-fd92bfb36d20}">
+		<property name="volume">
+			<value>-2.5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{33580ee8-79ba-4f28-8a3a-b0344b66c19c}</destination>
 		</relationship>

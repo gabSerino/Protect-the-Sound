@@ -12,7 +12,10 @@ public class PlayerFaceUI : MonoBehaviour
 
     [Header("Sprites Faccina")]
     [SerializeField] private Sprite defaultFace;
-    [SerializeField] private Sprite druggedFace;
+    [SerializeField] private Sprite cocaFace;
+    [SerializeField] private Sprite marjuanaFace;
+    [SerializeField] private Sprite lsdFace;
+    [SerializeField] private Sprite mdmaFace;
     [SerializeField] private Sprite badTripFace;
 
     void Update()
@@ -20,19 +23,34 @@ public class PlayerFaceUI : MonoBehaviour
         // Evitiamo errori se i riferimenti non sono stati assegnati
         if (player == null || faceImage == null) return;
 
-        // Gestione della priorità degli stati
+        // Gestione della prioritï¿½ degli stati
 
-        // 1. Bad Trip (Priorità massima)
+        // 1. Bad Trip (Prioritï¿½ massima)
         if (player.mentalStatus == PlayerMentalStatus.BADTRIP)
         {
             faceImage.sprite = badTripFace;
         }
         // 2. Sotto l'effetto di una droga (ma non in Bad Trip)
         // Guardando il tuo codice, quando una droga fa effetto senza bad trip, 
-        // lo status diventa STUNNED oppure consumedDrug non è NONE.
+        // lo status diventa STUNNED oppure consumedDrug non ï¿½ NONE.
         else if (player.consumedDrug != DrugType.NONE || player.mentalStatus == PlayerMentalStatus.STUNNED)
         {
-            faceImage.sprite = druggedFace;
+            if(player.consumedDrug == DrugType.COCAINE)
+            {
+                faceImage.sprite = cocaFace;
+            }
+            else if (player.consumedDrug == DrugType.MARIJUANA)
+            {
+                faceImage.sprite = marjuanaFace;
+            }
+            else if (player.consumedDrug == DrugType.LSD)
+            {
+                faceImage.sprite = lsdFace;
+            }
+            else if (player.consumedDrug == DrugType.MDMA)
+            {
+                faceImage.sprite = mdmaFace;
+            }
         }
         // 3. Stato Normale (Nessuna droga, nessun malus)
         else

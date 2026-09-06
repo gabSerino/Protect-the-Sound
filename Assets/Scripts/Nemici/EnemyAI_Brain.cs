@@ -47,7 +47,7 @@ public class EnemyAI_Brain : MonoBehaviour
         currentTarget = null;
         windupTimer = 0f;
 
-        // Se era morto mentre caricava, gli resettiamo la velocità base
+        // Se era morto mentre caricava, gli resettiamo la velocitï¿½ base
         if (agent != null && stats != null)
         {
             agent.speed = stats.moveSpeed;
@@ -79,7 +79,7 @@ public class EnemyAI_Brain : MonoBehaviour
             Transform player = hitPlayers[0].transform;
             Player playerScript = player.GetComponentInParent<Player>();
 
-            // CONTROLLO FONDAMENTALE: Il player esiste e NON è morto?
+            // CONTROLLO FONDAMENTALE: Il player esiste e NON ï¿½ morto?
             if (playerScript != null && !playerScript.IsDead)
             {
                 foundAlivePlayer = true;
@@ -98,10 +98,10 @@ public class EnemyAI_Brain : MonoBehaviour
             }
         }
 
-        // Se non ha trovato nessun player nel raggio, OPPURE se il player che ha trovato è MORTO
+        // Se non ha trovato nessun player nel raggio, OPPURE se il player che ha trovato ï¿½ MORTO
         if (!foundAlivePlayer)
         {
-            // Abbandona l'inseguimento e torna "Idle" (così andrà a cercare le Casse)
+            // Abbandona l'inseguimento e torna "Idle" (cosï¿½ andrï¿½ a cercare le Casse)
             if (currentState == EnemyState.ChasingPlayer || currentState == EnemyState.AttackingPlayer || currentState == EnemyState.PreparingCharge)
             {
                 currentTarget = null;
@@ -110,7 +110,7 @@ public class EnemyAI_Brain : MonoBehaviour
                 if (stats != null && agent != null)
                 {
                     agent.isStopped = false; // Toglie il freno
-                    agent.speed = stats.moveSpeed; // Torna alla velocità normale
+                    agent.speed = stats.moveSpeed; // Torna alla velocitï¿½ normale
                 }
             }
         }
@@ -192,7 +192,7 @@ public class EnemyAI_Brain : MonoBehaviour
         }
     }
 
-    // Una cassa "target" è valida solo se esiste ancora ed è attiva (non distrutta)
+    // Una cassa "target" ï¿½ valida solo se esiste ancora ed ï¿½ attiva (non distrutta)
     private bool IsCassaTargetValida()
     {
         return currentTarget != null && currentTarget.gameObject.activeInHierarchy;

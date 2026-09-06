@@ -69,11 +69,38 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639242384689971629
+  lastModified: 639243320688638550
   FileSizes:
   - Name: 
-    Value: 2574
+    Value: 2624
   Exists: 1
+--- !u!114 &-7378559999993731832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: snapshot:/Lowering
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: snapshot:/Lowering
+  Guid:
+    Data1: 1751834998
+    Data2: 1307819668
+    Data3: 2040300673
+    Data4: -695063507
+  Banks:
+  - {fileID: -1025088851501490094}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 0
 --- !u!114 &-5833151222005265184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +421,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 0
+  Length: 2000
 --- !u!114 &-1141624896661455742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,7 +464,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639242384689956593
+  lastModified: 639243320688623506
   FileSizes: []
   Exists: 1
 --- !u!114 &-803317859548288404
@@ -545,13 +572,14 @@ MonoBehaviour:
   - {fileID: 3235522397000264136}
   - {fileID: -1739359103976492228}
   - {fileID: -1141624896661455742}
+  - {fileID: -7378559999993731832}
   EditorParameters: []
   MasterBanks:
   - {fileID: -1025088851501490094}
   StringsBanks:
   - {fileID: -8276583537654689561}
   cacheVersion: 131858
-  cacheTime: 639242384690906127
+  cacheTime: 639243322953573393
   SerializableEventsDict:
   - key: event:/bonk
     index: 0
@@ -615,6 +643,8 @@ MonoBehaviour:
     index: 29
   - key: event:/Misc/bar_charged
     index: 30
+  - key: snapshot:/Lowering
+    index: 31
 --- !u!114 &321605498127420868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -901,7 +931,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/SFX.bank
   Name: SFX
   StudioPath: bank:/SFX
-  lastModified: 639242384690906127
+  lastModified: 639243322953573393
   FileSizes: []
   Exists: 1
 --- !u!114 &4042786153890122081
@@ -1129,7 +1159,7 @@ MonoBehaviour:
   Path: FMOD/Desktop/Music.bank
   Name: Music
   StudioPath: bank:/Music
-  lastModified: 639239016364672172
+  lastModified: 639243209234224795
   FileSizes: []
   Exists: 1
 --- !u!114 &9100537751718654615

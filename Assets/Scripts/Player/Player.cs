@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float baseAttackBoxDuration = 0.2f;
     [SerializeField] private float baseAttackTime = 0.4f;
     [SerializeField] private float baseAttackMoveSpeedMultiplier = 0f;
+    [SerializeField] private bool hitboxVisible = false;
 
     private float attackDamage;
     private float attackRange;
@@ -124,6 +125,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject attackHitbox;
     [SerializeField] private Animator playerAnimator;
     [SerializeField] private GameObject badTripVolume;
+    [SerializeField] private GameObject playerSprite;
+    [SerializeField] private GameObject playerAttackDirection;
 
     [Header("Grafica Player (Per il Lampeggio)")]
     [SerializeField] private Renderer[] playerRenderers;
@@ -422,8 +425,8 @@ public class Player : MonoBehaviour
         currentMovement.z = horizontalVelocity.z;
         characterController.Move(currentMovement * Time.deltaTime);
 
-        playerAnimator.SetFloat("X", horizontalVelocity.x);
-        playerAnimator.SetFloat("Y", horizontalVelocity.z);
+        playerAnimator.SetFloat("X", horizontalVelocity.normalized.x);
+        playerAnimator.SetFloat("Y", horizontalVelocity.normalized.z);
         playerAnimator.SetFloat("speed", input.magnitude);
     }
 
@@ -530,20 +533,19 @@ public class Player : MonoBehaviour
 
         bool isOnBeat = IsOnBeat(out float damageMultiplier);
         hitboxDamage.SetHitboxDamage(attackDamage * damageMultiplier, damageMultiplier);
+        hitboxDamage.ResetHitEnemies();
 
         playerAnimator.SetTrigger("Attack");
         PlayAttackSound();
 
         hitboxCollider.enabled = true;
-        hitboxRenderer.enabled = true;
+        if(hitboxVisible) attackHitbox.GetComponent<HitboxDamage>().EnableHitboxRenderer();
+        attackHitbox.GetComponent<HitboxDamage>().EnableHitSprite();
 
         yield return new WaitForSeconds(attackBoxDuration);
 
         hitboxCollider.enabled = false;
-        hitboxRenderer.enabled = false;
-
-        attackHitbox.SetActive(false);
-        attackHitbox.SetActive(true);
+        if(hitboxVisible) attackHitbox.GetComponent<HitboxDamage>().DisableHitboxRenderer();
 
         walkingSpeed = originalSpeed;
 
@@ -686,7 +688,7 @@ public class Player : MonoBehaviour
         }
 
         PlayHitSound();
-        //playerAnimator.SetTrigger("Hit");
+        playerAnimator.SetTrigger("damage");
         currentHealthPoints = Mathf.Clamp(currentHealthPoints - amount, 0, maxHealthPoints);
         UpdateUI();
 
@@ -763,19 +765,15 @@ public class Player : MonoBehaviour
         {
             currentlyVisible = !currentlyVisible;
 
-            foreach (Renderer r in playerRenderers)
-            {
-                if (r != null) r.enabled = currentlyVisible;
-            }
+            playerSprite.GetComponent<SpriteRenderer>().enabled = currentlyVisible;
+            playerAttackDirection.GetComponent<SpriteRenderer>().enabled = currentlyVisible;
 
             yield return new WaitForSeconds(flickerInterval);
             timer += flickerInterval;
         }
 
-        foreach (Renderer r in playerRenderers)
-        {
-            if (r != null) r.enabled = true;
-        }
+        playerSprite.GetComponent<SpriteRenderer>().enabled = true;
+        playerAttackDirection.GetComponent<SpriteRenderer>().enabled = true;
 
         isInvulnerable = false;
     }
@@ -1077,6 +1075,7 @@ public class Player : MonoBehaviour
                 ApplyDrugStatus(DrugType.NONE);
                 ApplyMentalStatus(PlayerMentalStatus.DEFAULT);
                 ResetModifiersToDefault();
+                Heal(maxHealthPoints/4);
                 if(tutorialMode) TutorialManager.Instance.RegisterWaterDrank();
                 return true; // Oggetto consumato con successo
 

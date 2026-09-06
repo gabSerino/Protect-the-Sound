@@ -226,7 +226,7 @@ SpriteRenderer:
   m_MaskInteraction: 0
   m_Sprite: {fileID: 804784273, guid: 0188956828ae0864798a63b152d4c041, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 2}
@@ -360,7 +360,21 @@ MonoBehaviour:
   genericItemPrefab: {fileID: 3888335886803409878, guid: 3277aa73942ecbd41ac0d331300b45f9, type: 3}
   spriteRenderer: {fileID: 7732448152174508189}
   deadSprite: {fileID: 21300000, guid: bf54edcf3c1872f4ebe0a829dd5e65f7, type: 3}
-  deathDelay: 0.5
+  deathDelay: 1
+  deathSound:
+    Guid:
+      Data1: -2119204111
+      Data2: 1242552899
+      Data3: -1231113324
+      Data4: 375846448
+    Path: event:/Enemy/enemy_death
+  defaultSound:
+    Guid:
+      Data1: -1189650579
+      Data2: 1136656790
+      Data3: 1717091479
+      Data4: 1868600563
+    Path: event:/Enemy/enemy_voice
 --- !u!114 &8061909222506316813
 MonoBehaviour:
   m_ObjectHideFlags: 0

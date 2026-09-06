@@ -136,6 +136,7 @@
 			<destination>{32086556-d67f-4f38-a64d-e609068a3b8a}</destination>
 			<destination>{32a84936-7279-462b-94e3-910cf2be8c3e}</destination>
 			<destination>{856ab5b6-bb22-48a5-ab83-caa374139eef}</destination>
+			<destination>{06ab6183-1b63-4c00-9a76-1eca860f8fb2}</destination>
 			<destination>{3d378b3c-f869-412c-a0f6-d9c40237c2d0}</destination>
 		</relationship>
 	</object>
@@ -232,6 +233,14 @@
 			<value>-10</value>
 		</property>
 	</object>
+	<object class="DelayEffect" id="{06ab6183-1b63-4c00-9a76-1eca860f8fb2}">
+		<property name="delay">
+			<value>66</value>
+		</property>
+		<property name="level">
+			<value>-2.5</value>
+		</property>
+	</object>
 	<object class="SFXReverbEffect" id="{3d378b3c-f869-412c-a0f6-d9c40237c2d0}">
 		<property name="decayTime">
 			<value>900</value>
@@ -241,6 +250,9 @@
 		</property>
 		<property name="wetLevel">
 			<value>-80</value>
+		</property>
+		<property name="dryLevel">
+			<value>5</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{a7f4d763-8a85-485e-9db1-3fd26a378e58}">

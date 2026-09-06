@@ -19,6 +19,7 @@
 			<destination>{18678fa8-980e-4442-9e98-958f97a1b435}</destination>
 			<destination>{c490c6ff-8f58-4fee-b83e-555b9357eceb}</destination>
 			<destination>{336a2984-9a33-4521-aecd-01fce259b2fd}</destination>
+			<destination>{ebe8274a-79e7-465c-b119-c5da8d65016d}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{ffce2e69-3abb-4239-a1d6-fb0fe25a4b04}" />
@@ -37,6 +38,17 @@
 		</property>
 		<property name="wetMix">
 			<value>0</value>
+		</property>
+	</object>
+	<object class="MultibandEqEffect" id="{ebe8274a-79e7-465c-b119-c5da8d65016d}">
+		<property name="wetDryEnabled">
+			<value>true</value>
+		</property>
+		<property name="wetMix">
+			<value>0</value>
+		</property>
+		<property name="filterTypeA">
+			<value>3</value>
 		</property>
 	</object>
 </objects>

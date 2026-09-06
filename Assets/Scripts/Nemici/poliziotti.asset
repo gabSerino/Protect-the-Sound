@@ -24,5 +24,5 @@ MonoBehaviour:
   firstAttackDelay: 0.4
   aggroRadius: 7
   knockbackForce: 15
-  dropChance: 0.25
+  dropChance: 0.4
   lootTable: {fileID: 11400000, guid: 8044bb0aef9b3774d94ac843dfa212e0, type: 2}
